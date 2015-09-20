@@ -5,6 +5,7 @@ import logging
 import sys
 import hashlib
 import datetime
+import subprocess
 
 log = logging.getLogger(__name__)
 
@@ -35,6 +36,33 @@ cfg = {
         "local": False,
     },
 }
+
+class TRsyncError(Exception):
+    def __init__(self, returncode):
+        self.returncode = returncode
+
+    def __repr__(self):
+        return "TRsyncError(returncode={})".format(self.returncode)
+
+def rsync(from_path, to_path, opts):
+    cmd = ["rsync"]
+    cmd += opts
+    cmd.append(from_path)
+    cmd = " ".join(cmd)
+    log.info("Popen: [%s]", cmd)
+    with subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        ) as proc:
+        for line in proc.stdout:
+            yield line
+        for line in proc.stderr:
+            log.debug("Popen stderr: %s", line)
+        proc.wait()
+        if proc.returncode != 0:
+            raise TRsyncError(proc.returncode)
 
 def check_time():
     pass
@@ -83,13 +111,16 @@ if __name__ == "__main__":
         log.setLevel(logging.DEBUG)
 
         ch = logging.StreamHandler()
-        ch.setLevel(logging.ERROR)
+        ch.setLevel(logging.DEBUG)
         ch.setFormatter(
             logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
         )
         log.addHandler(ch)
 
         main()
+        for l in rsync("192.168.1.215:rtorrent", "", ["""--rsh='ssh -p 6013'"""]):
+            log.debug(l)
+        #rsync("/home/", "", [])
 
     except SystemExit:
         raise
