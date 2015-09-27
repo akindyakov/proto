@@ -14,43 +14,6 @@ storage = {
     "index": ["phobos", "deimos"],
 }
 
-cfg = {
-    "akindyakov_source": {
-        "local": True,
-        "filename": "akindyakov_source.%Y-%m-%d",
-        "path": "/home/akindyakov/bare.repo", "tail_size": 14,
-        "time_interval": datetime.timedelta(days=1),
-    },
-    "akindyakov_photo": {
-        "tail_size": 0,  # inplace
-        "local": False,
-        "path": "/home/akindyakov/data/photo",
-        "remote": {
-            "host": "192.168.1.215",
-            "port": 6013,
-        },
-    },
-    "akindyakov_doc": {
-        "tail_size": 0,  # inplace
-        "local": False,
-        "path": "/home/akindyakov/data/documents",
-        "remote": {
-            "host": "192.168.1.215",
-            "port": 6013,
-        },
-    },
-    "akindyakov_video": {
-        "tail_size": 0,  # inplace
-        "local": False,
-        "path": "/home/akindyakov/data/video",
-        "remote": {
-            "host": "192.168.1.215",
-            "port": 6013,
-        },
-    },
-}
-
-
 class TRsyncError(Exception):
     def __init__(self, returncode):
         self.returncode = returncode
@@ -67,14 +30,13 @@ class TTarError(Exception):
 
 
 def irsync(from_path, to_path, opts):
-    log.error("rsync: [%s]", from_path)
     cmd = " ".join([
         "rsync",
         opts,
         from_path,
         to_path,
     ])
-    log.debug("Popen: [%s]", cmd)
+    log.debug("run: %s", cmd)
     with subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
         for line in proc.stdout:
             yield line
@@ -106,29 +68,46 @@ def pack(path, tfile):
 
 
 def implace_backup(args):
-    pass
+    opts = (
+        " --recursive"
+        " --perms"
+        " --owner"
+        " --times"
+        " --sparse"
+    )
+    dst = ""
+    if not args.local:
+        opts += """ --rsh='ssh -p {}'""".format(args.backup_port)
+        dst = "{}:{}".format(
+            args.backup_host,
+            args.backup_path,
+        )
+    else:
+        dst = args.backup_path
+    for _ in irsync(args.what, dst, opts): pass
 
 
 def tail_backup(args):
     with tempfile.NamedTemporaryFile(mode='w+b', prefix="tmp.", suffix='.tar.gz') as tmp:
         pack(args.what, tmp.name)
         fname = datetime.datetime.now().strftime(args.backup_file_fmt) + ".tar.gz"
-        dst = "{}:{}".format(
-            args.backup_host,
-            os.path.join(args.backup_path, fname),
-        )
-        log.debug("%s", dst)
-        log.debug("%s", tmp.name)
-        log.debug("%s", """--rsh='ssh -p {}'""".format(args.backup_port))
-        for _ in irsync(tmp.name, dst, """--rsh='ssh -p {}'""".format(args.backup_port)): pass
+        if not args.local:
+            dst = "{}:{}".format(
+                args.backup_host,
+                os.path.join(args.backup_path, fname),
+            )
+            for _ in irsync(tmp.name, dst, """--rsh='ssh -p {}'""".format(args.backup_port)): pass
+        else:
+            dst = os.path.join(args.backup_path, fname)
+            for _ in irsync(tmp.name, dst, ""): pass
 
 
 def main():
     args = arguments()
     if args.log is not None:
-        log.debug("add custom log file")
+        log.debug("add custom log file [%s]", args.log)
         filehandler = logging.FileHandler(args.log)
-        filehandler.setLevel(logging.DEBUG)
+        filehandler.setLevel(logging.DEBUGG)
         filehandler.setFormatter(
             logging.Formatter("%(asctime)s %(name)s [%(process)d] %(levelname)s %(message)s")
         )
@@ -173,7 +152,6 @@ def arguments():
     parser.add_argument(
         "--backup-file-fmt",
         type=str,
-        required=True,
         help=".tar.gz file fmt",
     )
     parser.add_argument(
@@ -197,7 +175,7 @@ if __name__ == "__main__":
         log.setLevel(logging.DEBUG)
 
         ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logging.ERROR)
         ch.setFormatter(
             logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
         )
