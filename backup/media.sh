@@ -3,7 +3,7 @@
 BACKUPER="/home/akindyakov/source/git.proto/backup/backuper.py"
 HOST="192.168.1.215"
 PORT="6013"
-LOGDIR="/home/akindyakov/logs"
+LOGDIR="/home/akindyakov/temp/logs"
 
 $BACKUPER \
     --backup-host $HOST \

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BACKUPER="/home/akindyakov/source/git.proto/backup/backuper.py"
-LOGDIR="/home/akindyakov/logs"
+LOGDIR="/home/akindyakov/temp/logs"
 
 function git_pull {
     cd $1
