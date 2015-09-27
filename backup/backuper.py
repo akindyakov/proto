@@ -107,7 +107,7 @@ def main():
     if args.log is not None:
         log.debug("add custom log file [%s]", args.log)
         filehandler = logging.FileHandler(args.log)
-        filehandler.setLevel(logging.DEBUGG)
+        filehandler.setLevel(logging.DEBUG)
         filehandler.setFormatter(
             logging.Formatter("%(asctime)s %(name)s [%(process)d] %(levelname)s %(message)s")
         )
