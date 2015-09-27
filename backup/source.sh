@@ -10,7 +10,7 @@ function git_pull {
 
 git_pull "/home/akindyakov/source/git.allu_zef"
 git_pull "/home/akindyakov/source/git.config"
-git_pull "/home/akindyakov/source/git.doc_in_tex"
+git_pull "/home/akindyakov/source/git.doc"
 git_pull "/home/akindyakov/source/git.simple_algo"
 
 $BACKUPER \
