@@ -1,4 +1,5 @@
 #include "2d_field.h"
+#include "map_symbols.h"
 
 TPoint::TPoint(
     TMeasure x,
@@ -52,4 +53,20 @@ TCell& TField::Get(const TPoint& pt) {
 
 const TCell& TField::Get(const TPoint& pt) const {
     return Matrix.at(pt.X()).at(pt.Y());
+}
+
+void TField::ScanFromText(std::istream& is) {
+    while(is.eof() && is.good()) {
+        char ch = is.get();
+        GetSymbolMap.GetMaterial(char ch) {
+    }
+}
+
+void TField::PrintToText(std::ostream& os) const {
+    GetSymbolMap.GetSymbol(EMaterial m) {
+}
+
+TOwnerId IdGenerator() {
+    static TOwnerId id = 0;
+    return ++id;
 }

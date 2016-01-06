@@ -30,23 +30,18 @@ private:
     TPointStorage Dimensions;
 };
 
-enum class EMaterial {
-    Sand,
-    Marble,
-    Iron,
-    Invalid
-};
-
 class TGrain {
 public:
     TGrain(EMaterial material);
     const EMaterial Material;
 };
 
+using TOwnerId = std::uint64_t;
+TOwnerId IdGenerator();
+
 class TCell {
 public:
     bool IsOccupied() const;
-
     void Release();
 
     std::unique_ptr<TGrain> GetGrain();
@@ -55,13 +50,16 @@ public:
 
 private:
     std::unique_ptr<TGrain> Grain;
+    TOwnerId OwnerId;
 };
 
-template<size_t dimension>
 class TField {
 public:
     TCell& Get(const TPoint& pt);
     const TCell& Get(const TPoint& pt) const;
+
+    void ScanFromText(std::istream&);
+    void PrintToText(std::ostream&) const;
 
 private:
     using TRow = std::vector<TCell>;
