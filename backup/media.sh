@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 BACKUPER="/home/akindyakov/source/git.proto/backup/backuper.py"
 HOST="192.168.1.215"
 PORT="6013"

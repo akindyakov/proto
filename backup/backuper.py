@@ -70,8 +70,6 @@ def pack(path, tfile):
 def implace_backup(args):
     opts = (
         " --recursive"
-        " --perms"
-        " --owner"
         " --times"
         " --sparse"
     )
@@ -84,7 +82,8 @@ def implace_backup(args):
         )
     else:
         dst = args.backup_path
-    for _ in irsync(args.what, dst, opts): pass
+    for i in irsync(args.what, dst, opts):
+        log.info(i)
 
 
 def tail_backup(args):
@@ -175,7 +174,7 @@ if __name__ == "__main__":
         log.setLevel(logging.DEBUG)
 
         ch = logging.StreamHandler()
-        ch.setLevel(logging.ERROR)
+        ch.setLevel(logging.INFO)
         ch.setFormatter(
             logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
         )
