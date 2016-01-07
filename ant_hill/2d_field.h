@@ -2,59 +2,68 @@
 
 #include <array>
 #include <cstdint>
+#include <memory>
+#include <vector>
 
 using TMeasure = std::uint32_t;
 
-class T2dPoint {
+class TPoint {
 public:
     TPoint(
         TMeasure x,
-        TMeasure y,
+        TMeasure y
     );
-
-
-    using TDimensions = std::array<TMeasure, dimension>;
-    class enum EDimensions: size_t {
-        EX,
-        EY,
-        ECOUNT,
-    };
 
     TMeasure X() const;
     TMeasure Y() const;
 
 private:
-    TDimensions Dimensions;
+    static const size_t Dimension = 2;
+    enum EDim {
+        EX,
+        EY,
+        ECOUNT,
+    };
+    using TPointStorage = std::array<TMeasure, Dimension>;
+
+private:
+    TPointStorage Dimensions;
 };
 
-class enum EMaterial {
-    Sand,
-    Marble,
-    Iron,
-    Invalid
+class TGrain {
+public:
+    TGrain(EMaterial material);
+    const EMaterial Material;
 };
+
+using TOwnerId = std::uint64_t;
+TOwnerId IdGenerator();
 
 class TCell {
 public:
     bool IsOccupied() const;
-
-    void Occupy();
     void Release();
 
-private:
-    bool Occupied = false;
-};
-
-class TGrain: TCell {
-public:
+    std::unique_ptr<TGrain> GetGrain();
+    void PutGrain(std::unique_ptr<TGrain>&& grain);
+    const TGrain* SeeGrain();
 
 private:
-    EMaterial Material;
+    std::unique_ptr<TGrain> Grain;
+    TOwnerId OwnerId;
 };
 
-template<size_t dimension>
 class TField {
 public:
-    using TRow = std::vector<TGrain>;
+    TCell& Get(const TPoint& pt);
+    const TCell& Get(const TPoint& pt) const;
+
+    void ScanFromText(std::istream&);
+    void PrintToText(std::ostream&) const;
+
+private:
+    using TRow = std::vector<TCell>;
     using TMatrix = std::vector<TRow>;
+
+    TMatrix Matrix;
 };
