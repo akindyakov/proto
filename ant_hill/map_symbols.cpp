@@ -13,9 +13,7 @@ TMapSymbols::TMapSymbols()
         {EMaterial::Iron,         'i'},
         {EMaterial::Wood,         'w'},
         {EMaterial::AntHead,      'V'},
-        {EMaterial::AntMesosoma,  '8'},
-        {EMaterial::AntPetiole,   '.'},
-        {EMaterial::AntGaster,    '@'},
+        {EMaterial::AntBody,      '#'},
         {EMaterial::Invalid,      '?'},
     }
 {

@@ -17,25 +17,23 @@ class TAnt {
 public:
     TAnt(
         TPoint head,
-        TPoint mesosoma,
-        TPoint petiole,
-        TPoint gaster
+        TPoint body
     )
         : Head(head)
-        , Mesosoma(mesosoma)
-        , Petiole(petiole)
-        , Gaster(gaster)
+        , Body(body)
     {
     }
 
+    enum ETurnDirection {
+        CLOCKWISE,
+        CONTERCLOCKWISE,
+    };
     void Turn();
     void Move();
 
 private:
     TPoint Head;
-    TPoint Mesosoma;
-    TPoint Petiole;
-    TPoint Gaster;
+    TPoint Body;
 };
 
 class TPostOffice {
@@ -55,17 +53,10 @@ private:
 class TWorker: public TAnt {
 public:
     TWorker(
-       TPoint head,
-       TPoint mesosoma,
-       TPoint petiole,
-       TPoint gaster
+        TPoint head,
+        TPoint body
     )
-        : TAnt(
-            head,
-            mesosoma,
-            petiole,
-            gaster
-        )
+        : TAnt(head, body)
     {
     }
 
