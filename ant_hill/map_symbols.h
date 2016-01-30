@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
+#include <unordered_map>
 
 enum class EMaterial {
     EmptySpace,
@@ -16,48 +18,34 @@ enum class EMaterial {
 };
 
 
+namespace std {
+template<>
+struct hash<EMaterial>
+{
+    size_t operator()(const EMaterial e) const
+    {
+        return static_cast<size_t>(e);
+    }
+};
+}
+
 class TMapSymbols {
 public:
-    TMapSymbols()
-        : CharToMaterial(128, EMaterial::Invalid)
-    {
-        MaterialToChar = {
-            ' ', // EmptySpace,
-            's', // Sand
-            'm', // Marble
-            'i', // Iron
-            'w', // Wood
-            'V', // AntHead
-            '8', // AntMesosoma
-            '.', // AntPetiole
-            '@', // AntGaster
-            '?'  // Invalid
-        };
-        for (std::size_t i = 0; i < MaterialToChar.size(); ++i) {
-            auto index = static_cast<std::size_t>(MaterialToChar[i] - FirstChar);
-            CharToMaterial[index] = static_cast<EMaterial>(i);
-        }
-    }
+    TMapSymbols();
+
     TMapSymbols(const TMapSymbols&) = delete;
     TMapSymbols(TMapSymbols&&) = delete;
     TMapSymbols& operator=(const TMapSymbols&) = delete;
     TMapSymbols& operator=(TMapSymbols&&) = delete;
 
-    const EMaterial GetMaterial(char ch) {
-        return CharToMaterial[static_cast<std::size_t>(ch)];
-    }
-
-    const char GetSymbol(EMaterial m) {
-        return MaterialToChar[static_cast<std::size_t>(m)];
-    }
+    const EMaterial GetMaterial(char ch) const;
+    const char GetSymbol(EMaterial m) const;
 
 private:
     static const char FirstChar = ' ';
-    std::vector<char> MaterialToChar;
-    std::vector<EMaterial> CharToMaterial;
+
+    std::unordered_map<EMaterial, char> MaterialToChar;
+    std::unordered_map<char, EMaterial> CharToMaterial;
 };
 
-const TMapSymbols& GetSymbolMap() {
-    static TMapSymbols m;
-    return m;
-}
+const TMapSymbols& GetSymbolMap();
