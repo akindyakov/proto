@@ -1,9 +1,13 @@
 #pragma once
 
+#include "map_symbols.h"
+
 #include <array>
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <istream>
+#include <ostream>
 
 using TMeasure = std::uint32_t;
 
@@ -41,16 +45,34 @@ TOwnerId IdGenerator();
 
 class TCell {
 public:
+    TCell(const TCell&) = delete;
+    TCell& operator=(const TCell&) = delete;
+
+    TCell() = default;
+    explicit TCell(EMaterial material)
+        : Grain(std::make_unique<TGrain>(material))
+    {
+    }
+    TCell(TCell&& cell)
+        : Grain(std::move(cell.Grain))
+    {
+    }
+    TCell& operator=(TCell&& cell) {
+        Grain = std::move(cell.Grain);
+        return *this;
+    }
+
     bool IsOccupied() const;
     void Release();
 
     std::unique_ptr<TGrain> GetGrain();
     void PutGrain(std::unique_ptr<TGrain>&& grain);
-    const TGrain* SeeGrain();
+    void PutGrain(EMaterial material);
+    const TGrain* SeeGrain() const;
 
 private:
     std::unique_ptr<TGrain> Grain;
-    TOwnerId OwnerId;
+    // TOwnerId OwnerId;
 };
 
 class TField {

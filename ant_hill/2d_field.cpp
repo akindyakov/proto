@@ -1,6 +1,8 @@
 #include "2d_field.h"
 #include "map_symbols.h"
 
+#include <iostream>
+
 TPoint::TPoint(
     TMeasure x,
     TMeasure y
@@ -43,7 +45,11 @@ void TCell::PutGrain(std::unique_ptr<TGrain>&& grain) {
     }
 }
 
-const TGrain* TCell::SeeGrain() {
+void TCell::PutGrain(EMaterial material) {
+    PutGrain(std::make_unique<TGrain>(material));
+}
+
+const TGrain* TCell::SeeGrain() const {
     return Grain.get();
 }
 
@@ -56,14 +62,41 @@ const TCell& TField::Get(const TPoint& pt) const {
 }
 
 void TField::ScanFromText(std::istream& is) {
-    while(is.eof() && is.good()) {
-        char ch = is.get();
-        GetSymbolMap.GetMaterial(char ch) {
+    size_t cell = 0;
+    char ch = 0;
+    Matrix.clear();
+    TRow row;
+    std::cerr << "scan..." << std::endl;
+    while (!is.eof() && is.good()) {
+        is.get(ch);
+        if (ch == '\n') {
+            cell = 0;
+            if (!row.empty()) {
+                Matrix.push_back(std::move(row));
+            }
+        } else {
+            EMaterial material = GetSymbolMap().GetMaterial(ch);
+            if (material != EMaterial::EmptySpace) {
+                row.emplace_back(material);
+            } else {
+                row.emplace_back();
+            }
+            ++cell;
+        }
     }
 }
 
 void TField::PrintToText(std::ostream& os) const {
-    GetSymbolMap.GetSymbol(EMaterial m) {
+    for (const auto& row : Matrix) {
+        for (const auto& cell : row) {
+            if (cell.IsOccupied()) {
+                os << GetSymbolMap().GetSymbol(cell.SeeGrain()->Material);
+            } else {
+                os << GetSymbolMap().GetSymbol(EMaterial::EmptySpace);
+            }
+        }
+        os << "\n";
+    }
 }
 
 TOwnerId IdGenerator() {
