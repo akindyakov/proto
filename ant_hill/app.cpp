@@ -2,12 +2,15 @@
  * g++(clang++) -std=c++11
  *
  */
+#include "2d_field.h"
+
 #include <getopt.h>
 
 #include <exception>
 #include <iostream>
 #include <sstream>
 #include <string>
+
 
 class ArgparseException: public std::exception {
 public:
@@ -32,7 +35,12 @@ private:
     std::string whatHappen = "[argument parser exception] ";
 };
 
-void argparse(int argn, char** args) {
+struct TArgs {
+    std::string input;
+    std::string output;
+};
+
+TArgs argparse(int argn, char** argv) {
     static struct option long_options[] = {
         {"input",       required_argument,  0,  'i' },
         {"output",      required_argument,  0,  'o' },
@@ -40,12 +48,11 @@ void argparse(int argn, char** args) {
         {0,             0,                  0,   0 }
     };
 
-    std::string input;
-    std::string output;
+    TArgs args;
 
     int option_index = 0;
     while (
-        int c = getopt_long(argn, args, "i:o:?:h", long_options, &option_index)
+        int c = getopt_long(argn, argv, "i:o:?:h", long_options, &option_index)
     ) {
         if (c == -1) {
             break;
@@ -53,30 +60,38 @@ void argparse(int argn, char** args) {
             if (!optarg) {
                 throw ArgparseException("empty value for option \'i\'");
             }
-            input = optarg;
+            args.input = optarg;
         } else if (c == 'o') {
             if (!optarg) {
                 throw ArgparseException("empty value for option \'o\'");
             }
-            output = optarg;
+            args.output = optarg;
         } else if (c == 'h' || c == '?') {
             std::cerr << "Usage:\n"
                 << " -i, --input : Input file\n"
                 << " -o, --output : Output file\n"
                 << " -h, -?, --help : Print this help\n"
             ;
-            return;
+            return args;
         } else {
             if (0 != opterr) {
                 throw ArgparseException();
             }
         }
-    };
+    }
+    return args;
 }
 
-int main(int argn, char** args) {
+void App(const std::string&) {
+    TField field;
+    field.ScanFromText(std::cin);
+    field.PrintToText(std::cout);
+}
+
+int main(int argn, char** argv) {
     try {
-        argparse(argn, args);
+        auto args = argparse(argn, argv);
+        App(args.input);
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;
         return 1;
