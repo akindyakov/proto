@@ -1,8 +1,15 @@
 PRODUCT=product
 
-CC=g++
+#CC=g++
+CC=clang++
 LIB=
-FLAGS=-std=c++11 -Wall
+FLAGS=-std=c++14 -Wall
+
+app:
+	${CC} ${FLAGS} ${LIB} -o ${PRODUCT}/app \
+	2d_field.cpp \
+	map_symbols.cpp \
+	app.cpp \
 
 ut:
 	${CC} ${FLAGS} ${LIB} -o ${PRODUCT}/ut \
