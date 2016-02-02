@@ -5,12 +5,16 @@
 #include <memory>
 #include <map>
 
-enum EAntStatus {
+namespace NAnt {
+enum class EStatus {
     ALIVE,
     DEAD,
 };
 
 class TAntMessage {
+    // stacked
+    // angry
+    // lose way
 };
 
 class TAnt {
@@ -19,21 +23,24 @@ public:
         TPoint head,
         TPoint body
     )
-        : Head(head)
-        , Body(body)
+        : BodyPos(body)
+        , DirectionVec(body - head)
     {
+        if (DirectionVec.Lenght() >= 4) {
+            throw std::exception();
+        }
     }
 
-    enum ETurnDirection {
-        CLOCKWISE,
-        CONTERCLOCKWISE,
-    };
-    void Turn();
+    void Turn(const TVector& direction);
     void Move();
 
+    TPoint Head() const;
+    const TPoint& Body() const;
+    const TVector& Direction() const;
+
 private:
-    TPoint Head;
-    TPoint Body;
+    TPoint BodyPos;
+    TVector DirectionVec;
 };
 
 class TPostOffice {
@@ -60,15 +67,16 @@ public:
     {
     }
 
-    EAntStatus Step(TField& field, const TPostOffice& post);
+    EStatus Step(TField& field, const TPostOffice& post);
     void SendMessage(TAntMessage msg);
 
 private:
     void SeeMail();
-    void Move();
+    void Move(TField& field);
 
 private:
-    EAntStatus Status;
+    EStatus Status;
     std::unique_ptr<TGrain> Load;
     std::vector<TAntMessage> MailBox;
 };
+}
