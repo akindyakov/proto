@@ -53,42 +53,79 @@ const TGrain* TCell::SeeGrain() const {
     return Grain.get();
 }
 
+TMatrix::TMatrix(
+    TMeasure xSize,
+    TMeasure ySize
+)
+    : XSize(xSize)
+    , Field(xSize * ySize)
+{
+}
+
+void TMatrix::Resize(TMeasure xSize, TMeasure ySize) {
+    XSize = xSize;
+    Field.resize(xSize * ySize);
+}
+
+TMeasure TMatrix::GetXSize() const {
+    return XSize;
+}
+
+TMeasure TMatrix::GetYSize() const {
+    return Field.size() / XSize;
+}
+
+TCell& TMatrix::At(const TPoint& pt) {
+    return Field.at(pt.Y() * XSize + pt.X());
+}
+
+const TCell& At(const TPoint& pt) const {
+    return Field.at(pt.Y() * XSize + pt.X());
+}
+
 TCell& TField::Get(const TPoint& pt) {
-    return Matrix.at(pt.X()).at(pt.Y());
+    return Matrix.At(pt);
 }
 
 const TCell& TField::Get(const TPoint& pt) const {
-    return Matrix.at(pt.X()).at(pt.Y());
+    return Matrix.At(pt);
 }
 
 void TField::ScanFromText(std::istream& is) {
     size_t cell = 0;
     char ch = 0;
-    Matrix.clear();
-    TRow row;
-    std::cerr << "scan..." << std::endl;
+    std::cerr << "scan field" << std::endl;
+    TMeasure x = 0;
+    TMeasure y = 0;
+    is >> x;
+    is >> y;
+    std::cerr << "size: " << x << "x" << y << std::endl;
+    Matrix.Resize(x, y);
     while (!is.eof() && is.good()) {
         is.get(ch);
         if (ch == '\n') {
-            cell = 0;
-            if (!row.empty()) {
-                Matrix.push_back(std::move(row));
-            }
+            ++y;
+            x = 0;
         } else {
+            ++x;
             EMaterial material = GetSymbolMap().GetMaterial(ch);
             if (material != EMaterial::EmptySpace) {
-                row.emplace_back(material);
+                Matrix.At(TPoint(x,y)) = TCell(material);
             } else {
-                row.emplace_back();
+                Matrix.At(TPoint(x,y)).Release();
             }
-            ++cell;
         }
     }
 }
 
 void TField::PrintToText(std::ostream& os) const {
-    for (const auto& row : Matrix) {
-        for (const auto& cell : row) {
+    TMeasure xSize = Field.XSize();
+    TMeasure ySize = Field.YSize();
+    os << xSize << '\n';
+    os << ySize << '\n';
+    for (TMeasure y = 0; y < ySize; ++y) {
+        for (TMeasure x = 0; x < ySize; ++x) {
+            const TCell& cell = Matrix.At(TPoint(x, y));
             if (cell.IsOccupied()) {
                 os << GetSymbolMap().GetSymbol(cell.SeeGrain()->Material);
             } else {
