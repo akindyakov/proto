@@ -26,5 +26,5 @@ $BACKUPER \
     --tail-size 14 \
     --backup-file-fmt '%Y.%m.%d' \
     --what /home/akindyakov/crt \
-    --backup-path /home/akindyakov/backup/backups/akindyakov_source \
+    --backup-path /home/akindyakov/backup/backups/akindyakov_crt \
     --log $LOGDIR"/crt_bp.log"
