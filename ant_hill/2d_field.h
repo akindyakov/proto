@@ -96,6 +96,23 @@ private:
     // TOwnerId OwnerId;
 };
 
+<<<<<<< HEAD
+class TMatrix {
+public:
+    TMatrix(TMeasure xSize, TMeasure ySize);
+
+    void Resize(TMeasure xSize, TMeasure ySize);
+
+    TMeasure GetXSize() const;
+    TMeasure GetYSize() const;
+
+    TCell& At(const TPoint& pt);
+    const TCell& At(const TPoint& pt) const;
+
+private:
+    TMeasure XSize;
+    std::vector<TCell> Field;
+=======
 class TAntField {
 public:
     const TCell& See(const TPoint& pt) const;
@@ -105,6 +122,7 @@ public:
         const TPoint& pt,
         const TVector& vec
     );
+>>>>>>> 0d1c9b12a474747af295a76c1349ceac17335ed6
 };
 
 class TField {
@@ -122,8 +140,5 @@ public:
     void PrintToText(std::ostream&) const;
 
 private:
-    using TRow = std::vector<TCell>;
-    using TMatrix = std::vector<TRow>;
-
     TMatrix Matrix;
 };
