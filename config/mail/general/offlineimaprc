@@ -1,0 +1,9 @@
+# Sample minimal config file.  Copy this to ~/.offlineimaprc and edit to
+# get started fast.
+
+[general]
+# Path to file with arbitrary Python code to be loaded
+pythonfile = ~/.offlineimap.py
+
+[general]
+accounts = #@ACCOUNTS
