@@ -9,7 +9,7 @@
 #include <istream>
 #include <ostream>
 
-using TMeasure = std::uint32_t;
+using TMeasure = unsigned;
 
 class TPoint {
 private:
@@ -52,51 +52,17 @@ TVector operator-(const TPoint& left, const TPoint& right) {
 }
 
 
+using TGrainId = unsigned int;
+
 class TGrain {
 public:
     TGrain(EMaterial material);
     const EMaterial Material;
-    // Weight
-    // Form
-    // 
+
+    bool IsNone() const;
 };
 
-using TOwnerId = std::uint64_t;
-TOwnerId IdGenerator();
 
-class TCell {
-public:
-    TCell(const TCell&) = delete;
-    TCell& operator=(const TCell&) = delete;
-
-    TCell() = default;
-    explicit TCell(EMaterial material)
-        : Grain(std::make_unique<TGrain>(material))
-    {
-    }
-    TCell(TCell&& cell)
-        : Grain(std::move(cell.Grain))
-    {
-    }
-    TCell& operator=(TCell&& cell) {
-        Grain = std::move(cell.Grain);
-        return *this;
-    }
-
-    bool IsOccupied() const;
-    void Release();
-
-    std::unique_ptr<TGrain> GetGrain();
-    void PutGrain(std::unique_ptr<TGrain>&& grain);
-    void PutGrain(EMaterial material);
-    const TGrain* SeeGrain() const;
-
-private:
-    std::unique_ptr<TGrain> Grain;
-    // TOwnerId OwnerId;
-};
-
-<<<<<<< HEAD
 class TMatrix {
 public:
     TMatrix(TMeasure xSize, TMeasure ySize);
@@ -104,7 +70,7 @@ public:
     void Resize(TMeasure xSize, TMeasure ySize);
 
     TMeasure GetXSize() const;
-    TMeasure GetYSize() const;
+    TMeasure GetY Size() const;
 
     TCell& At(const TPoint& pt);
     const TCell& At(const TPoint& pt) const;
@@ -112,33 +78,21 @@ public:
 private:
     TMeasure XSize;
     std::vector<TCell> Field;
-=======
-class TAntField {
-public:
-    const TCell& See(const TPoint& pt) const;
-    std::unique_ptr<TGrain> GetGrain(const TPoint& pt);
-    std::unique_ptr<TGrain> PutGrain(const TPoint& pt);
-    void MoveCell(
-        const TPoint& pt,
-        const TVector& vec
-    );
->>>>>>> 0d1c9b12a474747af295a76c1349ceac17335ed6
 };
 
-class TField {
+
+class IField {
 public:
-    TCell& Get(const TPoint& pt);
-    const TCell& Get(const TPoint& pt) const;
+    TGrainId CreateGrain(TGrain&&);
 
-    std::unique_ptr<TGrain> GetGrain(const TPoint& pt);
-    void PutGrain(
-        const TPoint& pt,
-        std::unique_ptr<TGrain> grain
-    );
+    const TGrain& GetGrain(TGrainId) const;
+    const TGrain& GetGrain(const TPoint&) const;
 
-    void ScanFromText(std::istream&);
-    void PrintToText(std::ostream&) const;
-
-private:
-    TMatrix Matrix;
+    bool TryMoveGrain(TGrainId, const TVector& to) const;
+    void MoveGrain(TGrainId, const TVector& to);
 };
+
+
+TField ScanFromText(std::istream&);
+void PrintToText(std::ostream&, const TField&);
+
