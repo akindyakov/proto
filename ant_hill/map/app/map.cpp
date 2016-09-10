@@ -1,4 +1,4 @@
-#include <lib/map/2d_field.h>
+#include <map/lib/2d_field.h>
 
 #include <tools/tests/ut.h>
 
@@ -32,5 +32,6 @@ iiiiiiiiii
 
 int main() {
     App();
+    std::cout << "Hello Alex!" << std::endl;
     return 0;
 }

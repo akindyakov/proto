@@ -6,9 +6,9 @@ export CC := clang++ $(CC_FLAGS)
 
 LOCAL_PRODUCT = $(PRODUCT)
 
-.PHONY: all lib app
+TARGETS := map
 
-TARGETS := lib app
+.PHONY: all $(TARGETS)
 
 all: $(TARGETS)
 

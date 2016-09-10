@@ -1,6 +1,6 @@
-PRODUCT := "$(ABS_PRODUCT)/lib"
+PRODUCT := "$(ABS_PRODUCT)/map"
 
-TARGETS := map
+TARGETS := lib app
 
 .PHONY: all prepare $(TARGETS)
 

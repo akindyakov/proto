@@ -1,4 +1,4 @@
-PRODUCT = $(ABS_PRODUCT)/lib/map
+PRODUCT = $(ABS_PRODUCT)/map/lib
 
 .PHONY: all ut clear prepare
 
