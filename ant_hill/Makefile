@@ -1,35 +1,23 @@
-PRODUCT=product
+export ABS_PRODUCT := $(abspath product)
+export SRC_PATH := $(abspath .)
 
-#CC=g++
-CC=clang++
-LIB=
-FLAGS=-std=c++14 -Wall
+export CC_FLAGS := -std=c++14 -Wall -I $(SRC_PATH)
+export CC := clang++ $(CC_FLAGS)
 
-app:
-	${CC} ${FLAGS} ${LIB} -o ${PRODUCT}/app \
-	2d_field.cpp \
-	map_symbols.cpp \
-	app.cpp \
+LOCAL_PRODUCT = $(PRODUCT)
 
-ut:
-	${CC} ${FLAGS} ${LIB} -o ${PRODUCT}/ut \
-	ut.cpp
+.PHONY: all lib app
 
-2d_field_ut:
-	${CC} ${FLAGS} ${LIB} -o ${PRODUCT}/2d_field_ut \
-	2d_field.cpp \
-	map_symbols.cpp \
-	2d_field_ut.cpp
+TARGETS := lib app
 
-tdoc:
-	latex -output-directory=${PRODUCT} -output-format=pdf article.tex
+all: $(TARGETS)
 
-mdoc:
-	pandoc --output ${PRODUCT}/mdoc.rst --to rst doc/mdoc.md
+$(TARGETS):
+	$(MAKE) --directory=$@
 
 clear:
-	rm product -r
+	rm --recursive $(ABS_PRODUCT)
 
 prepare:
-	mkdir product
+	mkdir --parents $(PRODUCT)
 

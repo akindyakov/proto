@@ -1,5 +1,6 @@
 #include "2d_field.h"
-#include "ut.h"
+
+#include <tools/tests/ut.h>
 
 #include <iostream>
 #include <sstream>
