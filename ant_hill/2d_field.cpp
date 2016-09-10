@@ -3,20 +3,15 @@
 
 #include <iostream>
 
+namespace NField {
+
 TPoint::TPoint(
     TMeasure x,
     TMeasure y
 )
-    : Dimensions {{x, y}}
+    : X(x)
+    , Y(y)
 {
-}
-
-TMeasure TPoint::X() const {
-    return Dimensions[EX];
-}
-
-TMeasure TPoint::Y() const {
-    return Dimensions[EY];
 }
 
 TGrain::TGrain(EMaterial material)
@@ -24,119 +19,68 @@ TGrain::TGrain(EMaterial material)
 {
 }
 
-bool TCell::IsOccupied() const {
-    return bool(Grain);
-}
-
-void TCell::Release() {
-    Grain.reset();
-}
-
-std::unique_ptr<TGrain> TCell::GetGrain() {
-    // TODO: mutex required
-    return std::move(Grain);
-}
-
-void TCell::PutGrain(std::unique_ptr<TGrain>&& grain) {
-    if (Grain) {
-        Grain = std::move(grain);
-    } else {
-        throw std::exception();
-    }
-}
-
-void TCell::PutGrain(EMaterial material) {
-    PutGrain(std::make_unique<TGrain>(material));
-}
-
-const TGrain* TCell::SeeGrain() const {
-    return Grain.get();
-}
-
-TMatrix::TMatrix(
-    TMeasure xSize,
-    TMeasure ySize
-)
-    : XSize(xSize)
-    , Field(xSize * ySize)
+TGrain::TGrain(TGrain&& other)
+    : Material(other.Material)
 {
 }
 
-void TMatrix::Resize(TMeasure xSize, TMeasure ySize) {
-    XSize = xSize;
-    Field.resize(xSize * ySize);
+TGrain::TGrain(const TGrain& other)
+    : Material(other.Material)
+{
 }
 
-TMeasure TMatrix::GetXSize() const {
-    return XSize;
+TGrain& TGrain::operator=(TGrain&& other) {
+    Material = other.Material;
+    return *this;
 }
 
-TMeasure TMatrix::GetYSize() const {
-    return Field.size() / XSize;
+TGrain& TGrain::operator=(const TGrain& other) {
+    Material = other.Material;
+    return *this;
 }
 
-TCell& TMatrix::At(const TPoint& pt) {
-    return Field.at(pt.Y() * XSize + pt.X());
-}
-
-const TCell& At(const TPoint& pt) const {
-    return Field.at(pt.Y() * XSize + pt.X());
-}
-
-TCell& TField::Get(const TPoint& pt) {
-    return Matrix.At(pt);
-}
-
-const TCell& TField::Get(const TPoint& pt) const {
-    return Matrix.At(pt);
-}
-
-void TField::ScanFromText(std::istream& is) {
-    size_t cell = 0;
-    char ch = 0;
-    std::cerr << "scan field" << std::endl;
-    TMeasure x = 0;
-    TMeasure y = 0;
+TField ScanFromText(std::istream& is) {
+    auto ch = char{0};
+    // std::cerr << "scan field" << std::endl;
+    auto x = TMeasure{0};
+    auto y = TMeasure{0};
     is >> x;
     is >> y;
-    std::cerr << "size: " << x << "x" << y << std::endl;
-    Matrix.Resize(x, y);
+    // std::cerr << "size: " << x << "x" << y << std::endl;
+    auto field = TField(x, y);
     while (!is.eof() && is.good()) {
         is.get(ch);
         if (ch == '\n') {
-            ++y;
+            // std::cerr << '\n';
+            --y;
             x = 0;
         } else {
-            ++x;
+            //std::cerr << "[" << ch << "]\n";
             EMaterial material = GetSymbolMap().GetMaterial(ch);
             if (material != EMaterial::EmptySpace) {
-                Matrix.At(TPoint(x,y)) = TCell(material);
-            } else {
-                Matrix.At(TPoint(x,y)).Release();
+                field.At(TPoint(x, y)).Grain = TGrain(material);
             }
+            ++x;
         }
     }
+    return field;
 }
 
-void TField::PrintToText(std::ostream& os) const {
-    TMeasure xSize = Field.XSize();
-    TMeasure ySize = Field.YSize();
+void PrintToText(std::ostream& os, const TField& field) {
+    TMeasure xSize = field.GetXSize();
+    TMeasure ySize = field.GetYSize();
     os << xSize << '\n';
     os << ySize << '\n';
-    for (TMeasure y = 0; y < ySize; ++y) {
+    // std::cerr << "field: " << xSize << 'x' << ySize << std::endl;
+    for (TMeasure y = ySize; y != 0; --y) {
         for (TMeasure x = 0; x < ySize; ++x) {
-            const TCell& cell = Matrix.At(TPoint(x, y));
-            if (cell.IsOccupied()) {
-                os << GetSymbolMap().GetSymbol(cell.SeeGrain()->Material);
-            } else {
-                os << GetSymbolMap().GetSymbol(EMaterial::EmptySpace);
-            }
+            const TGrain& grain = field.At(TPoint(x, y - 1)).Grain;
+            os << GetSymbolMap().GetSymbol(grain.SeeMaterial());
+            // std::cerr << '.';
         }
         os << "\n";
+        // std::cerr << '\n';
     }
 }
 
-TOwnerId IdGenerator() {
-    static TOwnerId id = 0;
-    return ++id;
-}
+}  // NField

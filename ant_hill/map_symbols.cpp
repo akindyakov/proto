@@ -7,7 +7,7 @@ const TMapSymbols& GetSymbolMap() {
 
 TMapSymbols::TMapSymbols()
     : MaterialToChar{
-        {EMaterial::EmptySpace,   ' '},
+        {EMaterial::EmptySpace,   '.'},
         {EMaterial::Sand,         's'},
         {EMaterial::Marble,       'm'},
         {EMaterial::Iron,         'i'},
@@ -35,5 +35,6 @@ const char TMapSymbols::GetSymbol(EMaterial m) const {
     if (it == MaterialToChar.end()) {
         throw std::exception();
     }
+    // std::cerr << "[" << it->second << "]\n";
     return it->second;
 }

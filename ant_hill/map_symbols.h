@@ -11,9 +11,7 @@ enum class EMaterial {
     Iron,
     Wood,
     AntHead,
-    AntMesosoma,
-    AntPetiole,
-    AntGaster,
+    AntBody,
     Invalid
 };
 
