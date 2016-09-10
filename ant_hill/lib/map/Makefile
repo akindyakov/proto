@@ -18,7 +18,7 @@ $(PRODUCT)/map_symbols.o: map_symbols.h map_symbols.cpp
     map_symbols.cpp
 
 $(PRODUCT)/2d_field_ut: $(PRODUCT)/2d_field_ut.o $(PRODUCT)/libmap.a
-	$(CC) -v -o $@ $^
+	$(CC) -o $@ $^
 
 $(PRODUCT)/2d_field_ut.o: 2d_field_ut.cpp
 	$(CC) -c -o $@ $^

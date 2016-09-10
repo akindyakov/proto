@@ -1,12 +1,12 @@
 PRODUCT := $(ABS_PRODUCT)/app/map
 
-.PHONY: all app clear prepare
+.PHONY: all clear prepare
 
-all: prepare app
+all: prepare $(PRODUCT)/map
 
-app: $(PRODUCT)/map.o
-	$(CC) -o $(PRODUCT)/map \
-	$(PRODUCT)/map.o
+$(PRODUCT)/map: $(PRODUCT)/map.o
+	$(CC) -o $@ $^ \
+	$(ABS_PRODUCT)/lib/map/libmap.a
 
 $(PRODUCT)/map.o: map.cpp
 	$(CC) -c -o $(PRODUCT)/map.o \
