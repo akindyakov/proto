@@ -1,11 +1,6 @@
-#PRODUCT=product
-PRODUCT := "$(ABS_PRODUCT)/app"
+PRODUCT := "$(ABS_PRODUCT)/ant"
 
-#CC=g++
-#export CC_FLAGS := -std=c++14 -Wall
-#export CC = clang++ CC_FLAGS
-
-TARGETS := map
+TARGETS := lib
 
 .PHONY: all clear prepare $(TARGETS)
 
