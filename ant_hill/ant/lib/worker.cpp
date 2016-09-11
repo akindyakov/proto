@@ -1,4 +1,4 @@
-#include "ant_worker.h"
+#include "worker.h"
 
 namespace NAnt {
 EStatus TWorker::Step(TField& field, const TPostOffice& post) {
