@@ -1,45 +1,18 @@
-# Sample minimal config file.  Copy this to ~/.offlineimaprc and edit to
-# get started fast.
 
-[general]
-# Path to file with arbitrary Python code to be loaded
-pythonfile = ~/.offlineimap.py
+[Account yateam]
+localrepository = ya_local
+remoterepository = ya_remote
 
-[general]
-accounts = magictwin,gmail
-
-[Account magictwin]
-localrepository = magictwin_local
-remoterepository = magictwin_remote
-
-[Repository magictwin_local]
+[Repository ya_local]
 type = Maildir
-localfolders = ~/mail/magictwin@yandex.ru
+localfolders = ~/mail/yateam
 
-[Repository magictwin_remote]
+[Repository ya_remote]
 type = IMAP
 ssl = yes
-remotehost = imap.yandex.ru
+remotehost = imap.yandex-team.ru
 remoteport = 993
-remoteuser = magictwin@yandex.ru
-remotepasseval = get_pass("yandex.ru/magictwin@yandex.ru")
-sslcacertfile = /etc/ssl/certs/ca-certificates.crt
-maxconnections = 2
-
-[Account gmail]
-localrepository = gmail_local
-remoterepository = gmail_remote
-
-[Repository gmail_local]
-type = Maildir
-localfolders = ~/mail/gmail
-
-[Repository gmail_remote]
-type = IMAP
-ssl = yes
-remotehost = imap.gmail.com
-remoteport = 993
-remoteuser = akindyakov@gmail.com
-remotepasseval = get_pass("google.com/akindyakov@gmail.com")
+remoteuser = akindyakov@yandex-team.ru
+remotepasseval = get_pass("ya")
 sslcacertfile = /etc/ssl/certs/ca-certificates.crt
 maxconnections = 2

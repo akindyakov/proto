@@ -3,12 +3,10 @@ reset all
 unhook *
 
 mailboxes =INBOX
-#set smtp_url="smtps://magictwin@smtp.yandex.ru"
-#set smtp_pass=""
 
-set realname="magictwin"
-set from="magictwin@smtp.yandex.ru"
-set sendmail="/usr/bin/msmtp -a magictwin"
+set realname="Alexander Kindyakov"
+set from="Alexander Kindyakov <akindyakov@yandex-team.ru>"
+set sendmail="/usr/bin/msmtp -a yateam"
 set envelope_from=yes
 
 set timeout = 15
@@ -20,25 +18,25 @@ set imap_pipeline_depth=0
 unset imap_passive
 set imap_check_subscribed
 
-set folder="~/mail/magictwin@yandex.ru"
-mailboxes `echo ~/mail/magictwin@yandex.ru/*`
-set spoolfile="~/mail/magictwin@yandex.ru/INBOX"
-set mbox      = "~/mail/magictwin@yandex.ru/Archives"
-set record="=Sended"
-set postponed = "~/mail/magictwin@yandex.ru/Drafts"
-set trash = "~/mail/magictwin@yandex.ru/Trash"
+set folder="~/mail/yateam"
+mailboxes `echo ~/mail/yateam/*`
+set spoolfile="~/mail/yateam/INBOX"
+set mbox      = "~/mail/yateam/Archives"
+set record="~/mail/yateam/Sent"
+set postponed = "~/mail/yateam/Drafts"
+set trash = "~/mail/yateam/Trash"
 
 set charset=utf-8
 set folder_format="%2C %t %N %8s %d %f"
 
-set header_cache="~/.mutt/magictwin@yandex.ru/headers"
-set message_cachedir="~/.mutt/magictwin@yandex.ru/bodies"
-set certificate_file="~/.mutt/magictwin@yandex.ru_certificates"
+set header_cache="~/.mutt/yateam/header_cache"
+set message_cachedir="~/.mutt/yateam/message_cachedir"
+set certificate_file="~/.mutt/yateam/certificates"
 
 set sort = "threads"
 set sort_aux = "last-date-received"
 
-set from="AK <magictwin@yandex.ru>"
+set from="Alexamder Kindyakov <akindyakov@yandex-team.ru>"
 
 set editor="/usr/bin/vim"
 hdr_order Date From To Cc Subject
