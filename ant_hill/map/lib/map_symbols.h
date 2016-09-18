@@ -10,6 +10,8 @@ enum class EMaterial {
     Marble,
     Iron,
     Wood,
+    Loam,
+    Water,
     AntHead,
     AntBody,
     Invalid

@@ -12,7 +12,9 @@ TMapSymbols::TMapSymbols()
         {EMaterial::Marble,       'm'},
         {EMaterial::Iron,         'i'},
         {EMaterial::Wood,         'w'},
-        {EMaterial::AntHead,      'V'},
+        {EMaterial::Loam,         'l'},
+        {EMaterial::Water,        'a'},
+        {EMaterial::AntHead,      'X'},
         {EMaterial::AntBody,      '#'},
         {EMaterial::Invalid,      '?'},
     }
