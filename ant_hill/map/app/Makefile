@@ -4,13 +4,20 @@ PRODUCT := $(ABS_PRODUCT)/map/app
 
 all: prepare $(PRODUCT)/map
 
-$(PRODUCT)/map: $(PRODUCT)/map.o
-	$(CC) -o $@ $^ \
-	$(ABS_PRODUCT)/map/lib/libmap.a
+# for client
 
-$(PRODUCT)/map.o: map.cpp
-	$(CC) -c -o $(PRODUCT)/map.o \
-	map.cpp
+$(PRODUCT)/map: $(PRODUCT)/main.o $(ABS_PRODUCT)/map/lib/libmap.a
+	$(CC) \
+    -ljsoncpp \
+    -ljsonrpccpp-common \
+    -ljsonrpccpp-server \
+    -lmicrohttpd \
+    $(ABS_PRODUCT)/map/lib/libmap.a \
+    -o $@ $^
+
+$(PRODUCT)/main.o: main.cpp $(ABS_PRODUCT)/map/rpc/server.h
+	$(CC) -c \
+    -o $@ $<
 
 clear:
 	rm --recursive $(PRODUCT)

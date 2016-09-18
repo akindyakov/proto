@@ -1,6 +1,6 @@
 PRODUCT := "$(ABS_PRODUCT)/map"
 
-TARGETS := lib app
+TARGETS := lib rpc app
 
 .PHONY: all prepare $(TARGETS)
 

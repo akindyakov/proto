@@ -1,6 +1,6 @@
 PRODUCT := "$(ABS_PRODUCT)/ant"
 
-TARGETS := lib
+TARGETS := app
 
 .PHONY: all clear prepare $(TARGETS)
 
