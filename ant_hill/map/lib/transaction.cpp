@@ -20,7 +20,7 @@ TMovement& TMovement::operator=(TMovement&& other) {
     return *this;
 }
 
-void TTransaction::Move(const TPoint& old, ECompass direction) {
+TTransaction& TTransaction::Move(const TPoint& old, ECompass direction) {
     auto action = TMovement(old, old);
     if (direction == ECompass::North) {
         action.To.Y += 1;
@@ -31,7 +31,10 @@ void TTransaction::Move(const TPoint& old, ECompass direction) {
     } else if (direction == ECompass::East) {
         action.To.X += 1;
     }
+    // std::cerr << "From: " << action.From.X << ", " << action.From.Y << std::endl;
+    // std::cerr << "To: " << action.To.X << ", " << action.To.Y << std::endl;
     Actions.push_back(std::move(action));
+    return *this;
 }
 
 bool TTransaction::Apply(TField& where) const {

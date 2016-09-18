@@ -26,7 +26,7 @@ struct TMovement {
 
 class TTransaction {
 public:
-    void Move(const TPoint& pt, ECompass direction);
+    TTransaction& Move(const TPoint& pt, ECompass direction);
     bool Apply(TField& where) const;
 
 private:
