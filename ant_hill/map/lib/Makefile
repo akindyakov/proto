@@ -4,7 +4,7 @@ PRODUCT = $(ABS_PRODUCT)/map/lib
 
 all: prepare $(PRODUCT)/libmap.a ut
 
-ut: $(PRODUCT)/2d_field_ut
+ut: $(PRODUCT)/2d_field_ut  $(PRODUCT)/transaction_ut
 
 $(PRODUCT)/libmap.a: $(PRODUCT)/2d_field.o $(PRODUCT)/map_symbols.o $(PRODUCT)/transaction.o
 	ar rcs $@ $^
@@ -24,6 +24,12 @@ $(PRODUCT)/2d_field_ut: $(PRODUCT)/2d_field_ut.o $(PRODUCT)/libmap.a
 	$(CC) -o $@ $^
 
 $(PRODUCT)/2d_field_ut.o: 2d_field_ut.cpp
+	$(CC) -c -o $@ $^
+
+$(PRODUCT)/transaction_ut: $(PRODUCT)/transaction_ut.o $(PRODUCT)/libmap.a
+	$(CC) -o $@ $^
+
+$(PRODUCT)/transaction_ut.o: transaction_ut.cpp
 	$(CC) -c -o $@ $^
 
 clear:
