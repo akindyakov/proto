@@ -35,6 +35,7 @@ void TTransaction::Move(const TPoint& old, ECompass direction) {
 }
 
 bool TTransaction::Apply(TField& where) const {
+    // TODO: there have to be full lock on the all poins of transaction!
     auto lock = std::vector<
         std::unique_lock<std::mutex>
     >{};
