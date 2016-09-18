@@ -1,5 +1,8 @@
 #include "transaction.h"
 
+#include <tools/tests/ut.h>
+
+
 namespace NField {
 
 TMovement::TMovement(const TPoint& to, const TPoint& from)
@@ -50,6 +53,13 @@ bool TTransaction::Apply(TField& where) const {
         std::unique_lock<std::mutex> lk2(toCell.Mutex, std::defer_lock);
         std::lock(lk1, lk2);
 
+        // std::cerr << "EMaterial::EmptySpace: " << int(EMaterial::EmptySpace) << std::endl;
+        // std::cerr << "Material: " << int(toCell.Grain.SeeMaterial()) << std::endl;
+        // std::cerr << "toCell.Grain.IsNone(): " << toCell.Grain.IsNone() << std::endl;
+
+        if (fromCell.Grain.IsNone()) {
+            throw NAntHill::TException("Expected error was not threw");
+        }
         if (!toCell.Grain.IsNone()) {
             return false;
         }
