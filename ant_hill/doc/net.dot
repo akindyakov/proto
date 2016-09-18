@@ -1,0 +1,31 @@
+digraph ant_hill_net {
+    manager_0[shape=doublecircle];
+    manager_1[shape=doublecircle];
+    manager_2[shape=doublecircle];
+
+    worker_0[shape=circle];
+    worker_1[shape=circle];
+    worker_2[shape=circle];
+    worker_3[shape=circle];
+    worker_4[shape=circle];
+
+    map_0[shape=triangle];
+
+    manager_0 -> manager_1 -> manager_2;
+    manager_2 -> manager_0 -> manager_2;
+    manager_2 -> manager_1 -> manager_0;
+
+    manager_1 -> worker_0;
+    manager_1 -> worker_1;
+    manager_1 -> worker_2;
+    manager_1 -> worker_3;
+    manager_1 -> worker_4;
+
+    manager_1 -> map_0;
+
+    worker_0 -> map_0;
+    worker_1 -> map_0;
+    worker_2 -> map_0;
+    worker_3 -> map_0;
+    worker_4 -> map_0;
+}
