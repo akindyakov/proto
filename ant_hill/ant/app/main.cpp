@@ -1,3 +1,5 @@
+#include "args.h"
+
 #include <map/rpc/client.h>
 
 #include <jsonrpccpp/client/connectors/httpclient.h>
@@ -6,9 +8,14 @@
 #include <thread>
 #include <chrono>
 
-int main()
-{
-    // TODO: Put arguments parsing here
+
+int main(int argn, char** argv) {
+
+    auto args = Argparse(argn, argv);
+    if (args.count("help")) {
+        return 0;
+    }
+
     using namespace std::chrono_literals;
     auto httpclient = jsonrpc::HttpClient("http://localhost:8383");
     auto client = NMap::NJsonRPC::TClient{httpclient};
