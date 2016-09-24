@@ -21,9 +21,20 @@ class TMapServer
         int MoveGroup(const Json::Value& grains) override {
             std::cerr << "MoveGroup(...)" << std::endl;
             // TODO:
-            // TODO:
             return 0;
         }
+
+        Json::Value YieldMe(
+            const Json::Value& grains
+            , const Json::Value& place
+        ) override {
+            // TODO:
+            auto point = Json::Value{};
+            point["x"] = 1;
+            point["y"] = 1;
+            return point;
+        }
+
         int Ping() override {
             std::cerr << "Ping()" << std::endl;
             // TODO:
