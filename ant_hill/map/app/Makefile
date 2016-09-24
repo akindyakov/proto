@@ -21,7 +21,7 @@ $(PRODUCT)/args.o: args.cpp args.h
 	$(CC) -c \
     -o $@ $<
 
-$(PRODUCT)/map_server.o: map.cpp map_server.h $(ABS_PRODUCT)/map/rpc/server.h
+$(PRODUCT)/map_server.o: map_server.cpp map_server.h $(ABS_PRODUCT)/map/rpc/server.h
 	$(CC) -c \
     -o $@ $<
 
