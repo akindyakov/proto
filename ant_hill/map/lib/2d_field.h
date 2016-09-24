@@ -99,6 +99,12 @@ public:
     {
     }
 
+    TField(const TField&) = delete;
+    TField(TField&&) = default;
+
+    TField& operator=(const TField&) = delete;
+    TField& operator=(TField&&) = default;
+
     TMeasure GetXSize() const {
         return XSize;
     }
