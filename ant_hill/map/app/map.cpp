@@ -1,6 +1,12 @@
+#include "map_server.h"
+
 #include <map/lib/2d_field.h>
 
+#include <map/rpc/server.h>
+
 #include <tools/tests/ut.h>
+
+#include <jsonrpccpp/server/connectors/httpserver.h>
 
 #include <iostream>
 
@@ -30,8 +36,35 @@ iiiiiiiiii
     }
 }
 
-int main() {
-    App();
-    std::cout << "Hello Alex!" << std::endl;
+TMapServer::TMapServer(jsonrpc::AbstractServerConnector &conn)
+    : NMap::NJsonRPC::TServer(conn)
+{
+}
+
+int TMapServer::SeeGrain(int x, int y) {
+    std::cerr << "GetGrain(" << x << ", " << y << ")" << std::endl;
+    // TODO:
+    return x + y;
+}
+int TMapServer::MoveGroup(const Json::Value& grains) {
+    std::cerr << "MoveGroup(...)" << std::endl;
+    // TODO:
+    return 0;
+}
+
+Json::Value TMapServer::YieldMe(
+    const Json::Value& grains
+    , const Json::Value& place
+) {
+    // TODO:
+    auto point = Json::Value{};
+    point["x"] = 1;
+    point["y"] = 1;
+    return point;
+}
+
+int TMapServer::Ping() {
+    std::cerr << "Ping()" << std::endl;
+    // TODO:
     return 0;
 }

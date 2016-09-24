@@ -4,21 +4,24 @@ PRODUCT := $(ABS_PRODUCT)/map/app
 
 all: prepare $(PRODUCT)/map
 
-$(PRODUCT)/map: $(PRODUCT)/main.o $(ABS_PRODUCT)/map/lib/libmap.a $(PRODUCT)/args.o
+$(PRODUCT)/map: $(PRODUCT)/main.o $(PRODUCT)/args.o $(PRODUCT)/map_server.o $(ABS_PRODUCT)/map/lib/libmap.a
 	$(CC) \
     -ljsoncpp \
     -ljsonrpccpp-common \
     -ljsonrpccpp-server \
     -lmicrohttpd \
     -lboost_program_options \
-    $(ABS_PRODUCT)/map/lib/libmap.a \
     -o $@ $^
 
-$(PRODUCT)/main.o: main.cpp $(ABS_PRODUCT)/map/rpc/server.h
+$(PRODUCT)/main.o: main.cpp
 	$(CC) -c \
     -o $@ $<
 
 $(PRODUCT)/args.o: args.cpp args.h
+	$(CC) -c \
+    -o $@ $<
+
+$(PRODUCT)/map_server.o: map.cpp map_server.h $(ABS_PRODUCT)/map/rpc/server.h
 	$(CC) -c \
     -o $@ $<
 
