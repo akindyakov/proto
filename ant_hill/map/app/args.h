@@ -2,4 +2,6 @@
 
 #include <boost/program_options/variables_map.hpp>
 
-boost::program_options::variables_map Argparse(int argn, char** argv);
+using TArgsMap = boost::program_options::variables_map;
+
+TArgsMap Argparse(int argn, char** argv);

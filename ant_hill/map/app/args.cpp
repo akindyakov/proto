@@ -10,39 +10,39 @@
 #include <string>
 #include <iostream>
 
-namespace opts = boost::program_options;
+namespace NArgs = boost::program_options;
 
-opts::variables_map Argparse(int argn, char** argv) {
-    auto generic = opts::options_description{"Generic options"};
+NArgs::variables_map Argparse(int argn, char** argv) {
+    auto generic = NArgs::options_description{"Generic options"};
     generic.add_options()
         ("version,v", "print version string")
         ("help,h", "produce help message")
     ;
 
-    auto config = opts::options_description{"Network configuration"};
+    auto config = NArgs::options_description{"Network configuration"};
     config.add_options()
         (
-            "map-port",
-            opts::value<int>()->default_value(8383),
+            "port",
+            NArgs::value<unsigned>()->default_value(8383),
             "Map server port"
         ) (
-            "map-host",
-            opts::value<std::string>()->default_value("localhost")->composing(),
+            "host",
+            NArgs::value<std::string>()->default_value("localhost"),
             "Map server hostname"
         )
     ;
 
-    auto data = opts::options_description{"Construction options"};
+    auto data = NArgs::options_description{"Construction options"};
     data.add_options()
-        ("map-file", opts::value<std::string>(), "input map file")
+        ("map-file", NArgs::value<std::string>(), "input map file")
     ;
 
-    auto cmdline_options = opts::options_description{};
+    auto cmdline_options = NArgs::options_description{};
     cmdline_options.add(generic).add(config).add(data);
 
-    auto args = opts::variables_map{};
-    opts::store(opts::parse_command_line(argn, argv, cmdline_options), args);
-    opts::notify(args);
+    auto args = NArgs::variables_map{};
+    NArgs::store(NArgs::parse_command_line(argn, argv, cmdline_options), args);
+    NArgs::notify(args);
 
     if (args.count("help")) {
         std::cerr << generic << '\n';
