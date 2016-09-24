@@ -13,7 +13,7 @@ class TMapServer
         {
         }
 
-        int GetGrain(int x, int y) override {
+        int SeeGrain(int x, int y) override {
             std::cerr << "GetGrain(" << x << ", " << y << ")" << std::endl;
             // TODO:
             return x + y;

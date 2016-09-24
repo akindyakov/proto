@@ -20,7 +20,7 @@ int main(int argn, char** argv) {
     auto httpclient = jsonrpc::HttpClient("http://localhost:8383");
     auto client = NMap::NJsonRPC::TClient{httpclient};
     try {
-        std::cout << "GetGrain(56, 34): " << client.GetGrain(56, 34) << std::endl;
+        std::cout << "SeeGrain(56, 34): " << client.SeeGrain(56, 34) << std::endl;
         while (true) {
             std::this_thread::sleep_for(1s);
 
