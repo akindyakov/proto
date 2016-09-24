@@ -36,8 +36,12 @@ iiiiiiiiii
     }
 }
 
-TMapServer::TMapServer(jsonrpc::AbstractServerConnector &conn)
+TMapServer::TMapServer(
+    jsonrpc::AbstractServerConnector &conn
+    , NField::TField&& field
+)
     : NMap::NJsonRPC::TServer(conn)
+    , Field(std::move(field))
 {
 }
 

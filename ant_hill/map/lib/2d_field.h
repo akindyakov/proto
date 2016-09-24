@@ -4,11 +4,11 @@
 
 #include <array>
 #include <cstdint>
-#include <memory>
-#include <vector>
 #include <istream>
-#include <ostream>
+#include <memory>
 #include <mutex>
+#include <ostream>
+#include <vector>
 
 namespace NField {
 
