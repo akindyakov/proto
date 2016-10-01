@@ -21,6 +21,10 @@ TMapServer CreateServer(const TArgsMap& args) {
 
 int main(int argn, char** argv) {
     auto args = Argparse(argn, argv);
+    if (args.count("help")) {
+        return 0;
+    }
+
     auto server = CreateServer(args);
 
     server.StartListening();
