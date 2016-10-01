@@ -46,5 +46,4 @@ public:
 
 private:
     NField::TField Field;
-    std::unique_ptr<jsonrpc::AbstractServerConnector> Connector;
 };
