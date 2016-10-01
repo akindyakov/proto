@@ -59,7 +59,7 @@ public:
     TGrain& operator=(TGrain&& other);
     TGrain& operator=(const TGrain& other);
 
-    EMaterial SeeMaterial() const {
+    EMaterial SeeMaterial() const noexcept {
         return Material;
     }
 
