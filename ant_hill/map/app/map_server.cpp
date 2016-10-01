@@ -47,8 +47,15 @@ TMapServer::TMapServer(
 }
 
 int TMapServer::SeeGrain(int x, int y) {
-    std::cerr << "GetGrain(" << x << ", " << y << ")" << std::endl;
-    // TODO:
+    if (x < 0 || y < 0) {
+        throw NAntHill::TException()
+            << "Point must has positive coordinates "
+            << "[" << x << ", " << y << "]";
+    }
+    Field.At({
+        static_cast<NField::TMeasure>(x),
+        static_cast<NField::TMeasure>(y)
+    }).Grain.SeeMaterial();
     return x + y;
 }
 int TMapServer::MoveGroup(const Json::Value& grains) {
