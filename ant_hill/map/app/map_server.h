@@ -3,6 +3,27 @@
 
 #include <jsonrpccpp/server/connectors/httpserver.h>
 
+class TConnectionOwner {
+public:
+    TConnectionOwner(
+        std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
+    )
+        : Connector(std::move(connector))
+    {
+    }
+    TConnectionOwner(const TConnectionOwner&) = delete;
+    TConnectionOwner(TConnectionOwner&&) = default;
+    TConnectionOwner& operator=(const TConnectionOwner&) = delete;
+    TConnectionOwner& operator=(TConnectionOwner&&) = default;
+
+    jsonrpc::AbstractServerConnector& GetConnector() {
+        return *Connector;
+    }
+
+private:
+    std::unique_ptr<jsonrpc::AbstractServerConnector> Connector;
+};
+
 class TMapServer
     : public NMap::NJsonRPC::TServer
 {
