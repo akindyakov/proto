@@ -25,11 +25,12 @@ private:
 };
 
 class TMapServer
-    : public NMap::NJsonRPC::TServer
+    : public TConnectionOwner
+    , public NMap::NJsonRPC::TServer
 {
 public:
     TMapServer(
-        jsonrpc::AbstractServerConnector& conn
+        std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
         , NField::TField&& field
     );
 
@@ -45,4 +46,5 @@ public:
 
 private:
     NField::TField Field;
+    std::unique_ptr<jsonrpc::AbstractServerConnector> Connector;
 };

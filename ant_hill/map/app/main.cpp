@@ -12,9 +12,8 @@ TMapServer CreateServer(const TArgsMap& args) {
         throw NAntHill::TException() << "option [map-file] is required";
     }
     auto dataFile = std::ifstream(args["map-file"].as<std::string>());
-    auto httpServer = jsonrpc::HttpServer(args["port"].as<unsigned>());
     return TMapServer(
-        httpServer,
+        std::make_unique<jsonrpc::HttpServer>(args["port"].as<unsigned>()),
         NField::ScanFromText(dataFile)
     );
 }
