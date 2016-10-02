@@ -14,6 +14,30 @@ TPoint::TPoint(
 {
 }
 
+TVector::TVector(
+    TMeasure x,
+    TMeasure y
+)
+    : TPoint(x, y)
+{
+}
+
+TVector& operator+=(TVector& self, const TVector& shift) {
+    self.X += shift.X;
+    self.Y += shift.Y;
+    return self;
+}
+
+bool operator!=(const TVector& first, const TVector& second) {
+    return first.X != second.X && first.X != second.X;
+}
+
+TPoint& operator+=(TPoint& self, const TVector& shift) {
+    self.X += shift.X;
+    self.Y += shift.Y;
+    return self;
+}
+
 TGrain::TGrain(EMaterial material)
     : Material(material)
 {

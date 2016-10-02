@@ -14,7 +14,7 @@ namespace NField {
 
 using TMeasure = unsigned;
 
-struct TPoint {
+class TPoint {
 public:
     TMeasure X;
     TMeasure Y;
@@ -34,14 +34,21 @@ public:
         TMeasure x,
         TMeasure y
     );
+
     TVector(const TVector& other)
         : TPoint(other.X, other.Y)
     {
     }
+
     TMeasure Lenght() const {
         return X*X + Y*Y;
     }
+
 };
+
+bool operator!=(const TVector& first, const TVector& second);
+
+TPoint& operator+=(TPoint& self, const TVector& shift);
 
 // TVector operator-(const TPoint& left, const TPoint& right) {
 //     return TVector(
