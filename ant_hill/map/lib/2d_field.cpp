@@ -71,7 +71,7 @@ TField ScanFromText(std::istream& is) {
     is >> x;
     is >> y;
     // std::cerr << "size: " << x << "x" << y << std::endl;
-    auto field = TField(x, y);
+    auto field = TField{x, y};
     while (!is.eof() && is.good()) {
         is.get(ch);
         if (ch == '\n') {
