@@ -77,6 +77,5 @@ Json::Value TMapServer::YieldMe(
 
 int TMapServer::Ping() {
     std::cerr << "Ping()" << std::endl;
-    // TODO:
     return 0;
 }
