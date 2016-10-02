@@ -141,18 +141,6 @@ private:
 };
 
 
-// class IField {
-// public:
-//     TGrainId CreateGrain(TGrain&&);
-// 
-//     const TGrain& GetGrain(TGrainId) const;
-//     const TGrain& GetGrain(const TPoint&) const;
-// 
-//     bool TryMoveGrain(TGrainId, const TVector& to) const;
-//     void MoveGrain(TGrainId, const TVector& to);
-// };
-
-
 TField ScanFromText(std::istream&);
 void PrintToText(std::ostream&, const TField&);
 
