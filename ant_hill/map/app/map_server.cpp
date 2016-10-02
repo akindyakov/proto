@@ -80,14 +80,29 @@ int TMapServer::MoveGroup(const Json::Value& params) {
 }
 
 Json::Value TMapServer::YieldMe(
-    const Json::Value& grains
+    const Json::Value& params
     , const Json::Value& place
 ) {
-    // TODO:
-    auto point = Json::Value{};
-    point["x"] = 1;
-    point["y"] = 1;
-    return point;
+    auto tr = NField::TAppearanceTransaction{};
+    for (const auto& grain : params["grains"]) {
+        const Json::Value& point = grain["point"];
+        tr.Add(
+            {
+                static_cast<NField::TMeasure>(point["x"].asInt()),
+                static_cast<NField::TMeasure>(point["y"].asInt())
+            },
+            static_cast<EMaterial>(grain["material"].asInt())
+        );
+    }
+    auto shift = NField::TVector{0, 0};
+    {
+        std::lock_guard<std::mutex> lock{FieldMutex};
+        shift = tr.Apply(Field);
+    }
+    auto jsonShift = Json::Value{};
+    jsonShift["x"] = shift.X;
+    jsonShift["y"] = shift.Y;
+    return jsonShift;
 }
 
 int TMapServer::Ping() {
