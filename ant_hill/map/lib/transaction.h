@@ -24,13 +24,37 @@ struct TMovement {
     TMovement& operator=(TMovement&&);
 };
 
-class TTransaction {
+class TMoveTransaction {
 public:
-    TTransaction& Move(const TPoint& pt, ECompass direction);
+    TMoveTransaction& Add(const TPoint& pt, ECompass direction);
     bool Apply(TField& where) const;
 
 private:
     std::vector<TMovement> Actions;
+};
+
+class TAppearanceTransaction {
+public:
+    TAppearanceTransaction& Add(const TPoint& pt, EMaterial material);
+    TVector Apply(TField& where);
+
+private:
+    struct TFakeCell {
+        TFakeCell(
+            EMaterial material
+            , const TPoint& point
+        )
+            : Material(material)
+            , Point(point)
+        {
+        }
+
+        EMaterial Material;
+        TPoint Point;
+    };
+
+private:
+    std::vector<TFakeCell> Cells;
 };
 
 }  // NField

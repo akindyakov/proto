@@ -61,4 +61,37 @@ bool TMoveTransaction::Apply(TField& where) const {
     return true;
 }
 
+TAppearanceTransaction& TAppearanceTransaction::Add(
+    const TPoint& pt
+    , EMaterial material
+) {
+    Cells.emplace_back(material, pt);
+    return *this;
+}
+
+TVector TAppearanceTransaction::Apply(TField& where) {
+    auto shift = TVector{0, 0};
+    auto shiftStep = TVector{1, 1};
+    for (TMeasure x = 0; x < where.GetXSize(); ++x) {
+        bool vacant = true;
+        for (auto& cell : Cells) {
+            if (!where.At(cell.Point).Grain.IsNone()) {
+                vacant = false;
+                break;
+            }
+        }
+        if (vacant) {
+            for (auto& cell : Cells) {
+                where.Insert(cell.Point, cell.Material);
+            }
+            break;
+        }
+        for (auto& cell : Cells) {
+            cell.Point += shiftStep;
+        }
+        shift += shiftStep;
+    }
+    return shift;
+}
+
 }  // NField

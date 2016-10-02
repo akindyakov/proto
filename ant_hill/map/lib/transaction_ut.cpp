@@ -92,9 +92,63 @@ void WrongMoveTest() {
     }
 }
 
+void YieldTest() {
+    std::string startText = R"FieldMap(10
+10
+iiiiiiiiii
+i........i
+i........i
+i........i
+i........i
+i........i
+i........i
+i.w......i
+iww......i
+iiiiiiiiii
+)FieldMap";
+    auto in = std::istringstream(startText);
+    auto field = NField::ScanFromText(in);
+
+    {
+        auto appearance = NField::TAppearanceTransaction{};
+        appearance
+            .Add({0, 0}, EMaterial::AntBody)
+            .Add({0, 1}, EMaterial::AntHead)
+        ;
+        auto shift = appearance.Apply(field);
+        if (shift != NField::TVector{3, 3}) {
+            throw NAntHill::TException("Wrong shift: ") 
+                << "Expected: [3, 3]"
+                << "\nGot: [" << shift.X << ", " << shift.Y << "]";
+        }
+    }
+    std::string endText = R"FieldMap(10
+10
+iiiiiiiiii
+i........i
+i........i
+i........i
+i........i
+i..X.....i
+i..#.....i
+i.w......i
+iww......i
+iiiiiiiiii
+)FieldMap";
+    auto out = std::ostringstream();
+    NField::PrintToText(out, field);
+    auto outText = out.str();
+    if (endText != outText) {
+        throw NAntHill::TException()
+            << "Expected: " << endText
+            << "\nGot: " << outText;
+    }
+}
+
 int main(int argn, char** argv) {
     try {
         MoveTest();
+        YieldTest();
         WrongMoveTest();
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;
