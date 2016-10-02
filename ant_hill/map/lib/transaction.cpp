@@ -42,16 +42,9 @@ TTransaction& TTransaction::Move(const TPoint& old, ECompass direction) {
 
 bool TTransaction::Apply(TField& where) const {
     // TODO: there have to be full lock on the all poins of transaction!
-    auto lock = std::vector<
-        std::unique_lock<std::mutex>
-    >{};
     for (const auto& action : Actions) {
         auto& fromCell = where.At(action.From);
         auto& toCell = where.At(action.To);
-
-        std::unique_lock<std::mutex> lk1(fromCell.Mutex, std::defer_lock);
-        std::unique_lock<std::mutex> lk2(toCell.Mutex, std::defer_lock);
-        std::lock(lk1, lk2);
 
         // std::cerr << "EMaterial::EmptySpace: " << int(EMaterial::EmptySpace) << std::endl;
         // std::cerr << "Material: " << int(toCell.Grain.SeeMaterial()) << std::endl;

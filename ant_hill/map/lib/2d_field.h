@@ -78,7 +78,6 @@ struct TCell {
     {
     }
 
-    std::mutex Mutex;
     TGrain Grain;
 };
 

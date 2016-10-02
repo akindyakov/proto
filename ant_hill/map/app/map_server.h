@@ -46,4 +46,5 @@ public:
 
 private:
     NField::TField Field;
+    std::mutex FieldMutex;
 };
