@@ -23,7 +23,7 @@ TMovement& TMovement::operator=(TMovement&& other) {
     return *this;
 }
 
-TTransaction& TTransaction::Move(const TPoint& old, ECompass direction) {
+TMoveTransaction& TMoveTransaction::Add(const TPoint& old, ECompass direction) {
     auto action = TMovement(old, old);
     if (direction == ECompass::North) {
         action.To.Y += 1;
@@ -40,7 +40,7 @@ TTransaction& TTransaction::Move(const TPoint& old, ECompass direction) {
     return *this;
 }
 
-bool TTransaction::Apply(TField& where) const {
+bool TMoveTransaction::Apply(TField& where) const {
     // TODO: there have to be full lock on the all poins of transaction!
     for (const auto& action : Actions) {
         auto& fromCell = where.At(action.From);

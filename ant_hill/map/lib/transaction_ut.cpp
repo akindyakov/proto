@@ -25,23 +25,23 @@ iiiiiiiiii
     auto field = NField::ScanFromText(in);
 
     {
-        auto lawsMove = NField::TTransaction{};
+        auto lawsMove = NField::TMoveTransaction{};
         lawsMove
-            .Move({2, 3}, NField::ECompass::South)
-            .Move({2, 4}, NField::ECompass::South)
-            .Move({3, 3}, NField::ECompass::South)
-            .Move({3, 4}, NField::ECompass::South)
+            .Add({2, 3}, NField::ECompass::South)
+            .Add({2, 4}, NField::ECompass::South)
+            .Add({3, 3}, NField::ECompass::South)
+            .Add({3, 4}, NField::ECompass::South)
         ;
         if (!lawsMove.Apply(field)) {
             throw NAntHill::TException("Error in move 1");
         }
     }
     {
-        auto smiMove = NField::TTransaction{};
+        auto smiMove = NField::TMoveTransaction{};
         smiMove
-            .Move({7, 2}, NField::ECompass::East)
-            .Move({7, 3}, NField::ECompass::South)
-            .Move({7, 4}, NField::ECompass::South)
+            .Add({7, 2}, NField::ECompass::East)
+            .Add({7, 3}, NField::ECompass::South)
+            .Add({7, 4}, NField::ECompass::South)
         ;
         if (!smiMove.Apply(field)) {
             throw NAntHill::TException("Error in move 2");
@@ -82,9 +82,9 @@ void WrongMoveTest() {
     auto field = NField::ScanFromText(in);
 
     {
-        auto move = NField::TTransaction{};
+        auto move = NField::TMoveTransaction{};
         move
-            .Move({1, 1}, NField::ECompass::East)
+            .Add({1, 1}, NField::ECompass::East)
         ;
         if (move.Apply(field)) {
             throw NAntHill::TException("Expected error was not threw");
