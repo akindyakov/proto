@@ -1,6 +1,7 @@
 #include "map_server.h"
 
 #include <map/lib/2d_field.h>
+#include <map/lib/transaction.h>
 
 #include <map/rpc/server.h>
 
@@ -58,10 +59,24 @@ int TMapServer::SeeGrain(int x, int y) {
     }).Grain.SeeMaterial();
     return x + y;
 }
-int TMapServer::MoveGroup(const Json::Value& grains) {
+
+int TMapServer::MoveGroup(const Json::Value& params) {
     std::cerr << "MoveGroup(...)" << std::endl;
-    // TODO:
-    return 0;
+    auto tr = NField::TMoveTransaction{};
+    for (const auto& grain : params["grains"]) {
+        const Json::Value& from = grain["from"];
+        tr.Add({
+                static_cast<NField::TMeasure>(from["x"].asInt()),
+                static_cast<NField::TMeasure>(from["y"].asInt())
+            },
+            static_cast<NField::ECompass>(grain["direction"].asInt())
+        );
+    }
+    std::lock_guard<std::mutex> lock{FieldMutex};
+    if (tr.Apply(Field)) {
+        return 0;
+    }
+    return 1;
 }
 
 Json::Value TMapServer::YieldMe(
