@@ -129,6 +129,11 @@ public:
         return Field.at(GetIndexByPoint(pt));
     }
 
+    void Insert(const TPoint& pt, EMaterial material) {
+        // std::cerr << pt.X << ", " << pt.Y << '\n';
+        Field.at(GetIndexByPoint(pt)).Grain = TGrain(material);
+    }
+
 private:
     TMeasure XSize;
     TMeasure YSize;
