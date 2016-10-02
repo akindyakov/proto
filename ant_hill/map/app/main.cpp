@@ -7,15 +7,12 @@
 #include <fstream>
 
 
-TMapServer CreateServer(const TArgsMap& args) {
+NField::TField CreateField(const TArgsMap& args) {
     if (!args.count("map-file")) {
         throw NAntHill::TException() << "option [map-file] is required";
     }
     auto dataFile = std::ifstream(args["map-file"].as<std::string>());
-    return TMapServer(
-        std::make_unique<jsonrpc::HttpServer>(args["port"].as<unsigned>()),
-        NField::ScanFromText(dataFile)
-    );
+    return NField::ScanFromText(dataFile);
 }
 
 int main(int argn, char** argv) {
@@ -24,7 +21,10 @@ int main(int argn, char** argv) {
         return 0;
     }
 
-    auto server = CreateServer(args);
+    TMapServer server{
+        std::make_unique<jsonrpc::HttpServer>(args["port"].as<unsigned>()),
+        CreateField(args)
+    };
 
     server.StartListening();
     std::cin.get();
