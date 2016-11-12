@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <tuple>
 
 
 NField::TField CreateField(const TArgsMap& args) {
@@ -17,13 +18,12 @@ NField::TField CreateField(const TArgsMap& args) {
 
 int main(int argn, char** argv) {
     auto args = Argparse(argn, argv);
-    if (args.count("help")) {
-        return 0;
+    if (!std::get<1>(args)) {
+        return 1;
     }
-
     TMapServer server{
-        std::make_unique<jsonrpc::HttpServer>(args["port"].as<unsigned>()),
-        CreateField(args)
+        std::make_unique<jsonrpc::HttpServer>(std::get<0>(args)["port"].as<unsigned>()),
+        CreateField(std::get<0>(args))
     };
 
     server.StartListening();

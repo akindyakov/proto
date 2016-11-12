@@ -6,13 +6,14 @@
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include <vector>
-#include <string>
 #include <iostream>
+#include <string>
+#include <tuple>
+#include <vector>
 
 namespace NArgs = boost::program_options;
 
-NArgs::variables_map Argparse(int argn, char** argv) {
+std::tuple<NArgs::variables_map, bool> Argparse(int argn, char** argv) {
     auto generic = NArgs::options_description{"Generic options"};
     generic.add_options()
         ("version,v", "print version string")
@@ -44,11 +45,13 @@ NArgs::variables_map Argparse(int argn, char** argv) {
     NArgs::store(NArgs::parse_command_line(argn, argv, cmdline_options), args);
     NArgs::notify(args);
 
+    bool isValid = true;
     if (args.count("help")) {
         std::cerr << generic << '\n';
         std::cerr << config << '\n';
         std::cerr << data << '\n';
+        isValid = false;
     }
 
-    return args;
+    return std::make_tuple(args, isValid);
 }
