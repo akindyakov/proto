@@ -12,8 +12,8 @@
 int main(int argn, char** argv) {
 
     auto args = Argparse(argn, argv);
-    if (args.count("help")) {
-        return 0;
+    if (!std::get<1>(args)) {
+        return 1;
     }
 
     using namespace std::chrono_literals;
