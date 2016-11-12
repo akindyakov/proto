@@ -1,4 +1,5 @@
 #include <map/lib/2d_field.h>
+#include <map/lib/transaction.h>
 #include <map/rpc/server.h>
 
 #include <jsonrpccpp/server/connectors/httpserver.h>
@@ -43,6 +44,9 @@ public:
     ) override;
 
     int Ping() override;
+
+private:
+    NField::TVector YieldMeImpl(NField::TAppearanceTransaction& tr);
 
 private:
     NField::TField Field;

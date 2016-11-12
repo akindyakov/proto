@@ -94,15 +94,16 @@ Json::Value TMapServer::YieldMe(
             static_cast<EMaterial>(grain["material"].asInt())
         );
     }
-    auto shift = NField::TVector{0, 0};
-    {
-        std::lock_guard<std::mutex> lock{FieldMutex};
-        shift = tr.Apply(Field);
-    }
+    auto shift = this->YieldMeImpl(tr);
     auto jsonShift = Json::Value{};
     jsonShift["x"] = shift.X;
     jsonShift["y"] = shift.Y;
     return jsonShift;
+}
+
+NField::TVector TMapServer::YieldMeImpl(NField::TAppearanceTransaction& tr) {
+    std::lock_guard<std::mutex> lock{FieldMutex};
+    return tr.Apply(Field);
 }
 
 int TMapServer::Ping() {
