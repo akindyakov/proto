@@ -41,8 +41,8 @@ TMapServer::TMapServer(
     std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
     , NField::TField&& field
 )
-    : TConnectionOwner(std::move(connector))
-    , NMap::NJsonRPC::TServer(TConnectionOwner::GetConnector())
+    : TConnectionHolder(std::move(connector))
+    , NMap::NJsonRPC::TServer(TConnectionHolder::GetConnector())
     , Field(std::move(field))
 {
 }
