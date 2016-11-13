@@ -2,6 +2,8 @@
 
 #include "map_symbols.h"
 
+#include <tools/tests/ut.h>
+
 #include <array>
 #include <cstdint>
 #include <istream>
@@ -88,15 +90,19 @@ struct TCell {
 class TField {
 private:
     size_t GetIndexByPoint(const TPoint& pt) const {
-        auto index = static_cast<size_t>(pt.X + pt.Y * XSize);
+        auto signedIndex = (pt.X - bottomLeft_.X) + (pt.Y - bottomLeft_.Y) * size_.X;
+        if (signedIndex < 0) {
+            throw NAntHill::TException("Access by outrange point");
+        }
+        auto index = static_cast<size_t>(signedIndex);
         // std::cerr << "index: " << index << std::endl;
         return index;
     }
 
 public:
-    TField(TMeasure xSize, TMeasure ySize)
-        : XSize(xSize)
-        , YSize(ySize)
+    TField(TMeasure xSize, TMeasure ySize, TPoint bottomLeft=TPoint{0, 0})
+        : size_(xSize, ySize)
+        , bottomLeft_(bottomLeft)
         , Field(xSize * ySize)
     {
     }
@@ -108,11 +114,11 @@ public:
     TField& operator=(TField&&) = default;
 
     TMeasure GetXSize() const {
-        return XSize;
+        return size_.X;
     }
 
     TMeasure GetYSize() const {
-        return YSize;
+        return size_.Y;
     }
 
     TCell& At(const TPoint& pt) {
@@ -130,9 +136,17 @@ public:
         Field.at(GetIndexByPoint(pt)).Grain = TGrain(material);
     }
 
+    TPoint BottomLeft() const {
+        return bottomLeft_;
+    }
+
+    TPoint TopRight() const {
+        return bottomLeft_ + size_;
+    }
+
 private:
-    TMeasure XSize;
-    TMeasure YSize;
+    TVector size_;
+    TPoint bottomLeft_;
     std::vector<TCell> Field;
 };
 
