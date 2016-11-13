@@ -87,7 +87,7 @@ void WrongMoveTest() {
             .Add({1, 1}, NField::ECompass::East)
         ;
         if (move.Apply(field)) {
-            throw NAntHill::TException("Expected error was not threw");
+            throw NAntHill::TException("[WrongMoveTest] Expected error was not threw");
         }
     }
 }
@@ -117,8 +117,8 @@ iiiiiiiiii
         ;
         auto shift = appearance.Apply(field);
         if (shift != NField::TVector{3, 3}) {
-            throw NAntHill::TException("Wrong shift: ") 
-                << "Expected: [3, 3]"
+            throw NAntHill::TException("[YieldTest] Wrong shift.")
+                << " Expected: [3, 3]"
                 << "\nGot: [" << shift.X << ", " << shift.Y << "]";
         }
     }
