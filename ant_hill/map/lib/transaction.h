@@ -26,6 +26,11 @@ struct TMovement {
     TMovement& operator=(TMovement&&);
 };
 
+struct ShortMovement {
+    ECompass direction;
+    TPoint pt;
+};
+
 class TMoveTransaction {
 public:
     TMoveTransaction& Add(const TPoint& pt, ECompass direction);
