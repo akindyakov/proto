@@ -90,10 +90,11 @@ TAppearanceTransaction& TAppearanceTransaction::Add(
 TVector TAppearanceTransaction::Apply(TField& where) {
     auto shift = TVector{0, 0};
     auto shiftStep = TVector{1, 1};
-    for (TMeasure x = 0; x < where.GetXSize(); ++x) {
+    for (auto x = where.BottomLeft().X; x < where.TopRight().X; ++x) {
         bool vacant = true;
         for (auto& cell : Cells) {
             if (!where.At(cell.Point).Grain.IsNone()) {
+                // std::cerr << "Check: " << cell.Point.X << ", " << cell.Point.Y << std::endl;
                 vacant = false;
                 break;
             }
