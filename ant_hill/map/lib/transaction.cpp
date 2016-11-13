@@ -5,6 +5,33 @@
 
 namespace NField {
 
+ECompass DirectionDiff(const TPoint& to, const TPoint& from) {
+    auto shift = to - from;
+    if (shift.X != 0 && shift.Y != 0) {
+        throw NAntHill::TException("Direction move must be only horisontal or vertical");
+    } else if (shift.X > 0) {
+        return ECompass::East;
+    } else if (shift.X < 0) {
+        return ECompass::West;
+    } else if (shift.Y > 0) {
+        return ECompass::North;
+    }
+    return ECompass::South;
+}
+
+TPoint MovePoint(TPoint pt, ECompass direction) {
+    if (direction == ECompass::North) {
+        pt.Y += 1;
+    } else if (direction == ECompass::West) {
+        pt.X -= 1;
+    } else if (direction == ECompass::South) {
+        pt.Y -= 1;
+    } else if (direction == ECompass::East) {
+        pt.X += 1;
+    }
+    return pt;
+}
+
 TMovement::TMovement(const TPoint& to, const TPoint& from)
     : To(to)
     , From(from)
@@ -24,16 +51,7 @@ TMovement& TMovement::operator=(TMovement&& other) {
 }
 
 TMoveTransaction& TMoveTransaction::Add(const TPoint& old, ECompass direction) {
-    auto action = TMovement(old, old);
-    if (direction == ECompass::North) {
-        action.To.Y += 1;
-    } else if (direction == ECompass::West) {
-        action.To.X -= 1;
-    } else if (direction == ECompass::South) {
-        action.To.Y -= 1;
-    } else if (direction == ECompass::East) {
-        action.To.X += 1;
-    }
+    auto action = TMovement(MovePoint(old, direction), old);
     // std::cerr << "From: " << action.From.X << ", " << action.From.Y << std::endl;
     // std::cerr << "To: " << action.To.X << ", " << action.To.Y << std::endl;
     Actions.push_back(std::move(action));

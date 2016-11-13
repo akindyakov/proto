@@ -11,6 +11,8 @@ enum class ECompass {
     East,
 };
 
+ECompass DirectionDiff(const TPoint& to, const TPoint& from);
+
 struct TMovement {
     TPoint To;
     TPoint From;
