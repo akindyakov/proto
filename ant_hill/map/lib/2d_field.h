@@ -12,7 +12,7 @@
 
 namespace NField {
 
-using TMeasure = unsigned;
+using TMeasure = int;
 
 class TPoint {
 public:
