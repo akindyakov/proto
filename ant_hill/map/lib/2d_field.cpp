@@ -38,6 +38,20 @@ TPoint& operator+=(TPoint& self, const TVector& shift) {
     return self;
 }
 
+TVector operator-(const TPoint& left, const TPoint& right) {
+    return TVector(
+        left.X - right.X,
+        left.Y - right.Y
+    );
+}
+
+TPoint operator+(const TPoint& base, const TVector& shift) {
+    return TPoint(
+        base.X + shift.X,
+        base.Y + shift.Y
+    );
+}
+
 TGrain::TGrain(EMaterial material)
     : Material(material)
 {

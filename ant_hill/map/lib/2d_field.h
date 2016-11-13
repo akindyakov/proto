@@ -50,12 +50,8 @@ bool operator!=(const TVector& first, const TVector& second);
 
 TPoint& operator+=(TPoint& self, const TVector& shift);
 
-// TVector operator-(const TPoint& left, const TPoint& right) {
-//     return TVector(
-//         left.X() - right.X(),
-//         left.Y() - right.Y()
-//     );
-// }
+TVector operator-(const TPoint& left, const TPoint& right);
+TPoint operator+(const TPoint& base, const TVector& shift);
 
 class TGrain {
 public:
