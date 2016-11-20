@@ -11,6 +11,8 @@ enum class ECompass {
     East,
 };
 
+ECompass DirectionDiff(const TPoint& to, const TPoint& from);
+
 struct TMovement {
     TPoint To;
     TPoint From;
@@ -22,6 +24,11 @@ struct TMovement {
 
     TMovement& operator=(const TMovement&) = delete;
     TMovement& operator=(TMovement&&);
+};
+
+struct ShortMovement {
+    ECompass direction;
+    TPoint pt;
 };
 
 class TMoveTransaction {
