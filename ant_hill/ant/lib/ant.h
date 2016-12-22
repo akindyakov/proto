@@ -17,34 +17,34 @@ public:
     );
 
     /**
-    * Move by head side
+    * Get diff for moving head to specified direction
     */
-    std::vector<NField::ShortMovement> DiffHeadMove(NField::ECompass direction) const;
+    std::vector<NField::ShortMovement>
+    DiffHeadMove(NField::ECompass direction) const;
 
     /**
-    * Move by head side
+    * Move head to specified direction
     */
     void HeadMove(NField::ECompass direction);
 
     /**
-    * Move by tail side
+    * Get diff for moving tail to specified direction
     */
-    std::vector<NField::ShortMovement> DiffTailMove(NField::ECompass direction) const;
+    std::vector<NField::ShortMovement>
+    DiffTailMove(NField::ECompass direction) const;
 
     /**
-    * Move by tail side
+    * Move tail to specified direction
     */
     void TailMove(NField::ECompass direction);
 
     /**
     * Add one more point to head side
-    * TODO: Check that pt is close to the head
     */
     void AppendPoint(NField::ECompass direction);
 
     /**
-    * Add one more point to head side
-    * TODO: Check that pt is close to the head
+    * Drop first point from head side
     */
     void DropPoint(NField::ECompass direction);
 
