@@ -13,6 +13,8 @@ enum class ECompass {
 
 ECompass DirectionDiff(const TPoint& to, const TPoint& from);
 
+TPoint MovePoint(TPoint pt, ECompass direction);
+
 struct TMovement {
     TPoint To;
     TPoint From;
@@ -26,9 +28,25 @@ struct TMovement {
     TMovement& operator=(TMovement&&);
 };
 
-struct ShortMovement {
-    ECompass direction;
-    TPoint pt;
+class ShortMovement {
+public:
+    ShortMovement(
+        const TPoint& point
+        , ECompass direction
+    )
+        : direction_(direction)
+        , point_(point)
+    {
+    }
+
+    /**
+     * Make step to the owned direction and get new one from argument
+     */
+    void Next(ECompass direction);
+
+private:
+    ECompass direction_;
+    TPoint point_;
 };
 
 class TMoveTransaction {

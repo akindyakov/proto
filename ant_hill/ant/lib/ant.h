@@ -12,8 +12,8 @@ public:
 class SnakeAntBody {
 public:
     SnakeAntBody(
-        , TPoint body
-        TPoint head
+        NField::TPoint body
+        , NField::TPoint head
     );
 
     /**
