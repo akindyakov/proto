@@ -61,16 +61,17 @@ int TMapServer::SeeGrain(int x, int y) {
 }
 
 int TMapServer::MoveGroup(const Json::Value& params) {
-    std::cerr << "MoveGroup(...)" << std::endl;
+    std::cerr << "TMapServer::MoveGroup\n";
     auto tr = NField::TMoveTransaction{};
     for (const auto& grain : params["grains"]) {
         const Json::Value& from = grain["from"];
-        tr.Add({
-                static_cast<NField::TMeasure>(from["x"].asInt()),
-                static_cast<NField::TMeasure>(from["y"].asInt())
-            },
+        auto x = static_cast<NField::TMeasure>(from["x"].asInt());
+        auto y = static_cast<NField::TMeasure>(from["y"].asInt());
+        tr.Add(
+            {x, y},
             static_cast<NField::ECompass>(grain["direction"].asInt())
         );
+        std::cerr << "TMapServer::MoveGroup -- Point: (" << x << "; " << y << ")\n";
     }
     std::lock_guard<std::mutex> lock{FieldMutex};
     if (tr.Apply(Field)) {
@@ -83,16 +84,17 @@ Json::Value TMapServer::YieldMe(
     const Json::Value& params
     , const Json::Value& place
 ) {
+    std::cerr << "TMapServer::YieldMe\n";
     auto tr = NField::TAppearanceTransaction{};
     for (const auto& grain : params["grains"]) {
         const Json::Value& point = grain["point"];
+        auto x = static_cast<NField::TMeasure>(point["x"].asInt());
+        auto y = static_cast<NField::TMeasure>(point["y"].asInt());
         tr.Add(
-            {
-                static_cast<NField::TMeasure>(point["x"].asInt()),
-                static_cast<NField::TMeasure>(point["y"].asInt())
-            },
+            {x, y},
             static_cast<EMaterial>(grain["material"].asInt())
         );
+        std::cerr << "TMapServer::YieldMe -- Point: (" << x << "; " << y << ")\n";
     }
     auto shift = this->YieldMeImpl(tr);
     auto jsonShift = Json::Value{};
@@ -107,6 +109,6 @@ NField::TVector TMapServer::YieldMeImpl(NField::TAppearanceTransaction& tr) {
 }
 
 int TMapServer::Ping() {
-    std::cerr << "Ping()" << std::endl;
+    std::cerr << "TMapServer::Ping\n";
     return 0;
 }

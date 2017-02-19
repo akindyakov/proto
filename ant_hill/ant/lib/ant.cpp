@@ -6,8 +6,8 @@
 namespace NAnt {
 
 SnakeAntBody::SnakeAntBody(
-    TPoint body
-    , TPoint head
+    NField::TPoint body
+    , NField::TPoint head
 )
     : base_{body}
 {
@@ -20,18 +20,18 @@ SnakeAntBody::DiffHeadMove(
 ) const {
     std::vector<NField::ShortMovement> ret;
     auto it = head_.begin();
-    ret.emplace_back(base_, it);
-    auto nextPt = MovePoint(base_, it);
+    ret.emplace_back(base_, *it);
+    auto nextPt = NField::MovePoint(base_, *it);
     while (++it != head_.end()) {
         ret.emplace_back(nextPt, it);
-        nextPt = MovePoint(nextPt, it);
+        nextPt = NField::MovePoint(nextPt, *it);
     }
     return ret;
 }
 
 void
 SnakeAntBody::HeadMove(NField::ECompass direction) {
-    base_ = MovePoint(base_, it);
+    base_ = NField::MovePoint(base_, *it);
     auto right = head_.begin();
     auto left = right++;
     while (right != head_.end()) {

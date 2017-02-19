@@ -36,8 +36,6 @@ set certificate_file="~/.mutt/yateam/certificates"
 set sort = "threads"
 set sort_aux = "last-date-received"
 
-set from="Alexamder Kindyakov <akindyakov@yandex-team.ru>"
-
 set editor="/usr/bin/vim"
 hdr_order Date From To Cc Subject
 set sort=threads
@@ -75,8 +73,6 @@ mono quoted bold
 
 bind editor <Tab> complete-query
 bind editor ^T complete
-bind pager g top
-bind pager G bottom
 bind attach,index g first-entry
 bind attach,index G last-entry
 

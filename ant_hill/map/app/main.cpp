@@ -3,16 +3,32 @@
 
 #include <tools/tests/ut.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <sstream>
 #include <tuple>
 
+std::string DefaultMapText = R"FieldMap(10
+10
+iiiiiiiiii
+i........i
+i.w......i
+i...w....i
+i........i
+i........i
+i...w....i
+i........i
+i........i
+iiiiiiiiii
+)FieldMap";
 
 NField::TField CreateField(const TArgsMap& args) {
-    if (!args.count("map-file")) {
-        throw NAntHill::TException() << "option [map-file] is required";
+    const auto& mapFileName = args["map-file"];
+    if (mapFileName.empty()) {
+        auto in = std::istringstream(DefaultMapText);
+        return NField::ScanFromText(in);
     }
-    auto dataFile = std::ifstream(args["map-file"].as<std::string>());
+    auto dataFile = std::ifstream(mapFileName.as<std::string>());
     return NField::ScanFromText(dataFile);
 }
 
@@ -22,7 +38,9 @@ int main(int argn, char** argv) {
         return 1;
     }
     TMapServer server{
-        std::make_unique<jsonrpc::HttpServer>(std::get<0>(args)["port"].as<unsigned>()),
+        std::make_unique<jsonrpc::HttpServer>(
+            std::get<0>(args)["port"].as<unsigned>()
+        ),
         CreateField(std::get<0>(args))
     };
 
