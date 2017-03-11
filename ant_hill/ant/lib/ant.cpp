@@ -7,12 +7,14 @@
 namespace NAnt {
 
 SnakeAntBody::SnakeAntBody(
-    NField::TPoint body
-    , NField::TPoint head // TODO: rename head -> ...
+    NField::TPoint head
+    , NField::TPoint tail
 )
-    : base_{body}
+    : head_{head}
 {
-    head_.push_back(NField::Direction::Diff(head, body));
+    tail_.push_back(
+        NField::Direction::Diff(head, tail)
+    );
 }
 
 std::vector<NField::ShortMovement>
@@ -20,37 +22,33 @@ SnakeAntBody::DiffHeadMove(
     NField::Direction direction
 ) const {
     auto diff = std::vector<NField::ShortMovement>{};
-    auto nextPoint = NField::TPoint{base_};
-    for (const auto& hDir : head_) {
-       diff.emplace_back(nextPoint, hDir);
-       nextPoint = NField::MovePoint(nextPoint, hDir);
-    }
+    auto nextPoint = NField::TPoint{head_};
     diff.emplace_back(nextPoint, direction);
-    if (direction != head_.back().Inverse()) {
+    for (const auto& hDir : tail_) {
+       nextPoint = NField::MovePoint(nextPoint, hDir.Inverse());
+       diff.emplace_back(nextPoint, hDir);
+    }
+    if (direction == tail_.begin()->Inverse()) {
         std::reverse(diff.begin(), diff.end());
     }
     return diff;
 }
 
 void
-SnakeAntBody::HeadMove(NField::Direction direction) {
-    auto right = head_.begin();
-    auto left = right;
-    ++right;
-    base_ = NField::MovePoint(base_, *left);
-    while (right != head_.end()) {
-        *left = std::move(*right);
-        ++left;
-        ++right;
-    }
-    *left = direction;
+SnakeAntBody::HeadMove(
+    NField::Direction direction
+) {
+    head_ = NField::MovePoint(head_, direction);
+    tail_.insert(tail_.begin(), direction);
+    tail_.pop_back();
 }
 
 void
 SnakeAntBody::AppendPoint(
     NField::Direction direction
 ) {
-    head_.push_back(direction);
+    head_ = NField::MovePoint(head_, direction);
+    tail_.push_back(direction);
 }
 
 void
@@ -58,12 +56,12 @@ SnakeAntBody::DropPoint(NField::Direction direction) {
     if (Size() < 3) {
         throw NAntHill::TException("Ant length must be at list 2");
     }
-    head_.pop_back();
+    tail_.erase(tail_.begin());
 }
 
 size_t
 SnakeAntBody::Size() const {
-    return 1 + head_.size();
+    return 1 + tail_.size();
 }
 
 bool FreeLoader::Step() {

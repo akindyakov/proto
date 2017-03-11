@@ -12,8 +12,8 @@ public:
 class SnakeAntBody {
 public:
     SnakeAntBody(
-        NField::TPoint body
-        , NField::TPoint head
+        NField::TPoint head
+        , NField::TPoint tail
     );
 
     /**
@@ -40,8 +40,14 @@ public:
     size_t Size() const;
 
 private:
-    NField::TPoint base_;
-    std::vector<NField::Direction> head_;
+    /**
+    * /^^^^^^^^^^\  /^^^^^^^^^^\ /^^^^^^^\
+    * | tail_[1] |  | tail_[0] | | head_ |
+    * |     *----------->  *-------->    |
+    * \__________/  \__________/ \_______/
+    */
+    NField::TPoint head_;
+    std::vector<NField::Direction> tail_;
 };
 
 
