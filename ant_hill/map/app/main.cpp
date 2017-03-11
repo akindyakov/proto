@@ -7,6 +7,8 @@
 #include <iostream>
 #include <sstream>
 #include <tuple>
+#include <thread>
+#include <chrono>
 
 std::string DefaultMapText = R"FieldMap(10
 10
@@ -37,15 +39,19 @@ int main(int argn, char** argv) {
     if (!std::get<1>(args)) {
         return 1;
     }
+    auto field = CreateField(std::get<0>(args));
     TMapServer server{
         std::make_unique<jsonrpc::HttpServer>(
             std::get<0>(args)["port"].as<unsigned>()
         ),
-        CreateField(std::get<0>(args))
+        field
     };
 
     server.StartListening();
-    std::cin.get();
+    while (true) {
+        NField::PrintToText(std::cout, field);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
     server.StopListening();
     return 0;
 }
