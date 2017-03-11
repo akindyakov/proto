@@ -18,13 +18,13 @@ std::vector<NField::ShortMovement>
 SnakeAntBody::DiffHeadMove(
     NField::ECompass direction
 ) const {
-    std::vector<NField::ShortMovement> ret;
+    auto diff = std::vector<NField::ShortMovement>{};
     auto nextPoint = NField::TPoint{base_};
     for (const auto& direction : head_) {
-       ret.emplace_back(nextPoint, direction);
+       diff.emplace_back(nextPoint, direction);
        nextPoint = NField::MovePoint(nextPoint, direction);
     }
-    return ret;
+    return diff;
 }
 
 void
@@ -34,7 +34,7 @@ SnakeAntBody::HeadMove(NField::ECompass direction) {
     ++right;
     base_ = NField::MovePoint(base_, *left);
     while (right != head_.end()) {
-        *left = *right;
+        *left = std::move(*right);
         ++left;
         ++right;
     }
