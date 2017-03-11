@@ -53,10 +53,18 @@ int TMapServer::SeeGrain(int x, int y) {
             << "Point must has positive coordinates "
             << "[" << x << ", " << y << "]";
     }
-    Field.At({
-        static_cast<NField::TMeasure>(x),
-        static_cast<NField::TMeasure>(y)
-    }).Grain.SeeMaterial();
+
+    try {
+        Field.At({
+            static_cast<NField::TMeasure>(x),
+            static_cast<NField::TMeasure>(y)
+        }).Grain.SeeMaterial();
+    }
+    catch(std::out_of_range& err) {
+        Json::Value data;
+        data.append(33);
+        throw jsonrpc::JsonRpcException(-32099, "User exception", data);
+    }
     return x + y;
 }
 
