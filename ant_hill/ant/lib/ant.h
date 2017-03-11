@@ -28,17 +28,6 @@ public:
     void HeadMove(NField::ECompass direction);
 
     /**
-    * Get diff for moving tail to specified direction
-    */
-    std::vector<NField::ShortMovement>
-    DiffTailMove(NField::ECompass direction) const;
-
-    /**
-    * Move tail to specified direction
-    */
-    void TailMove(NField::ECompass direction);
-
-    /**
     * Add one more point to head side
     */
     void AppendPoint(NField::ECompass direction);

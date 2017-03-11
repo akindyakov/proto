@@ -30,6 +30,16 @@ public:
     ~TPoint() = default;
 };
 
+inline bool operator == (
+    const TPoint& first
+    , const TPoint& second
+) {
+    return (
+        first.X == second.X
+        && first.Y == second.Y
+    );
+}
+
 class TVector: public TPoint {
 public:
     TVector(

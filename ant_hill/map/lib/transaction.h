@@ -11,6 +11,8 @@ enum class ECompass {
     East,
 };
 
+ECompass InverseDirection(ECompass direction);
+
 ECompass DirectionDiff(const TPoint& to, const TPoint& from);
 
 TPoint MovePoint(TPoint pt, ECompass direction);
@@ -39,18 +41,26 @@ public:
     {
     }
 
-    /**
-     * Make step to the owned direction and get new one from argument
-     */
-    void Next(ECompass direction);
-
-private:
+public:
     ECompass direction_;
     TPoint point_;
 };
 
+inline bool operator == (
+    const ShortMovement& first
+    , const ShortMovement& second
+) {
+    return (
+        first.direction_ == second.direction_
+        && first.point_ == second.point_
+    );
+}
+
+
 class TMoveTransaction {
 public:
+    explicit TMoveTransaction(const std::vector<ShortMovement>& movement);
+
     TMoveTransaction& Add(const TPoint& pt, ECompass direction);
     bool Apply(TField& where) const;
 

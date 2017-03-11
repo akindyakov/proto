@@ -2,6 +2,7 @@
 
 #include <tools/tests/ut.h>
 
+#include <algorithm>
 
 namespace NAnt {
 
@@ -11,7 +12,7 @@ SnakeAntBody::SnakeAntBody(
 )
     : base_{body}
 {
-    head_.push_back(DirectionDiff(body, head));
+    head_.push_back(DirectionDiff(head, body));
 }
 
 std::vector<NField::ShortMovement>
@@ -20,9 +21,13 @@ SnakeAntBody::DiffHeadMove(
 ) const {
     auto diff = std::vector<NField::ShortMovement>{};
     auto nextPoint = NField::TPoint{base_};
-    for (const auto& direction : head_) {
-       diff.emplace_back(nextPoint, direction);
-       nextPoint = NField::MovePoint(nextPoint, direction);
+    for (const auto& hDir : head_) {
+       diff.emplace_back(nextPoint, hDir);
+       nextPoint = NField::MovePoint(nextPoint, hDir);
+    }
+    diff.emplace_back(nextPoint, direction);
+    if (direction != NField::InverseDirection(head_.back())) {
+        std::reverse(diff.begin(), diff.end());
     }
     return diff;
 }

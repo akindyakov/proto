@@ -5,6 +5,24 @@
 
 namespace NField {
 
+ECompass InverseDirection(ECompass direction) {
+    switch (direction) {
+        case ECompass::East:
+            return ECompass::West;
+            break;
+        case ECompass::West:
+            return ECompass::East;
+            break;
+        case ECompass::North:
+            return ECompass::South;
+            break;
+        case ECompass::South:
+            return ECompass::North;
+            break;
+    }
+    throw NAntHill::TException();
+}
+
 ECompass DirectionDiff(const TPoint& to, const TPoint& from) {
     auto shift = to - from;
     if (shift.X != 0 && shift.Y != 0) {
@@ -48,6 +66,14 @@ TMovement& TMovement::operator=(TMovement&& other) {
     To = std::move(other.To);
     From = std::move(other.From);
     return *this;
+}
+
+TMoveTransaction::TMoveTransaction(
+    const std::vector<ShortMovement>& movement
+) {
+    for (const auto& m : movement) {
+        Add(m.point_, m.direction_);
+    }
 }
 
 TMoveTransaction& TMoveTransaction::Add(const TPoint& old, ECompass direction) {
