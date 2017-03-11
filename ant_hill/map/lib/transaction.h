@@ -4,18 +4,47 @@
 
 namespace NField {
 
-enum class ECompass {
-    North,
-    West,
-    South,
-    East,
+class Direction {
+public:
+    enum ECompass {
+        North,
+        West,
+        South,
+        East,
+    };
+
+public:
+    ECompass compass_;
+
+public:
+    Direction(
+        ECompass compass
+    )
+        : compass_(compass)
+    {
+    }
+
+    Direction Inverse() const;
+
+    static Direction Diff(const TPoint& to, const TPoint& from);
+
 };
 
-ECompass InverseDirection(ECompass direction);
+inline bool operator == (
+    Direction first
+    , Direction second
+) {
+    return first.compass_ == second.compass_;
+}
 
-ECompass DirectionDiff(const TPoint& to, const TPoint& from);
+inline bool operator != (
+    Direction first
+    , Direction second
+) {
+    return first.compass_ != second.compass_;
+}
 
-TPoint MovePoint(TPoint pt, ECompass direction);
+TPoint MovePoint(TPoint pt, Direction direction);
 
 struct TMovement {
     TPoint To;
@@ -32,9 +61,9 @@ struct TMovement {
 
 class ShortMovement {
 public:
-    ShortMovement(
+    explicit ShortMovement(
         const TPoint& point
-        , ECompass direction
+        , Direction direction
     )
         : direction_(direction)
         , point_(point)
@@ -42,7 +71,7 @@ public:
     }
 
 public:
-    ECompass direction_;
+    Direction direction_;
     TPoint point_;
 };
 
@@ -59,9 +88,10 @@ inline bool operator == (
 
 class TMoveTransaction {
 public:
+    explicit TMoveTransaction() = default;
     explicit TMoveTransaction(const std::vector<ShortMovement>& movement);
 
-    TMoveTransaction& Add(const TPoint& pt, ECompass direction);
+    TMoveTransaction& Add(const TPoint& pt, Direction direction);
     bool Apply(TField& where) const;
 
 private:

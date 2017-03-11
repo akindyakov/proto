@@ -5,46 +5,46 @@
 
 namespace NField {
 
-ECompass InverseDirection(ECompass direction) {
-    switch (direction) {
-        case ECompass::East:
-            return ECompass::West;
+Direction Direction::Inverse() const {
+    switch (compass_) {
+        case East:
+            return West;
             break;
-        case ECompass::West:
-            return ECompass::East;
+        case West:
+            return East;
             break;
-        case ECompass::North:
-            return ECompass::South;
+        case North:
+            return South;
             break;
-        case ECompass::South:
-            return ECompass::North;
+        case South:
+            return North;
             break;
     }
     throw NAntHill::TException();
 }
 
-ECompass DirectionDiff(const TPoint& to, const TPoint& from) {
+Direction Direction::Diff(const TPoint& to, const TPoint& from) {
     auto shift = to - from;
     if (shift.X != 0 && shift.Y != 0) {
         throw NAntHill::TException("Direction move must be only horisontal or vertical");
     } else if (shift.X > 0) {
-        return ECompass::East;
+        return Direction::East;
     } else if (shift.X < 0) {
-        return ECompass::West;
+        return Direction::West;
     } else if (shift.Y > 0) {
-        return ECompass::North;
+        return Direction::North;
     }
-    return ECompass::South;
+    return Direction::South;
 }
 
-TPoint MovePoint(TPoint pt, ECompass direction) {
-    if (direction == ECompass::North) {
+TPoint MovePoint(TPoint pt, Direction direction) {
+    if (direction == Direction::North) {
         pt.Y += 1;
-    } else if (direction == ECompass::West) {
+    } else if (direction == Direction::West) {
         pt.X -= 1;
-    } else if (direction == ECompass::South) {
+    } else if (direction == Direction::South) {
         pt.Y -= 1;
-    } else if (direction == ECompass::East) {
+    } else if (direction == Direction::East) {
         pt.X += 1;
     }
     return pt;
@@ -76,7 +76,7 @@ TMoveTransaction::TMoveTransaction(
     }
 }
 
-TMoveTransaction& TMoveTransaction::Add(const TPoint& old, ECompass direction) {
+TMoveTransaction& TMoveTransaction::Add(const TPoint& old, Direction direction) {
     auto action = TMovement(MovePoint(old, direction), old);
     // std::cerr << "From: " << action.From.X << ", " << action.From.Y << std::endl;
     // std::cerr << "To: " << action.To.X << ", " << action.To.Y << std::endl;

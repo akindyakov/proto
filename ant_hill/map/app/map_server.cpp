@@ -69,7 +69,7 @@ int TMapServer::MoveGroup(const Json::Value& params) {
         auto y = static_cast<NField::TMeasure>(from["y"].asInt());
         tr.Add(
             {x, y},
-            static_cast<NField::ECompass>(grain["direction"].asInt())
+            static_cast<NField::Direction::ECompass>(grain["direction"].asInt())
         );
         std::cerr << "TMapServer::MoveGroup -- Point: (" << x << "; " << y << ")\n";
     }
