@@ -32,7 +32,7 @@ class TMapServer
 public:
     TMapServer(
         std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
-        , NField::TField&& field
+        , NField::TField& field
     );
 
     int SeeGrain(int x, int y) override;
@@ -49,6 +49,6 @@ private:
     NField::TVector YieldMeImpl(NField::TAppearanceTransaction& tr);
 
 private:
-    NField::TField Field;
+    NField::TField& Field;
     std::mutex FieldMutex;
 };

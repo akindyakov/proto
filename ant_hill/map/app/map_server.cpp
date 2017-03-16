@@ -39,11 +39,11 @@ iiiiiiiiii
 
 TMapServer::TMapServer(
     std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
-    , NField::TField&& field
+    , NField::TField& field
 )
     : TConnectionHolder(std::move(connector))
     , NMap::NJsonRPC::TServer(TConnectionHolder::GetConnector())
-    , Field(std::move(field))
+    , Field(field)
 {
 }
 
@@ -53,10 +53,18 @@ int TMapServer::SeeGrain(int x, int y) {
             << "Point must has positive coordinates "
             << "[" << x << ", " << y << "]";
     }
-    Field.At({
-        static_cast<NField::TMeasure>(x),
-        static_cast<NField::TMeasure>(y)
-    }).Grain.SeeMaterial();
+
+    try {
+        Field.At({
+            static_cast<NField::TMeasure>(x),
+            static_cast<NField::TMeasure>(y)
+        }).Grain.SeeMaterial();
+    }
+    catch(std::out_of_range& err) {
+        Json::Value data;
+        data.append(33);
+        throw jsonrpc::JsonRpcException(-32099, "User exception", data);
+    }
     return x + y;
 }
 
@@ -69,7 +77,7 @@ int TMapServer::MoveGroup(const Json::Value& params) {
         auto y = static_cast<NField::TMeasure>(from["y"].asInt());
         tr.Add(
             {x, y},
-            static_cast<NField::ECompass>(grain["direction"].asInt())
+            static_cast<NField::Direction::ECompass>(grain["direction"].asInt())
         );
         std::cerr << "TMapServer::MoveGroup -- Point: (" << x << "; " << y << ")\n";
     }

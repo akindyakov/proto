@@ -12,47 +12,42 @@ public:
 class SnakeAntBody {
 public:
     SnakeAntBody(
-        NField::TPoint body
-        , NField::TPoint head
+        NField::TPoint head
+        , NField::TPoint tail
     );
 
     /**
     * Get diff for moving head to specified direction
     */
     std::vector<NField::ShortMovement>
-    DiffHeadMove(NField::ECompass direction) const;
+    DiffHeadMove(NField::Direction direction) const;
 
     /**
     * Move head to specified direction
     */
-    void HeadMove(NField::ECompass direction);
-
-    /**
-    * Get diff for moving tail to specified direction
-    */
-    std::vector<NField::ShortMovement>
-    DiffTailMove(NField::ECompass direction) const;
-
-    /**
-    * Move tail to specified direction
-    */
-    void TailMove(NField::ECompass direction);
+    void HeadMove(NField::Direction direction);
 
     /**
     * Add one more point to head side
     */
-    void AppendPoint(NField::ECompass direction);
+    void AppendPoint(NField::Direction direction);
 
     /**
     * Drop first point from head side
     */
-    void DropPoint(NField::ECompass direction);
+    void DropPoint(NField::Direction direction);
 
     size_t Size() const;
 
 private:
-    NField::TPoint base_;
-    std::vector<NField::ECompass> head_;
+    /**
+    * /^^^^^^^^^^\  /^^^^^^^^^^\ /^^^^^^^\
+    * | tail_[1] |  | tail_[0] | | head_ |
+    * |     *----------->  *-------->    |
+    * \__________/  \__________/ \_______/
+    */
+    NField::TPoint head_;
+    std::vector<NField::Direction> tail_;
 };
 
 

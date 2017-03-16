@@ -5,28 +5,46 @@
 
 namespace NField {
 
-ECompass DirectionDiff(const TPoint& to, const TPoint& from) {
+Direction Direction::Inverse() const {
+    switch (compass_) {
+        case East:
+            return West;
+            break;
+        case West:
+            return East;
+            break;
+        case North:
+            return South;
+            break;
+        case South:
+            return North;
+            break;
+    }
+    throw NAntHill::TException();
+}
+
+Direction Direction::Diff(const TPoint& to, const TPoint& from) {
     auto shift = to - from;
     if (shift.X != 0 && shift.Y != 0) {
         throw NAntHill::TException("Direction move must be only horisontal or vertical");
     } else if (shift.X > 0) {
-        return ECompass::East;
+        return Direction::East;
     } else if (shift.X < 0) {
-        return ECompass::West;
+        return Direction::West;
     } else if (shift.Y > 0) {
-        return ECompass::North;
+        return Direction::North;
     }
-    return ECompass::South;
+    return Direction::South;
 }
 
-TPoint MovePoint(TPoint pt, ECompass direction) {
-    if (direction == ECompass::North) {
+TPoint MovePoint(TPoint pt, Direction direction) {
+    if (direction == Direction::North) {
         pt.Y += 1;
-    } else if (direction == ECompass::West) {
+    } else if (direction == Direction::West) {
         pt.X -= 1;
-    } else if (direction == ECompass::South) {
+    } else if (direction == Direction::South) {
         pt.Y -= 1;
-    } else if (direction == ECompass::East) {
+    } else if (direction == Direction::East) {
         pt.X += 1;
     }
     return pt;
@@ -50,7 +68,15 @@ TMovement& TMovement::operator=(TMovement&& other) {
     return *this;
 }
 
-TMoveTransaction& TMoveTransaction::Add(const TPoint& old, ECompass direction) {
+TMoveTransaction::TMoveTransaction(
+    const std::vector<ShortMovement>& movement
+) {
+    for (const auto& m : movement) {
+        Add(m.point_, m.direction_);
+    }
+}
+
+TMoveTransaction& TMoveTransaction::Add(const TPoint& old, Direction direction) {
     auto action = TMovement(MovePoint(old, direction), old);
     // std::cerr << "From: " << action.From.X << ", " << action.From.Y << std::endl;
     // std::cerr << "To: " << action.To.X << ", " << action.To.Y << std::endl;
