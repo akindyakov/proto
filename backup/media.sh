@@ -7,6 +7,8 @@ HOST="192.168.1.215"
 PORT="6013"
 LOGDIR="/home/akindyakov/temp/logs"
 
+mkdir --parents "${LOGDIR}"
+
 $BACKUPER \
     --backup-host $HOST \
     --backup-port $PORT \
