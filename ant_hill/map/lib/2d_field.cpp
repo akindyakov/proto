@@ -5,23 +5,6 @@
 
 namespace NField {
 
-TPoint::TPoint(
-    TMeasure x,
-    TMeasure y
-)
-    : X(x)
-    , Y(y)
-{
-}
-
-TVector::TVector(
-    TMeasure x,
-    TMeasure y
-)
-    : TPoint(x, y)
-{
-}
-
 TVector& operator+=(TVector& self, const TVector& shift) {
     self.X += shift.X;
     self.Y += shift.Y;
@@ -29,6 +12,10 @@ TVector& operator+=(TVector& self, const TVector& shift) {
 }
 
 bool operator!=(const TVector& first, const TVector& second) {
+    return first.X != second.X && first.X != second.X;
+}
+
+bool operator!=(const TPoint& first, const TPoint& second) {
     return first.X != second.X && first.X != second.X;
 }
 

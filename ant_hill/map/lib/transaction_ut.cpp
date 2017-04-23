@@ -111,14 +111,23 @@ iiiiiiiiii
     {
         auto appearance = NField::TAppearanceTransaction{};
         appearance
-            .Add({0, 0}, EMaterial::AntBody)
-            .Add({0, 1}, EMaterial::AntHead)
+            .Add(
+                NField::ChainNode<EMaterial>(
+                    EMaterial::AntBody
+                )
+            )
+            .Add(
+                NField::ChainNode<EMaterial>(
+                    EMaterial::AntHead,
+                    NField::Direction::North
+                )
+            )
         ;
-        auto shift = appearance.Apply(field);
-        if (shift != NField::TVector{3, 3}) {
+        auto start = appearance.Apply(field);
+        if (start != NField::TPoint{3, 3}) {
             throw NAntHill::TException("[YieldTest] Wrong shift.")
                 << " Expected: [3, 3]"
-                << "\nGot: [" << shift.X << ", " << shift.Y << "]";
+                << "\nGot: [" << start.X << ", " << start.Y << "]";
         }
     }
     std::string endText = R"FieldMap(10

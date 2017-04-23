@@ -5,24 +5,6 @@
 
 namespace NField {
 
-Direction Direction::Inverse() const {
-    switch (compass_) {
-        case East:
-            return West;
-            break;
-        case West:
-            return East;
-            break;
-        case North:
-            return South;
-            break;
-        case South:
-            return North;
-            break;
-    }
-    throw NAntHill::TException();
-}
-
 Direction Direction::Diff(const TPoint& to, const TPoint& from) {
     auto shift = to - from;
     if (shift.X != 0 && shift.Y != 0) {
@@ -35,19 +17,6 @@ Direction Direction::Diff(const TPoint& to, const TPoint& from) {
         return Direction::North;
     }
     return Direction::South;
-}
-
-TPoint MovePoint(TPoint pt, Direction direction) {
-    if (direction == Direction::North) {
-        pt.Y += 1;
-    } else if (direction == Direction::West) {
-        pt.X -= 1;
-    } else if (direction == Direction::South) {
-        pt.Y -= 1;
-    } else if (direction == Direction::East) {
-        pt.X += 1;
-    }
-    return pt;
 }
 
 TMovement::TMovement(const TPoint& to, const TPoint& from)
@@ -105,38 +74,41 @@ bool TMoveTransaction::Apply(TField& where) const {
     return true;
 }
 
-TAppearanceTransaction& TAppearanceTransaction::Add(
-    const TPoint& pt
-    , EMaterial material
-) {
-    Cells.emplace_back(material, pt);
-    return *this;
-}
+//TAppearanceTransaction& TAppearanceTransaction::Add(
+//    const TPoint& pt
+//    , EMaterial material
+//) {
+//    Cells.emplace_back(material, pt);
+//    return *this;
+//}
 
-TVector TAppearanceTransaction::Apply(TField& where) {
-    auto shift = TVector{0, 0};
-    auto shiftStep = TVector{1, 1};
-    for (auto x = where.BottomLeft().X; x < where.TopRight().X; ++x) {
-        bool vacant = true;
-        for (auto& cell : Cells) {
-            if (!where.At(cell.Point).Grain.IsNone()) {
-                // std::cerr << "Check: " << cell.Point.X << ", " << cell.Point.Y << std::endl;
-                vacant = false;
-                break;
+TPoint TAppearanceTransaction::Apply(TField& where) {
+    auto start = TPoint{0, 0};
+    for (auto x = where.min().X; x < where.max().X; ++x) {
+        for (auto y = where.min().Y; y < where.max().Y; ++y) {
+            start = TPoint{x, y};
+            bool vacant = true;
+            {
+                auto pt = start;
+                for (auto& cell : Chain) {
+                    pt = MovePoint(pt, cell.from);
+                    if (!where.At(pt).Grain.IsNone()) {
+                        vacant = false;
+                        break;
+                    }
+                }
+            }
+            if (vacant) {
+                auto pt = start;
+                for (auto& cell : Chain) {
+                    pt = MovePoint(pt, cell.from);
+                    where.Insert(pt, cell.value);
+                }
+                return start;
             }
         }
-        if (vacant) {
-            for (auto& cell : Cells) {
-                where.Insert(cell.Point, cell.Material);
-            }
-            break;
-        }
-        for (auto& cell : Cells) {
-            cell.Point += shiftStep;
-        }
-        shift += shiftStep;
     }
-    return shift;
+    throw NAntHill::TException("There is no vacant position");
 }
 
 }  // NField

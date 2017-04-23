@@ -11,23 +11,46 @@ public:
         West,
         South,
         East,
+        Nowhere,
     };
 
 public:
     ECompass compass_;
 
 public:
-    Direction(
+    constexpr Direction(
         ECompass compass
-    )
+    ) noexcept
         : compass_(compass)
     {
     }
 
-    Direction Inverse() const;
+    static constexpr const Direction ToNowhere() noexcept {
+        return Direction(Nowhere);
+    }
+
+    constexpr const Direction Inverse() noexcept {
+        auto to = Direction::ToNowhere();
+        switch (compass_) {
+            case East:
+                to = West;
+                break;
+            case West:
+                to = East;
+                break;
+            case North:
+                to = South;
+                break;
+            case South:
+                to = North;
+                break;
+            case Nowhere:
+                break;
+        }
+        return to;
+    }
 
     static Direction Diff(const TPoint& to, const TPoint& from);
-
 };
 
 inline bool operator == (
@@ -44,7 +67,26 @@ inline bool operator != (
     return first.compass_ != second.compass_;
 }
 
-TPoint MovePoint(TPoint pt, Direction direction);
+constexpr const TPoint MovePoint(TPoint pt, Direction direction) noexcept {
+    switch (direction.compass_) {
+        case Direction::North:
+            pt.Y += 1;
+            break;
+        case Direction::West:
+            pt.X -= 1;
+            break;
+        case Direction::South:
+            pt.Y -= 1;
+            break;
+        case Direction::East:
+            pt.X += 1;
+            break;
+        case Direction::Nowhere:
+            // do nothing
+            break;
+    }
+    return pt;
+}
 
 struct TMovement {
     TPoint To;
@@ -98,28 +140,33 @@ private:
     std::vector<TMovement> Actions;
 };
 
+template<typename Value>
+class ChainNode
+{
+public:
+    explicit constexpr ChainNode(
+        Value value_
+        , Direction from_ = Direction::Nowhere
+    ) noexcept
+        : from(from_)
+        , value(value_)
+    {
+    }
+
+public:
+    Direction from;
+    Value value;
+};
+
 class TAppearanceTransaction {
 public:
-    TAppearanceTransaction& Add(const TPoint& pt, EMaterial material);
-    TVector Apply(TField& where);
+    TAppearanceTransaction& Add(
+        ChainNode<EMaterial> node
+    );
+    TPoint Apply(TField& where);
 
 private:
-    struct TFakeCell {
-        TFakeCell(
-            EMaterial material
-            , const TPoint& point
-        )
-            : Material(material)
-            , Point(point)
-        {
-        }
-
-        EMaterial Material;
-        TPoint Point;
-    };
-
-private:
-    std::vector<TFakeCell> Cells;
+    std::vector<ChainNode<EMaterial>> Chain;
 };
 
 }  // NField

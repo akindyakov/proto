@@ -22,10 +22,14 @@ public:
     TMeasure Y;
 
 public:
-    TPoint(
+    constexpr TPoint(
         TMeasure x,
         TMeasure y
-    );
+    ) noexcept
+        : X(x)
+        , Y(y)
+    {
+    }
 
     ~TPoint() = default;
 };
@@ -42,16 +46,22 @@ inline bool operator == (
 
 class TVector: public TPoint {
 public:
-    TVector(
+    constexpr TVector(
         TMeasure x,
         TMeasure y
-    );
+    ) noexcept
+        : TPoint(x, y)
+    {
+    }
 
-    TVector(const TVector& other)
+    constexpr TVector(const TVector& other) noexcept
         : TPoint(other.X, other.Y)
     {
     }
 
+    /**
+    * @return length, raised to the power of 2
+    */
     TMeasure Lenght() const {
         return X*X + Y*Y;
     }
@@ -59,6 +69,7 @@ public:
 };
 
 bool operator!=(const TVector& first, const TVector& second);
+bool operator!=(const TPoint& first, const TPoint& second);
 
 TPoint& operator+=(TPoint& self, const TVector& shift);
 
@@ -100,7 +111,7 @@ struct TCell {
 class TField {
 private:
     size_t GetIndexByPoint(const TPoint& pt) const {
-        auto signedIndex = (pt.X - bottomLeft_.X) + (pt.Y - bottomLeft_.Y) * size_.X;
+        auto signedIndex = (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
         if (signedIndex < 0) {
             throw NAntHill::TException("Access by outrange point");
         }
@@ -110,9 +121,9 @@ private:
     }
 
 public:
-    TField(TMeasure xSize, TMeasure ySize, TPoint bottomLeft=TPoint{0, 0})
+    TField(TMeasure xSize, TMeasure ySize, TPoint minCorner=TPoint{0, 0})
         : size_(xSize, ySize)
-        , bottomLeft_(bottomLeft)
+        , min_(minCorner)
         , Field(xSize * ySize)
     {
     }
@@ -146,17 +157,17 @@ public:
         Field.at(GetIndexByPoint(pt)).Grain = TGrain(material);
     }
 
-    TPoint BottomLeft() const {
-        return bottomLeft_;
+    TPoint min() const {
+        return min_;
     }
 
-    TPoint TopRight() const {
-        return bottomLeft_ + size_;
+    TPoint max() const {
+        return min_ + size_;
     }
 
 private:
     TVector size_;
-    TPoint bottomLeft_;
+    TPoint min_;
     std::vector<TCell> Field;
 };
 
