@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -e -x
 
 BACKUPER="/home/akindyakov/source/git.proto/backup/backuper.py"
 HOST="192.168.1.215"

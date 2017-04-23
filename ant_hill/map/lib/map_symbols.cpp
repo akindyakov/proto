@@ -1,5 +1,7 @@
 #include "map_symbols.h"
 
+#include <tools/tests/ut.h>
+
 const TMapSymbols& GetSymbolMap() {
     static TMapSymbols m;
     return m;
@@ -7,12 +9,14 @@ const TMapSymbols& GetSymbolMap() {
 
 TMapSymbols::TMapSymbols()
     : MaterialToChar{
-        {EMaterial::EmptySpace,   ' '},
+        {EMaterial::EmptySpace,   '.'},
         {EMaterial::Sand,         's'},
         {EMaterial::Marble,       'm'},
         {EMaterial::Iron,         'i'},
         {EMaterial::Wood,         'w'},
-        {EMaterial::AntHead,      'V'},
+        {EMaterial::Loam,         'l'},
+        {EMaterial::Water,        'a'},
+        {EMaterial::AntHead,      'X'},
         {EMaterial::AntBody,      '#'},
         {EMaterial::Invalid,      '?'},
     }
@@ -25,7 +29,8 @@ TMapSymbols::TMapSymbols()
 const EMaterial TMapSymbols::GetMaterial(char ch) const {
     auto it = CharToMaterial.find(ch);
     if (it == CharToMaterial.end()) {
-        throw std::exception();
+        throw NAntHill::TException("Unexpected material character")
+            << "[" << ch << "]";
     }
     return it->second;
 }
@@ -33,7 +38,9 @@ const EMaterial TMapSymbols::GetMaterial(char ch) const {
 const char TMapSymbols::GetSymbol(EMaterial m) const {
     auto it = MaterialToChar.find(m);
     if (it == MaterialToChar.end()) {
-        throw std::exception();
+        throw NAntHill::TException("Unexpected material code")
+            << "[" << static_cast<int>(m) << "]";
     }
+    // std::cerr << "[" << it->second << "]\n";
     return it->second;
 }

@@ -1,0 +1,4 @@
+
+alias mmutt="mutt -F ~/.mutt/muttrc.magictwin"
+alias gmutt="mutt -F ~/.mutt/muttrc.gmail"
+alias ymutt="mutt -F ~/.mutt/muttrc.yateam"

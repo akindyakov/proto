@@ -1,11 +1,10 @@
 #pragma once
 
-#include "2d_field.h"
-
 #include <memory>
 #include <map>
 
 namespace NAnt {
+
 enum class EStatus {
     ALIVE,
     DEAD,
@@ -22,25 +21,15 @@ public:
     TAnt(
         TPoint head,
         TPoint body
-    )
-        : BodyPos(body)
-        , DirectionVec(body - head)
-    {
-        if (DirectionVec.Lenght() >= 4) {
-            throw std::exception();
-        }
-    }
+    );
 
     void Turn(const TVector& direction);
     void Move();
 
-    TPoint Head() const;
-    const TPoint& Body() const;
-    const TVector& Direction() const;
-
 private:
     TPoint BodyPos;
     TVector DirectionVec;
+
 };
 
 class TPostOffice {
@@ -67,7 +56,7 @@ public:
     {
     }
 
-    EStatus Step(TField& field, const TPostOffice& post);
+    EStatus Step(IFieldActor& field, const TPostOffice& post);
     void SendMessage(TAntMessage msg);
 
 private:

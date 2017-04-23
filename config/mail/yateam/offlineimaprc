@@ -1,0 +1,18 @@
+
+[Account yateam]
+localrepository = ya_local
+remoterepository = ya_remote
+
+[Repository ya_local]
+type = Maildir
+localfolders = ~/mail/yateam
+
+[Repository ya_remote]
+type = IMAP
+ssl = yes
+remotehost = imap.yandex-team.ru
+remoteport = 993
+remoteuser = akindyakov@yandex-team.ru
+remotepasseval = get_pass("ya")
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+maxconnections = 2

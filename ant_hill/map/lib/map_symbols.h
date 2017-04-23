@@ -10,10 +10,10 @@ enum class EMaterial {
     Marble,
     Iron,
     Wood,
+    Loam,
+    Water,
     AntHead,
-    AntMesosoma,
-    AntPetiole,
-    AntGaster,
+    AntBody,
     Invalid
 };
 

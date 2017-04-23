@@ -1,0 +1,18 @@
+
+[Account gmail]
+localrepository = gmail_local
+remoterepository = gmail_remote
+
+[Repository gmail_local]
+type = Maildir
+localfolders = ~/mail/gmail
+
+[Repository gmail_remote]
+type = IMAP
+ssl = yes
+remotehost = imap.gmail.com
+remoteport = 993
+remoteuser = akindyakov@gmail.com
+remotepasseval = get_pass("google.com/akindyakov@gmail.com")
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+maxconnections = 2

@@ -1,0 +1,51 @@
+[
+    {
+        "name": "SeeGrain",
+        "params": {
+            "x": 1,
+            "y": 2
+        },
+        "returns" : 1
+    },
+    {
+        "name": "MoveGroup",
+        "params": {
+            "grains": [
+                {
+                    "from": {
+                        "x": 1,
+                        "y": 2
+                    },
+                    "direction": 1
+                }
+            ]
+        },
+        "returns" : 1
+    },
+    {
+        "name": "YieldMe",
+        "params": {
+            "place": {
+                "x": 1,
+                "y": 2
+            },
+            "grains": [
+                {
+                    "point": {
+                        "x": 1,
+                        "y": 2
+                    },
+                    "material": 1
+                }
+            ]
+        },
+        "returns" : {
+            "x": 1,
+            "y": 2
+        }
+    },
+    {
+        "name" : "Ping",
+        "returns" : 0
+    }
+]

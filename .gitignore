@@ -1,0 +1,5 @@
+Makefile
+product/
+
+doc/*.html
+doc/*.pdf
