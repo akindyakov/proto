@@ -32,7 +32,7 @@ class MapServer
 public:
     MapServer(
         std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
-        , Field::Field& field
+        , Map::Field& field
     );
 
     int SeeGrain(int x, int y) override;
@@ -45,9 +45,9 @@ public:
     int Ping() override;
 
 private:
-    Field::Point YieldMeImpl(Field::AppearanceTransaction& tr);
+    Map::Point YieldMeImpl(Map::AppearanceTransaction& tr);
 
 private:
-    Field::Field& Field;
+    Map::Field& Field;
     std::mutex FieldMutex;
 };

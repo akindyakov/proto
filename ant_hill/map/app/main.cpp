@@ -24,14 +24,14 @@ i........i
 iiiiiiiiii
 )FieldMap";
 
-Field::Field CreateField(const ArgsMap& args) {
+Map::Field CreateField(const ArgsMap& args) {
     const auto& mapFileName = args["map-file"];
     if (mapFileName.empty()) {
         auto in = std::istringstream(DefaultMapText);
-        return Field::ScanFromText(in);
+        return Map::ScanFromText(in);
     }
     auto dataFile = std::ifstream(mapFileName.as<std::string>());
-    return Field::ScanFromText(dataFile);
+    return Map::ScanFromText(dataFile);
 }
 
 int main(int argn, char** argv) {
@@ -49,7 +49,7 @@ int main(int argn, char** argv) {
 
     server.StartListening();
     while (true) {
-        Field::PrintToText(std::cout, field);
+        Map::PrintToText(std::cout, field);
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     server.StopListening();

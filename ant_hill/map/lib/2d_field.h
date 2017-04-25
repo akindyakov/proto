@@ -12,7 +12,7 @@
 #include <ostream>
 #include <vector>
 
-namespace Field {
+namespace Map {
 
 using Measure = int;
 

@@ -2,6 +2,8 @@
 
 #include <tools/tests/ut.h>
 
+namespace Map {
+
 const MapSymbols& GetSymbolMap() {
     static MapSymbols m;
     return m;
@@ -44,3 +46,5 @@ const char MapSymbols::GetSymbol(EMaterial m) const {
     // std::cerr << "[" << it->second << "]\n";
     return it->second;
 }
+
+}  // namespace Map

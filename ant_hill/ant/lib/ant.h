@@ -12,30 +12,30 @@ public:
 class SnakeAntBody {
 public:
     SnakeAntBody(
-        Field::Point head
-        , Field::Point tail
+        Map::Point head
+        , Map::Point tail
     );
 
     /**
     * Get diff for moving head to specified direction
     */
-    std::vector<Field::ShortMovement>
-    DiffHeadMove(Field::Direction direction) const;
+    std::vector<Map::ShortMovement>
+    DiffHeadMove(Map::Direction direction) const;
 
     /**
     * Move head to specified direction
     */
-    void HeadMove(Field::Direction direction);
+    void HeadMove(Map::Direction direction);
 
     /**
     * Add one more point to head side
     */
-    void AppendPoint(Field::Direction direction);
+    void AppendPoint(Map::Direction direction);
 
     /**
     * Drop first point from head side
     */
-    void DropPoint(Field::Direction direction);
+    void DropPoint(Map::Direction direction);
 
     size_t Size() const;
 
@@ -46,8 +46,8 @@ private:
     * |     *----------->  *-------->    |
     * \__________/  \__________/ \_______/
     */
-    Field::Point head_;
-    std::vector<Field::Direction> tail_;
+    Map::Point head_;
+    std::vector<Map::Direction> tail_;
 };
 
 

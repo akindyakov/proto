@@ -2,7 +2,7 @@
 
 #include "2d_field.h"
 
-namespace Field {
+namespace Map {
 
 class Direction {
 public:
@@ -184,4 +184,4 @@ private:
     std::vector<ChainNode<EMaterial>> chain_;
 };
 
-}  // Field
+}  // namespace Map

@@ -22,26 +22,26 @@ i........i
 iiiiiiiiii
 )FieldMap";
     auto in = std::istringstream(startText);
-    auto field = Field::ScanFromText(in);
+    auto field = Map::ScanFromText(in);
     {
-        auto move = std::vector<Field::ShortMovement>{
-            Field::ShortMovement{{2, 3}, Field::Direction::South},
-            Field::ShortMovement{{2, 4}, Field::Direction::South},
-            Field::ShortMovement{{3, 3}, Field::Direction::South},
-            Field::ShortMovement{{3, 4}, Field::Direction::South},
+        auto move = std::vector<Map::ShortMovement>{
+            Map::ShortMovement{{2, 3}, Map::Direction::South},
+            Map::ShortMovement{{2, 4}, Map::Direction::South},
+            Map::ShortMovement{{3, 3}, Map::Direction::South},
+            Map::ShortMovement{{3, 4}, Map::Direction::South},
         };
-        auto lawsMove = Field::MoveTransaction{move};
+        auto lawsMove = Map::MoveTransaction{move};
         if (!lawsMove.Apply(field)) {
             throw AntHill::Exception("Error in move 1");
         }
     }
     {
-        auto move = std::vector<Field::ShortMovement>{
-            Field::ShortMovement({7, 2}, Field::Direction::East),
-            Field::ShortMovement({7, 3}, Field::Direction::South),
-            Field::ShortMovement({7, 4}, Field::Direction::South),
+        auto move = std::vector<Map::ShortMovement>{
+            Map::ShortMovement({7, 2}, Map::Direction::East),
+            Map::ShortMovement({7, 3}, Map::Direction::South),
+            Map::ShortMovement({7, 4}, Map::Direction::South),
         };
-        auto smiMove = Field::MoveTransaction{move};
+        auto smiMove = Map::MoveTransaction{move};
         if (!smiMove.Apply(field)) {
             throw AntHill::Exception("Error in move 2");
         }
@@ -60,7 +60,7 @@ i........i
 iiiiiiiiii
 )FieldMap";
     auto out = std::ostringstream();
-    Field::PrintToText(out, field);
+    Map::PrintToText(out, field);
     auto outText = out.str();
     if (endText != outText) {
         throw AntHill::Exception()
@@ -78,12 +78,12 @@ void WrongMoveTest() {
 ....
 )FieldMap";
     auto in = std::istringstream(startText);
-    auto field = Field::ScanFromText(in);
+    auto field = Map::ScanFromText(in);
 
     {
-        auto move = Field::MoveTransaction{};
+        auto move = Map::MoveTransaction{};
         move
-            .Add({1, 1}, Field::Direction::East)
+            .Add({1, 1}, Map::Direction::East)
         ;
         if (move.Apply(field)) {
             throw AntHill::Exception("[WrongMoveTest] Expected error was not threw");
@@ -106,25 +106,25 @@ iww......i
 iiiiiiiiii
 )FieldMap";
     auto in = std::istringstream(startText);
-    auto field = Field::ScanFromText(in);
+    auto field = Map::ScanFromText(in);
 
     {
-        auto appearance = Field::AppearanceTransaction{};
+        auto appearance = Map::AppearanceTransaction{};
         appearance
             .Add(
-                Field::ChainNode<EMaterial>(
-                    EMaterial::AntBody
+                Map::ChainNode<Map::EMaterial>(
+                    Map::EMaterial::AntBody
                 )
             )
             .Add(
-                Field::ChainNode<EMaterial>(
-                    EMaterial::AntHead,
-                    Field::Direction::North
+                Map::ChainNode<Map::EMaterial>(
+                    Map::EMaterial::AntHead,
+                    Map::Direction::North
                 )
             )
         ;
         auto start = appearance.Apply(field);
-        if (start != Field::Point{3, 3}) {
+        if (start != Map::Point{3, 3}) {
             throw AntHill::Exception("[YieldTest] Wrong shift.")
                 << " Expected: [3, 3]"
                 << "\nGot: [" << start.X << ", " << start.Y << "]";
@@ -144,7 +144,7 @@ iww......i
 iiiiiiiiii
 )FieldMap";
     auto out = std::ostringstream();
-    Field::PrintToText(out, field);
+    Map::PrintToText(out, field);
     auto outText = out.str();
     if (endText != outText) {
         throw AntHill::Exception()
@@ -154,20 +154,20 @@ iiiiiiiiii
 }
 
 void DirecitionTest() {
-    Field::Direction direction = Field::Direction::North;
-    if (direction != Field::Direction::North) {
+    Map::Direction direction = Map::Direction::North;
+    if (direction != Map::Direction::North) {
         throw AntHill::Exception()
             << "Wrong not equal operator work";
     }
     if (
-        direction == Field::Direction::West
-        || direction == Field::Direction::South
-        || direction == Field::Direction::East
+        direction == Map::Direction::West
+        || direction == Map::Direction::South
+        || direction == Map::Direction::East
     ) {
         throw AntHill::Exception()
             << "Wrong equal operator work";
     }
-    if (direction.Inverse() != Field::Direction::South) {
+    if (direction.Inverse() != Map::Direction::South) {
         throw AntHill::Exception()
             << "Wrong Inverse work";
     }

@@ -7,25 +7,25 @@
 namespace Ant {
 
 SnakeAntBody::SnakeAntBody(
-    Field::Point head
-    , Field::Point tail
+    Map::Point head
+    , Map::Point tail
 )
     : head_{head}
 {
     tail_.push_back(
-        Field::Direction::Diff(head, tail)
+        Map::Direction::Diff(head, tail)
     );
 }
 
-std::vector<Field::ShortMovement>
+std::vector<Map::ShortMovement>
 SnakeAntBody::DiffHeadMove(
-    Field::Direction direction
+    Map::Direction direction
 ) const {
-    auto diff = std::vector<Field::ShortMovement>{};
-    auto nextPoint = Field::Point{head_};
+    auto diff = std::vector<Map::ShortMovement>{};
+    auto nextPoint = Map::Point{head_};
     diff.emplace_back(nextPoint, direction);
     for (const auto& hDir : tail_) {
-       nextPoint = Field::MovePoint(nextPoint, hDir.Inverse());
+       nextPoint = Map::MovePoint(nextPoint, hDir.Inverse());
        diff.emplace_back(nextPoint, hDir);
     }
     if (direction == tail_.begin()->Inverse()) {
@@ -36,23 +36,23 @@ SnakeAntBody::DiffHeadMove(
 
 void
 SnakeAntBody::HeadMove(
-    Field::Direction direction
+    Map::Direction direction
 ) {
-    head_ = Field::MovePoint(head_, direction);
+    head_ = Map::MovePoint(head_, direction);
     tail_.insert(tail_.begin(), direction);
     tail_.pop_back();
 }
 
 void
 SnakeAntBody::AppendPoint(
-    Field::Direction direction
+    Map::Direction direction
 ) {
-    head_ = Field::MovePoint(head_, direction);
+    head_ = Map::MovePoint(head_, direction);
     tail_.push_back(direction);
 }
 
 void
-SnakeAntBody::DropPoint(Field::Direction direction) {
+SnakeAntBody::DropPoint(Map::Direction direction) {
     if (Size() < 3) {
         throw AntHill::Exception("Ant length must be at list 2");
     }

@@ -3,7 +3,7 @@
 #include <tools/tests/ut.h>
 
 
-namespace Field {
+namespace Map {
 
 Direction Direction::Diff(const Point& to, const Point& from) {
     auto shift = to - from;
@@ -103,4 +103,4 @@ Point AppearanceTransaction::Apply(Field& where) {
     throw AntHill::Exception("There is no vacant position");
 }
 
-}  // Field
+}  // namespace Map

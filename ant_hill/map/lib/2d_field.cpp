@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace Field {
+namespace Map {
 
 Vector& operator+=(Vector& self, const Vector& shift) {
     self.X += shift.X;
@@ -108,4 +108,4 @@ void PrintToText(std::ostream& os, const Field& field) {
     }
 }
 
-}  // Field
+}  // Map

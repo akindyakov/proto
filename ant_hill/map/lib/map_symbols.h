@@ -2,7 +2,9 @@
 
 #include <vector>
 #include <iostream>
-#include <unordered_map>
+#include <map>
+
+namespace Map {
 
 enum class EMaterial {
     EmptySpace,
@@ -16,18 +18,6 @@ enum class EMaterial {
     AntBody,
     Invalid
 };
-
-
-namespace std {
-template<>
-struct hash<EMaterial>
-{
-    size_t operator()(const EMaterial e) const
-    {
-        return static_cast<size_t>(e);
-    }
-};
-}
 
 class MapSymbols {
 public:
@@ -44,8 +34,10 @@ public:
 private:
     static const char FirstChar = ' ';
 
-    std::unordered_map<EMaterial, char> MaterialToChar;
-    std::unordered_map<char, EMaterial> CharToMaterial;
+    std::map<EMaterial, char> MaterialToChar;
+    std::map<char, EMaterial> CharToMaterial;
 };
 
 const MapSymbols& GetSymbolMap();
+
+}  // namespace Map

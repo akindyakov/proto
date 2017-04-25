@@ -26,9 +26,9 @@ iw...m..si
 iiiiiiiiii
 )FieldMap";
     auto in = std::istringstream(text);
-    auto field = Field::ScanFromText(in);
+    auto field = Map::ScanFromText(in);
     auto out = std::ostringstream();
-    Field::PrintToText(out, field);
+    Map::PrintToText(out, field);
     auto outText = out.str();
     if (text != outText) {
         throw AntHill::Exception()
@@ -39,7 +39,7 @@ iiiiiiiiii
 
 MapServer::MapServer(
     std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
-    , Field::Field& field
+    , Map::Field& field
 )
     : ConnectionHolder(std::move(connector))
     , Map::JsonRPC::Server(ConnectionHolder::GetConnector())
@@ -56,8 +56,8 @@ int MapServer::SeeGrain(int x, int y) {
 
     try {
         Field.At({
-            static_cast<Field::Measure>(x),
-            static_cast<Field::Measure>(y)
+            static_cast<Map::Measure>(x),
+            static_cast<Map::Measure>(y)
         }).Grain.SeeMaterial();
     }
     catch(std::out_of_range& err) {
@@ -70,14 +70,14 @@ int MapServer::SeeGrain(int x, int y) {
 
 int MapServer::MoveGroup(const Json::Value& params) {
     std::cerr << "MapServer::MoveGroup\n";
-    auto tr = Field::MoveTransaction{};
+    auto tr = Map::MoveTransaction{};
     for (const auto& grain : params["grains"]) {
         const Json::Value& from = grain["from"];
-        auto x = static_cast<Field::Measure>(from["x"].asInt());
-        auto y = static_cast<Field::Measure>(from["y"].asInt());
+        auto x = static_cast<Map::Measure>(from["x"].asInt());
+        auto y = static_cast<Map::Measure>(from["y"].asInt());
         tr.Add(
             {x, y},
-            static_cast<Field::Direction::ECompass>(grain["direction"].asInt())
+            static_cast<Map::Direction::ECompass>(grain["direction"].asInt())
         );
         std::cerr << "MapServer::MoveGroup -- Point: (" << x << "; " << y << ")\n";
     }
@@ -92,16 +92,16 @@ Json::Value MapServer::YieldMe(
     const Json::Value& params
 ) {
     std::cerr << "MapServer::YieldMe\n";
-    auto tr = Field::AppearanceTransaction{};
+    auto tr = Map::AppearanceTransaction{};
     for (const auto& node : params["body"]) {
-        auto direction = Field::Direction::FromInt(
+        auto direction = Map::Direction::FromInt(
             node["direction"].asInt()
         );
-        auto material = static_cast<EMaterial>(
+        auto material = static_cast<Map::EMaterial>(
             node["material"].asInt()
         );
         tr.Add(
-            Field::ChainNode<EMaterial>{material, direction}
+            Map::ChainNode<Map::EMaterial>{material, direction}
         );
     }
     auto point = this->YieldMeImpl(tr);
@@ -111,7 +111,7 @@ Json::Value MapServer::YieldMe(
     return jsonShift;
 }
 
-Field::Point MapServer::YieldMeImpl(Field::AppearanceTransaction& tr) {
+Map::Point MapServer::YieldMeImpl(Map::AppearanceTransaction& tr) {
     std::lock_guard<std::mutex> lock{FieldMutex};
     return tr.Apply(Field);
 }

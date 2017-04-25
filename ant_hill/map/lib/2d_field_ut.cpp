@@ -21,9 +21,9 @@ iw...m..si
 iiiiiiiiii
 )FieldMap";
     auto in = std::istringstream(text);
-    auto field = Field::ScanFromText(in);
+    auto field = Map::ScanFromText(in);
     auto out = std::ostringstream();
-    Field::PrintToText(out, field);
+    Map::PrintToText(out, field);
     auto outText = out.str();
     if (text != outText) {
         throw AntHill::Exception()

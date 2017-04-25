@@ -7,10 +7,10 @@
 
 void SnakeAntBodyMoveTest() {
     auto ant = Ant::SnakeAntBody({1, 1}, {0, 1});
-    auto diff = ant.DiffHeadMove(Field::Direction::North);
-    auto rightDiff = std::vector<Field::ShortMovement>{
-        Field::ShortMovement{{1, 1}, Field::Direction::North},
-        Field::ShortMovement{{0, 1}, Field::Direction::East},
+    auto diff = ant.DiffHeadMove(Map::Direction::North);
+    auto rightDiff = std::vector<Map::ShortMovement>{
+        Map::ShortMovement{{1, 1}, Map::Direction::North},
+        Map::ShortMovement{{0, 1}, Map::Direction::East},
     };
     if (rightDiff != diff) {
         auto err = AntHill::Exception();
