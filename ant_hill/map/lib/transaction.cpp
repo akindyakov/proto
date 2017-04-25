@@ -3,12 +3,12 @@
 #include <tools/tests/ut.h>
 
 
-namespace NField {
+namespace Field {
 
-Direction Direction::Diff(const TPoint& to, const TPoint& from) {
+Direction Direction::Diff(const Point& to, const Point& from) {
     auto shift = to - from;
     if (shift.X != 0 && shift.Y != 0) {
-        throw NAntHill::TException("Direction move must be only horisontal or vertical");
+        throw AntHill::Exception("Direction move must be only horisontal or vertical");
     } else if (shift.X > 0) {
         return Direction::East;
     } else if (shift.X < 0) {
@@ -19,25 +19,25 @@ Direction Direction::Diff(const TPoint& to, const TPoint& from) {
     return Direction::South;
 }
 
-TMovement::TMovement(const TPoint& to, const TPoint& from)
+Movement::Movement(const Point& to, const Point& from)
     : To(to)
     , From(from)
 {
 }
 
-TMovement::TMovement(TMovement&& other)
+Movement::Movement(Movement&& other)
     : To(std::move(other.To))
     , From(std::move(other.From))
 {
 }
 
-TMovement& TMovement::operator=(TMovement&& other) {
+Movement& Movement::operator=(Movement&& other) {
     To = std::move(other.To);
     From = std::move(other.From);
     return *this;
 }
 
-TMoveTransaction::TMoveTransaction(
+MoveTransaction::MoveTransaction(
     const std::vector<ShortMovement>& movement
 ) {
     for (const auto& m : movement) {
@@ -45,16 +45,16 @@ TMoveTransaction::TMoveTransaction(
     }
 }
 
-TMoveTransaction& TMoveTransaction::Add(const TPoint& old, Direction direction) {
-    auto action = TMovement(MovePoint(old, direction), old);
+MoveTransaction& MoveTransaction::Add(const Point& old, Direction direction) {
+    auto action = Movement(MovePoint(old, direction), old);
     // std::cerr << "From: " << action.From.X << ", " << action.From.Y << std::endl;
     // std::cerr << "To: " << action.To.X << ", " << action.To.Y << std::endl;
     Actions.push_back(std::move(action));
     return *this;
 }
 
-bool TMoveTransaction::Apply(TField& where) const {
-    // TODO: there have to be full lock on the all poins of transaction!
+bool MoveTransaction::Apply(Field& where) const {
+    // ODO: there have to be full lock on the all poins of transaction!
     for (const auto& action : Actions) {
         auto& fromCell = where.At(action.From);
         auto& toCell = where.At(action.To);
@@ -64,7 +64,7 @@ bool TMoveTransaction::Apply(TField& where) const {
         // std::cerr << "toCell.Grain.IsNone(): " << toCell.Grain.IsNone() << std::endl;
 
         if (fromCell.Grain.IsNone()) {
-            throw NAntHill::TException("Expected error was not threw");
+            throw AntHill::Exception("Expected error was not threw");
         }
         if (!toCell.Grain.IsNone()) {
             return false;
@@ -74,19 +74,19 @@ bool TMoveTransaction::Apply(TField& where) const {
     return true;
 }
 
-//TAppearanceTransaction& TAppearanceTransaction::Add(
-//    const TPoint& pt
+//AppearanceTransaction& AppearanceTransaction::Add(
+//    const Point& pt
 //    , EMaterial material
 //) {
 //    Cells.emplace_back(material, pt);
 //    return *this;
 //}
 
-TPoint TAppearanceTransaction::Apply(TField& where) {
-    auto start = TPoint{0, 0};
+Point AppearanceTransaction::Apply(Field& where) {
+    auto start = Point{0, 0};
     for (auto x = where.min().X; x < where.max().X; ++x) {
         for (auto y = where.min().Y; y < where.max().Y; ++y) {
-            start = TPoint{x, y};
+            start = Point{x, y};
             bool vacant = true;
             {
                 auto pt = start;
@@ -108,7 +108,7 @@ TPoint TAppearanceTransaction::Apply(TField& where) {
             }
         }
     }
-    throw NAntHill::TException("There is no vacant position");
+    throw AntHill::Exception("There is no vacant position");
 }
 
-}  // NField
+}  // Field

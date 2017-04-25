@@ -26,38 +26,38 @@ iw...m..si
 iiiiiiiiii
 )FieldMap";
     auto in = std::istringstream(text);
-    auto field = NField::ScanFromText(in);
+    auto field = Field::ScanFromText(in);
     auto out = std::ostringstream();
-    NField::PrintToText(out, field);
+    Field::PrintToText(out, field);
     auto outText = out.str();
     if (text != outText) {
-        throw NAntHill::TException()
+        throw AntHill::Exception()
             << "Expected: " << text
             << "\nGot: " << outText;
     }
 }
 
-TMapServer::TMapServer(
+MapServer::MapServer(
     std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
-    , NField::TField& field
+    , Field::Field& field
 )
-    : TConnectionHolder(std::move(connector))
-    , NMap::NJsonRPC::TServer(TConnectionHolder::GetConnector())
+    : ConnectionHolder(std::move(connector))
+    , Map::JsonRPC::Server(ConnectionHolder::GetConnector())
     , Field(field)
 {
 }
 
-int TMapServer::SeeGrain(int x, int y) {
+int MapServer::SeeGrain(int x, int y) {
     if (x < 0 || y < 0) {
-        throw NAntHill::TException()
+        throw AntHill::Exception()
             << "Point must has positive coordinates "
             << "[" << x << ", " << y << "]";
     }
 
     try {
         Field.At({
-            static_cast<NField::TMeasure>(x),
-            static_cast<NField::TMeasure>(y)
+            static_cast<Field::Measure>(x),
+            static_cast<Field::Measure>(y)
         }).Grain.SeeMaterial();
     }
     catch(std::out_of_range& err) {
@@ -68,18 +68,18 @@ int TMapServer::SeeGrain(int x, int y) {
     return x + y;
 }
 
-int TMapServer::MoveGroup(const Json::Value& params) {
-    std::cerr << "TMapServer::MoveGroup\n";
-    auto tr = NField::TMoveTransaction{};
+int MapServer::MoveGroup(const Json::Value& params) {
+    std::cerr << "MapServer::MoveGroup\n";
+    auto tr = Field::MoveTransaction{};
     for (const auto& grain : params["grains"]) {
         const Json::Value& from = grain["from"];
-        auto x = static_cast<NField::TMeasure>(from["x"].asInt());
-        auto y = static_cast<NField::TMeasure>(from["y"].asInt());
+        auto x = static_cast<Field::Measure>(from["x"].asInt());
+        auto y = static_cast<Field::Measure>(from["y"].asInt());
         tr.Add(
             {x, y},
-            static_cast<NField::Direction::ECompass>(grain["direction"].asInt())
+            static_cast<Field::Direction::ECompass>(grain["direction"].asInt())
         );
-        std::cerr << "TMapServer::MoveGroup -- Point: (" << x << "; " << y << ")\n";
+        std::cerr << "MapServer::MoveGroup -- Point: (" << x << "; " << y << ")\n";
     }
     std::lock_guard<std::mutex> lock{FieldMutex};
     if (tr.Apply(Field)) {
@@ -88,21 +88,21 @@ int TMapServer::MoveGroup(const Json::Value& params) {
     return 1;
 }
 
-Json::Value TMapServer::YieldMe(
+Json::Value MapServer::YieldMe(
     const Json::Value& params
     , const Json::Value& place
 ) {
-    std::cerr << "TMapServer::YieldMe\n";
-    auto tr = NField::TAppearanceTransaction{};
+    std::cerr << "MapServer::YieldMe\n";
+    auto tr = Field::AppearanceTransaction{};
     for (const auto& grain : params["grains"]) {
         const Json::Value& point = grain["point"];
-        auto x = static_cast<NField::TMeasure>(point["x"].asInt());
-        auto y = static_cast<NField::TMeasure>(point["y"].asInt());
+        auto x = static_cast<Field::Measure>(point["x"].asInt());
+        auto y = static_cast<Field::Measure>(point["y"].asInt());
         tr.Add(
             {x, y},
             static_cast<EMaterial>(grain["material"].asInt())
         );
-        std::cerr << "TMapServer::YieldMe -- Point: (" << x << "; " << y << ")\n";
+        std::cerr << "MapServer::YieldMe -- Point: (" << x << "; " << y << ")\n";
     }
     auto shift = this->YieldMeImpl(tr);
     auto jsonShift = Json::Value{};
@@ -111,12 +111,12 @@ Json::Value TMapServer::YieldMe(
     return jsonShift;
 }
 
-NField::TVector TMapServer::YieldMeImpl(NField::TAppearanceTransaction& tr) {
+Field::Vector MapServer::YieldMeImpl(Field::AppearanceTransaction& tr) {
     std::lock_guard<std::mutex> lock{FieldMutex};
     return tr.Apply(Field);
 }
 
-int TMapServer::Ping() {
-    std::cerr << "TMapServer::Ping\n";
+int MapServer::Ping() {
+    std::cerr << "MapServer::Ping\n";
     return 0;
 }

@@ -4,18 +4,18 @@
 
 #include <jsonrpccpp/server/connectors/httpserver.h>
 
-class TConnectionHolder {
+class ConnectionHolder {
 public:
-    TConnectionHolder(
+    ConnectionHolder(
         std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
     )
         : Connector(std::move(connector))
     {
     }
-    TConnectionHolder(const TConnectionHolder&) = delete;
-    TConnectionHolder(TConnectionHolder&&) = default;
-    TConnectionHolder& operator=(const TConnectionHolder&) = delete;
-    TConnectionHolder& operator=(TConnectionHolder&&) = default;
+    ConnectionHolder(const ConnectionHolder&) = delete;
+    ConnectionHolder(ConnectionHolder&&) = default;
+    ConnectionHolder& operator=(const ConnectionHolder&) = delete;
+    ConnectionHolder& operator=(ConnectionHolder&&) = default;
 
     jsonrpc::AbstractServerConnector& GetConnector() {
         return *Connector;
@@ -25,14 +25,14 @@ private:
     std::unique_ptr<jsonrpc::AbstractServerConnector> Connector;
 };
 
-class TMapServer
-    : public TConnectionHolder
-    , public NMap::NJsonRPC::TServer
+class MapServer
+    : public ConnectionHolder
+    , public Map::JsonRPC::Server
 {
 public:
-    TMapServer(
+    MapServer(
         std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
-        , NField::TField& field
+        , Field::Field& field
     );
 
     int SeeGrain(int x, int y) override;
@@ -46,9 +46,9 @@ public:
     int Ping() override;
 
 private:
-    NField::TVector YieldMeImpl(NField::TAppearanceTransaction& tr);
+    Field::Vector YieldMeImpl(Field::AppearanceTransaction& tr);
 
 private:
-    NField::TField& Field;
+    Field::Field& Field;
     std::mutex FieldMutex;
 };

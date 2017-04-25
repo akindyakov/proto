@@ -21,12 +21,12 @@ iw...m..si
 iiiiiiiiii
 )FieldMap";
     auto in = std::istringstream(text);
-    auto field = NField::ScanFromText(in);
+    auto field = Field::ScanFromText(in);
     auto out = std::ostringstream();
-    NField::PrintToText(out, field);
+    Field::PrintToText(out, field);
     auto outText = out.str();
     if (text != outText) {
-        throw NAntHill::TException()
+        throw AntHill::Exception()
             << "Expected: " << text
             << "\nGot: " << outText;
     }

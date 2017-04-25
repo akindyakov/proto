@@ -5,20 +5,20 @@
 #include <sstream>
 #include <iostream>
 
-namespace NAntHill {
+namespace AntHill {
 
-class TException: public std::exception {
+class Exception: public std::exception {
 private:
     std::string whatHappen;
 
 public:
-    TException() {}
-    TException(const std::string& what)
+    Exception() {}
+    Exception(const std::string& what)
         : whatHappen(what) {
     }
 
     template<typename T>
-    TException& operator<<(const T& val) {
+    Exception& operator<<(const T& val) {
         std::ostringstream ostr(whatHappen, std::ios_base::ate);
         ostr << val;
         whatHappen = ostr.str();

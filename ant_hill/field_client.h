@@ -1,4 +1,4 @@
-namespace NFieldClient {
+namespace FieldClient {
 
 
 class TMoveTransaction {
@@ -15,4 +15,4 @@ public:
 };
 
 
-}  // NFieldClient
+}  // FieldClient

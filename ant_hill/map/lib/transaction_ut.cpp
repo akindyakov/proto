@@ -22,28 +22,28 @@ i........i
 iiiiiiiiii
 )FieldMap";
     auto in = std::istringstream(startText);
-    auto field = NField::ScanFromText(in);
+    auto field = Field::ScanFromText(in);
     {
-        auto move = std::vector<NField::ShortMovement>{
-            NField::ShortMovement{{2, 3}, NField::Direction::South},
-            NField::ShortMovement{{2, 4}, NField::Direction::South},
-            NField::ShortMovement{{3, 3}, NField::Direction::South},
-            NField::ShortMovement{{3, 4}, NField::Direction::South},
+        auto move = std::vector<Field::ShortMovement>{
+            Field::ShortMovement{{2, 3}, Field::Direction::South},
+            Field::ShortMovement{{2, 4}, Field::Direction::South},
+            Field::ShortMovement{{3, 3}, Field::Direction::South},
+            Field::ShortMovement{{3, 4}, Field::Direction::South},
         };
-        auto lawsMove = NField::TMoveTransaction{move};
+        auto lawsMove = Field::MoveTransaction{move};
         if (!lawsMove.Apply(field)) {
-            throw NAntHill::TException("Error in move 1");
+            throw AntHill::Exception("Error in move 1");
         }
     }
     {
-        auto move = std::vector<NField::ShortMovement>{
-            NField::ShortMovement({7, 2}, NField::Direction::East),
-            NField::ShortMovement({7, 3}, NField::Direction::South),
-            NField::ShortMovement({7, 4}, NField::Direction::South),
+        auto move = std::vector<Field::ShortMovement>{
+            Field::ShortMovement({7, 2}, Field::Direction::East),
+            Field::ShortMovement({7, 3}, Field::Direction::South),
+            Field::ShortMovement({7, 4}, Field::Direction::South),
         };
-        auto smiMove = NField::TMoveTransaction{move};
+        auto smiMove = Field::MoveTransaction{move};
         if (!smiMove.Apply(field)) {
-            throw NAntHill::TException("Error in move 2");
+            throw AntHill::Exception("Error in move 2");
         }
     }
     std::string endText = R"FieldMap(10
@@ -60,10 +60,10 @@ i........i
 iiiiiiiiii
 )FieldMap";
     auto out = std::ostringstream();
-    NField::PrintToText(out, field);
+    Field::PrintToText(out, field);
     auto outText = out.str();
     if (endText != outText) {
-        throw NAntHill::TException()
+        throw AntHill::Exception()
             << "Expected: " << endText
             << "\nGot: " << outText;
     }
@@ -78,15 +78,15 @@ void WrongMoveTest() {
 ....
 )FieldMap";
     auto in = std::istringstream(startText);
-    auto field = NField::ScanFromText(in);
+    auto field = Field::ScanFromText(in);
 
     {
-        auto move = NField::TMoveTransaction{};
+        auto move = Field::MoveTransaction{};
         move
-            .Add({1, 1}, NField::Direction::East)
+            .Add({1, 1}, Field::Direction::East)
         ;
         if (move.Apply(field)) {
-            throw NAntHill::TException("[WrongMoveTest] Expected error was not threw");
+            throw AntHill::Exception("[WrongMoveTest] Expected error was not threw");
         }
     }
 }
@@ -106,26 +106,26 @@ iww......i
 iiiiiiiiii
 )FieldMap";
     auto in = std::istringstream(startText);
-    auto field = NField::ScanFromText(in);
+    auto field = Field::ScanFromText(in);
 
     {
-        auto appearance = NField::TAppearanceTransaction{};
+        auto appearance = Field::AppearanceTransaction{};
         appearance
             .Add(
-                NField::ChainNode<EMaterial>(
+                Field::ChainNode<EMaterial>(
                     EMaterial::AntBody
                 )
             )
             .Add(
-                NField::ChainNode<EMaterial>(
+                Field::ChainNode<EMaterial>(
                     EMaterial::AntHead,
-                    NField::Direction::North
+                    Field::Direction::North
                 )
             )
         ;
         auto start = appearance.Apply(field);
-        if (start != NField::TPoint{3, 3}) {
-            throw NAntHill::TException("[YieldTest] Wrong shift.")
+        if (start != Field::Point{3, 3}) {
+            throw AntHill::Exception("[YieldTest] Wrong shift.")
                 << " Expected: [3, 3]"
                 << "\nGot: [" << start.X << ", " << start.Y << "]";
         }
@@ -144,31 +144,31 @@ iww......i
 iiiiiiiiii
 )FieldMap";
     auto out = std::ostringstream();
-    NField::PrintToText(out, field);
+    Field::PrintToText(out, field);
     auto outText = out.str();
     if (endText != outText) {
-        throw NAntHill::TException()
+        throw AntHill::Exception()
             << "Expected: " << endText
             << "\nGot: " << outText;
     }
 }
 
 void DirecitionTest() {
-    NField::Direction direction = NField::Direction::North;
-    if (direction != NField::Direction::North) {
-        throw NAntHill::TException()
+    Field::Direction direction = Field::Direction::North;
+    if (direction != Field::Direction::North) {
+        throw AntHill::Exception()
             << "Wrong not equal operator work";
     }
     if (
-        direction == NField::Direction::West
-        || direction == NField::Direction::South
-        || direction == NField::Direction::East
+        direction == Field::Direction::West
+        || direction == Field::Direction::South
+        || direction == Field::Direction::East
     ) {
-        throw NAntHill::TException()
+        throw AntHill::Exception()
             << "Wrong equal operator work";
     }
-    if (direction.Inverse() != NField::Direction::South) {
-        throw NAntHill::TException()
+    if (direction.Inverse() != Field::Direction::South) {
+        throw AntHill::Exception()
             << "Wrong Inverse work";
     }
 }

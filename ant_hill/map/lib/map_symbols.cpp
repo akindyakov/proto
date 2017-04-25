@@ -2,12 +2,12 @@
 
 #include <tools/tests/ut.h>
 
-const TMapSymbols& GetSymbolMap() {
-    static TMapSymbols m;
+const MapSymbols& GetSymbolMap() {
+    static MapSymbols m;
     return m;
 }
 
-TMapSymbols::TMapSymbols()
+MapSymbols::MapSymbols()
     : MaterialToChar{
         {EMaterial::EmptySpace,   '.'},
         {EMaterial::Sand,         's'},
@@ -26,19 +26,19 @@ TMapSymbols::TMapSymbols()
     }
 }
 
-const EMaterial TMapSymbols::GetMaterial(char ch) const {
+const EMaterial MapSymbols::GetMaterial(char ch) const {
     auto it = CharToMaterial.find(ch);
     if (it == CharToMaterial.end()) {
-        throw NAntHill::TException("Unexpected material character")
+        throw AntHill::Exception("Unexpected material character")
             << "[" << ch << "]";
     }
     return it->second;
 }
 
-const char TMapSymbols::GetSymbol(EMaterial m) const {
+const char MapSymbols::GetSymbol(EMaterial m) const {
     auto it = MaterialToChar.find(m);
     if (it == MaterialToChar.end()) {
-        throw NAntHill::TException("Unexpected material code")
+        throw AntHill::Exception("Unexpected material code")
             << "[" << static_cast<int>(m) << "]";
     }
     // std::cerr << "[" << it->second << "]\n";

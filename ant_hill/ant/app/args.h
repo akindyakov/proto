@@ -4,6 +4,6 @@
 
 #include <tuple>
 
-using TArgsMap = boost::program_options::variables_map;
+using ArgsMap = boost::program_options::variables_map;
 
-std::tuple<TArgsMap, bool> Argparse(int argn, char** argv);
+std::tuple<ArgsMap, bool> Argparse(int argn, char** argv);

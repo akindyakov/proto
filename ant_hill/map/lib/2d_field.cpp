@@ -3,76 +3,76 @@
 
 #include <iostream>
 
-namespace NField {
+namespace Field {
 
-TVector& operator+=(TVector& self, const TVector& shift) {
+Vector& operator+=(Vector& self, const Vector& shift) {
     self.X += shift.X;
     self.Y += shift.Y;
     return self;
 }
 
-bool operator!=(const TVector& first, const TVector& second) {
+bool operator!=(const Vector& first, const Vector& second) {
     return first.X != second.X && first.X != second.X;
 }
 
-bool operator!=(const TPoint& first, const TPoint& second) {
+bool operator!=(const Point& first, const Point& second) {
     return first.X != second.X && first.X != second.X;
 }
 
-TPoint& operator+=(TPoint& self, const TVector& shift) {
+Point& operator+=(Point& self, const Vector& shift) {
     self.X += shift.X;
     self.Y += shift.Y;
     return self;
 }
 
-TVector operator-(const TPoint& left, const TPoint& right) {
-    return TVector(
+Vector operator-(const Point& left, const Point& right) {
+    return Vector(
         left.X - right.X,
         left.Y - right.Y
     );
 }
 
-TPoint operator+(const TPoint& base, const TVector& shift) {
-    return TPoint(
+Point operator+(const Point& base, const Vector& shift) {
+    return Point(
         base.X + shift.X,
         base.Y + shift.Y
     );
 }
 
-TGrain::TGrain(EMaterial material)
+Grain::Grain(EMaterial material)
     : Material(material)
 {
 }
 
-TGrain::TGrain(TGrain&& other)
+Grain::Grain(Grain&& other)
     : Material(other.Material)
 {
 }
 
-TGrain::TGrain(const TGrain& other)
+Grain::Grain(const Grain& other)
     : Material(other.Material)
 {
 }
 
-TGrain& TGrain::operator=(TGrain&& other) {
+Grain& Grain::operator=(Grain&& other) {
     Material = other.Material;
     return *this;
 }
 
-TGrain& TGrain::operator=(const TGrain& other) {
+Grain& Grain::operator=(const Grain& other) {
     Material = other.Material;
     return *this;
 }
 
-TField ScanFromText(std::istream& is) {
+Field ScanFromText(std::istream& is) {
     auto ch = char{0};
     // std::cerr << "scan field" << std::endl;
-    auto x = TMeasure{0};
-    auto y = TMeasure{0};
+    auto x = Measure{0};
+    auto y = Measure{0};
     is >> x;
     is >> y;
     // std::cerr << "size: " << x << "x" << y << std::endl;
-    auto field = TField{x, y};
+    auto field = Field{x, y};
     while (!is.eof() && is.good()) {
         is.get(ch);
         if (ch == '\n') {
@@ -83,7 +83,7 @@ TField ScanFromText(std::istream& is) {
             //std::cerr << "[" << ch << "]\n";
             EMaterial material = GetSymbolMap().GetMaterial(ch);
             if (material != EMaterial::EmptySpace) {
-                field.At(TPoint(x, y)).Grain = TGrain(material);
+                field.At(Point(x, y)).Grain = Grain(material);
             }
             ++x;
         }
@@ -91,15 +91,15 @@ TField ScanFromText(std::istream& is) {
     return field;
 }
 
-void PrintToText(std::ostream& os, const TField& field) {
-    TMeasure xSize = field.GetXSize();
-    TMeasure ySize = field.GetYSize();
+void PrintToText(std::ostream& os, const Field& field) {
+    Measure xSize = field.GetXSize();
+    Measure ySize = field.GetYSize();
     os << xSize << '\n';
     os << ySize << '\n';
     // std::cerr << "field: " << xSize << 'x' << ySize << std::endl;
-    for (TMeasure y = ySize; y != 0; --y) {
-        for (TMeasure x = 0; x < ySize; ++x) {
-            const TGrain& grain = field.At(TPoint(x, y - 1)).Grain;
+    for (Measure y = ySize; y != 0; --y) {
+        for (Measure x = 0; x < ySize; ++x) {
+            const Grain& grain = field.At(Point(x, y - 1)).Grain;
             os << GetSymbolMap().GetSymbol(grain.SeeMaterial());
             // std::cerr << '.';
         }
@@ -108,4 +108,4 @@ void PrintToText(std::ostream& os, const TField& field) {
     }
 }
 
-}  // NField
+}  // Field

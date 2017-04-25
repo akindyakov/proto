@@ -3,69 +3,69 @@
 #include <memory>
 #include <map>
 
-namespace NAnt {
+namespace Ant {
 
 enum class EStatus {
     ALIVE,
     DEAD,
 };
 
-class TAntMessage {
+class AntMessage {
     // stacked
     // angry
     // lose way
 };
 
-class TAnt {
+class Ant {
 public:
-    TAnt(
-        TPoint head,
-        TPoint body
+    Ant(
+        Point head,
+        Point body
     );
 
-    void Turn(const TVector& direction);
+    void Turn(const Vector& direction);
     void Move();
 
 private:
-    TPoint BodyPos;
-    TVector DirectionVec;
+    Point BodyPos;
+    Vector DirectionVec;
 
 };
 
-class TPostOffice {
+class PostOffice {
 public:
-    virtual void SendMessage(TOwnerId, TAntMessage);
+    virtual void SendMessage(OwnerId, AntMessage);
 };
 
-class TAntCatalogue: public TPostOffice {
+class AntCatalogue: public PostOffice {
 public:
     void Step();
 
-    void SendMessage(TOwnerId, TAntMessage);
+    void SendMessage(OwnerId, AntMessage);
 private:
-    std::map<TOwnerId, std::unique_ptr<TAnt>> Catalogue;
+    std::map<OwnerId, std::unique_ptr<Ant>> Catalogue;
 };
 
-class TWorker: public TAnt {
+class Worker: public Ant {
 public:
-    TWorker(
-        TPoint head,
-        TPoint body
+    Worker(
+        Point head,
+        Point body
     )
-        : TAnt(head, body)
+        : Ant(head, body)
     {
     }
 
-    EStatus Step(IFieldActor& field, const TPostOffice& post);
-    void SendMessage(TAntMessage msg);
+    EStatus Step(IFieldActor& field, const PostOffice& post);
+    void SendMessage(AntMessage msg);
 
 private:
     void SeeMail();
-    void Move(TField& field);
+    void Move(Field& field);
 
 private:
     EStatus Status;
-    std::unique_ptr<TGrain> Load;
-    std::vector<TAntMessage> MailBox;
+    std::unique_ptr<Grain> Load;
+    std::vector<AntMessage> MailBox;
 };
 }

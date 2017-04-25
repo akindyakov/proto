@@ -2,7 +2,7 @@
 
 #include <map/lib/transaction.h>
 
-namespace NAnt {
+namespace Ant {
 
 class IAnt {
 public:
@@ -12,30 +12,30 @@ public:
 class SnakeAntBody {
 public:
     SnakeAntBody(
-        NField::TPoint head
-        , NField::TPoint tail
+        Field::Point head
+        , Field::Point tail
     );
 
     /**
     * Get diff for moving head to specified direction
     */
-    std::vector<NField::ShortMovement>
-    DiffHeadMove(NField::Direction direction) const;
+    std::vector<Field::ShortMovement>
+    DiffHeadMove(Field::Direction direction) const;
 
     /**
     * Move head to specified direction
     */
-    void HeadMove(NField::Direction direction);
+    void HeadMove(Field::Direction direction);
 
     /**
     * Add one more point to head side
     */
-    void AppendPoint(NField::Direction direction);
+    void AppendPoint(Field::Direction direction);
 
     /**
     * Drop first point from head side
     */
-    void DropPoint(NField::Direction direction);
+    void DropPoint(Field::Direction direction);
 
     size_t Size() const;
 
@@ -46,8 +46,8 @@ private:
     * |     *----------->  *-------->    |
     * \__________/  \__________/ \_______/
     */
-    NField::TPoint head_;
-    std::vector<NField::Direction> tail_;
+    Field::Point head_;
+    std::vector<Field::Direction> tail_;
 };
 
 

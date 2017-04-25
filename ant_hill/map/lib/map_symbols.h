@@ -29,14 +29,14 @@ struct hash<EMaterial>
 };
 }
 
-class TMapSymbols {
+class MapSymbols {
 public:
-    TMapSymbols();
+    MapSymbols();
 
-    TMapSymbols(const TMapSymbols&) = delete;
-    TMapSymbols(TMapSymbols&&) = delete;
-    TMapSymbols& operator=(const TMapSymbols&) = delete;
-    TMapSymbols& operator=(TMapSymbols&&) = delete;
+    MapSymbols(const MapSymbols&) = delete;
+    MapSymbols(MapSymbols&&) = delete;
+    MapSymbols& operator=(const MapSymbols&) = delete;
+    MapSymbols& operator=(MapSymbols&&) = delete;
 
     const EMaterial GetMaterial(char ch) const;
     const char GetSymbol(EMaterial m) const;
@@ -48,4 +48,4 @@ private:
     std::unordered_map<char, EMaterial> CharToMaterial;
 };
 
-const TMapSymbols& GetSymbolMap();
+const MapSymbols& GetSymbolMap();

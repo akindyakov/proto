@@ -12,31 +12,31 @@
 #include <ostream>
 #include <vector>
 
-namespace NField {
+namespace Field {
 
-using TMeasure = int;
+using Measure = int;
 
-class TPoint {
+class Point {
 public:
-    TMeasure X;
-    TMeasure Y;
+    Measure X;
+    Measure Y;
 
 public:
-    constexpr TPoint(
-        TMeasure x,
-        TMeasure y
+    constexpr Point(
+        Measure x,
+        Measure y
     ) noexcept
         : X(x)
         , Y(y)
     {
     }
 
-    ~TPoint() = default;
+    ~Point() = default;
 };
 
 inline bool operator == (
-    const TPoint& first
-    , const TPoint& second
+    const Point& first
+    , const Point& second
 ) {
     return (
         first.X == second.X
@@ -44,46 +44,46 @@ inline bool operator == (
     );
 }
 
-class TVector: public TPoint {
+class Vector: public Point {
 public:
-    constexpr TVector(
-        TMeasure x,
-        TMeasure y
+    constexpr Vector(
+        Measure x,
+        Measure y
     ) noexcept
-        : TPoint(x, y)
+        : Point(x, y)
     {
     }
 
-    constexpr TVector(const TVector& other) noexcept
-        : TPoint(other.X, other.Y)
+    constexpr Vector(const Vector& other) noexcept
+        : Point(other.X, other.Y)
     {
     }
 
     /**
     * @return length, raised to the power of 2
     */
-    TMeasure Lenght() const {
+    Measure Lenght() const {
         return X*X + Y*Y;
     }
 
 };
 
-bool operator!=(const TVector& first, const TVector& second);
-bool operator!=(const TPoint& first, const TPoint& second);
+bool operator!=(const Vector& first, const Vector& second);
+bool operator!=(const Point& first, const Point& second);
 
-TPoint& operator+=(TPoint& self, const TVector& shift);
+Point& operator+=(Point& self, const Vector& shift);
 
-TVector operator-(const TPoint& left, const TPoint& right);
-TPoint operator+(const TPoint& base, const TVector& shift);
+Vector operator-(const Point& left, const Point& right);
+Point operator+(const Point& base, const Vector& shift);
 
-class TGrain {
+class Grain {
 public:
-    TGrain(EMaterial material);
+    Grain(EMaterial material);
 
-    TGrain(TGrain&& other);
-    TGrain(const TGrain& other);
-    TGrain& operator=(TGrain&& other);
-    TGrain& operator=(const TGrain& other);
+    Grain(Grain&& other);
+    Grain(const Grain& other);
+    Grain& operator=(Grain&& other);
+    Grain& operator=(const Grain& other);
 
     EMaterial SeeMaterial() const noexcept {
         return Material;
@@ -98,22 +98,22 @@ private:
     EMaterial Material;
 };
 
-struct TCell {
-    TCell()
+struct Cell {
+    Cell()
         : Grain(EMaterial::EmptySpace)
     {
     }
 
-    TGrain Grain;
+    Grain Grain;
 };
 
 
-class TField {
+class Field {
 private:
-    size_t GetIndexByPoint(const TPoint& pt) const {
+    size_t GetIndexByPoint(const Point& pt) const {
         auto signedIndex = (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
         if (signedIndex < 0) {
-            throw NAntHill::TException("Access by outrange point");
+            throw AntHill::Exception("Access by outrange point");
         }
         auto index = static_cast<size_t>(signedIndex);
         // std::cerr << "index: " << index << std::endl;
@@ -121,58 +121,58 @@ private:
     }
 
 public:
-    TField(TMeasure xSize, TMeasure ySize, TPoint minCorner=TPoint{0, 0})
+    Field(Measure xSize, Measure ySize, Point minCorner=Point{0, 0})
         : size_(xSize, ySize)
         , min_(minCorner)
-        , Field(xSize * ySize)
+        , field_(xSize * ySize)
     {
     }
 
-    TField(const TField&) = delete;
-    TField(TField&&) = default;
+    Field(const Field&) = delete;
+    Field(Field&&) = default;
 
-    TField& operator=(const TField&) = delete;
-    TField& operator=(TField&&) = default;
+    Field& operator=(const Field&) = delete;
+    Field& operator=(Field&&) = default;
 
-    TMeasure GetXSize() const {
+    Measure GetXSize() const {
         return size_.X;
     }
 
-    TMeasure GetYSize() const {
+    Measure GetYSize() const {
         return size_.Y;
     }
 
-    TCell& At(const TPoint& pt) {
+    Cell& At(const Point& pt) {
         //std::cerr << pt.X << ", " << pt.Y << '\n';
-        return Field.at(GetIndexByPoint(pt));
+        return field_.at(GetIndexByPoint(pt));
     }
 
-    const TCell& At(const TPoint& pt) const {
+    const Cell& At(const Point& pt) const {
         // std::cerr << pt.X << ", " << pt.Y << '\n';
-        return Field.at(GetIndexByPoint(pt));
+        return field_.at(GetIndexByPoint(pt));
     }
 
-    void Insert(const TPoint& pt, EMaterial material) {
+    void Insert(const Point& pt, EMaterial material) {
         // std::cerr << pt.X << ", " << pt.Y << '\n';
-        Field.at(GetIndexByPoint(pt)).Grain = TGrain(material);
+        field_.at(GetIndexByPoint(pt)).Grain = Grain(material);
     }
 
-    TPoint min() const {
+    Point min() const {
         return min_;
     }
 
-    TPoint max() const {
+    Point max() const {
         return min_ + size_;
     }
 
 private:
-    TVector size_;
-    TPoint min_;
-    std::vector<TCell> Field;
+    Vector size_;
+    Point min_;
+    std::vector<Cell> field_;
 };
 
 
-TField ScanFromText(std::istream&);
-void PrintToText(std::ostream&, const TField&);
+Field ScanFromText(std::istream&);
+void PrintToText(std::ostream&, const Field&);
 
 }

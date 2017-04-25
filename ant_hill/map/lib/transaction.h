@@ -2,7 +2,7 @@
 
 #include "2d_field.h"
 
-namespace NField {
+namespace Field {
 
 class Direction {
 public:
@@ -50,7 +50,7 @@ public:
         return to;
     }
 
-    static Direction Diff(const TPoint& to, const TPoint& from);
+    static Direction Diff(const Point& to, const Point& from);
 };
 
 inline bool operator == (
@@ -67,7 +67,7 @@ inline bool operator != (
     return first.compass_ != second.compass_;
 }
 
-constexpr const TPoint MovePoint(TPoint pt, Direction direction) noexcept {
+constexpr const Point MovePoint(Point pt, Direction direction) noexcept {
     switch (direction.compass_) {
         case Direction::North:
             pt.Y += 1;
@@ -88,23 +88,23 @@ constexpr const TPoint MovePoint(TPoint pt, Direction direction) noexcept {
     return pt;
 }
 
-struct TMovement {
-    TPoint To;
-    TPoint From;
+struct Movement {
+    Point To;
+    Point From;
 
-    TMovement(const TPoint& to, const TPoint& from);
+    Movement(const Point& to, const Point& from);
 
-    TMovement(const TMovement&) = delete;
-    TMovement(TMovement&&);
+    Movement(const Movement&) = delete;
+    Movement(Movement&&);
 
-    TMovement& operator=(const TMovement&) = delete;
-    TMovement& operator=(TMovement&&);
+    Movement& operator=(const Movement&) = delete;
+    Movement& operator=(Movement&&);
 };
 
 class ShortMovement {
 public:
     explicit ShortMovement(
-        const TPoint& point
+        const Point& point
         , Direction direction
     )
         : direction_(direction)
@@ -114,7 +114,7 @@ public:
 
 public:
     Direction direction_;
-    TPoint point_;
+    Point point_;
 };
 
 inline bool operator == (
@@ -128,16 +128,16 @@ inline bool operator == (
 }
 
 
-class TMoveTransaction {
+class MoveTransaction {
 public:
-    explicit TMoveTransaction() = default;
-    explicit TMoveTransaction(const std::vector<ShortMovement>& movement);
+    explicit MoveTransaction() = default;
+    explicit MoveTransaction(const std::vector<ShortMovement>& movement);
 
-    TMoveTransaction& Add(const TPoint& pt, Direction direction);
-    bool Apply(TField& where) const;
+    MoveTransaction& Add(const Point& pt, Direction direction);
+    bool Apply(Field& where) const;
 
 private:
-    std::vector<TMovement> Actions;
+    std::vector<Movement> Actions;
 };
 
 template<typename Value>
@@ -158,15 +158,15 @@ public:
     Value value;
 };
 
-class TAppearanceTransaction {
+class AppearanceTransaction {
 public:
-    TAppearanceTransaction& Add(
+    AppearanceTransaction& Add(
         ChainNode<EMaterial> node
     );
-    TPoint Apply(TField& where);
+    Point Apply(Field& where);
 
 private:
     std::vector<ChainNode<EMaterial>> Chain;
 };
 
-}  // NField
+}  // Field

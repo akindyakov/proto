@@ -4,28 +4,28 @@
 
 #include <algorithm>
 
-namespace NAnt {
+namespace Ant {
 
 SnakeAntBody::SnakeAntBody(
-    NField::TPoint head
-    , NField::TPoint tail
+    Field::TPoint head
+    , Field::TPoint tail
 )
     : head_{head}
 {
     tail_.push_back(
-        NField::Direction::Diff(head, tail)
+        Field::Direction::Diff(head, tail)
     );
 }
 
-std::vector<NField::ShortMovement>
+std::vector<Field::ShortMovement>
 SnakeAntBody::DiffHeadMove(
-    NField::Direction direction
+    Field::Direction direction
 ) const {
-    auto diff = std::vector<NField::ShortMovement>{};
-    auto nextPoint = NField::TPoint{head_};
+    auto diff = std::vector<Field::ShortMovement>{};
+    auto nextPoint = Field::TPoint{head_};
     diff.emplace_back(nextPoint, direction);
     for (const auto& hDir : tail_) {
-       nextPoint = NField::MovePoint(nextPoint, hDir.Inverse());
+       nextPoint = Field::MovePoint(nextPoint, hDir.Inverse());
        diff.emplace_back(nextPoint, hDir);
     }
     if (direction == tail_.begin()->Inverse()) {
@@ -36,25 +36,25 @@ SnakeAntBody::DiffHeadMove(
 
 void
 SnakeAntBody::HeadMove(
-    NField::Direction direction
+    Field::Direction direction
 ) {
-    head_ = NField::MovePoint(head_, direction);
+    head_ = Field::MovePoint(head_, direction);
     tail_.insert(tail_.begin(), direction);
     tail_.pop_back();
 }
 
 void
 SnakeAntBody::AppendPoint(
-    NField::Direction direction
+    Field::Direction direction
 ) {
-    head_ = NField::MovePoint(head_, direction);
+    head_ = Field::MovePoint(head_, direction);
     tail_.push_back(direction);
 }
 
 void
-SnakeAntBody::DropPoint(NField::Direction direction) {
+SnakeAntBody::DropPoint(Field::Direction direction) {
     if (Size() < 3) {
-        throw NAntHill::TException("Ant length must be at list 2");
+        throw AntHill::TException("Ant length must be at list 2");
     }
     tail_.erase(tail_.begin());
 }

@@ -18,7 +18,7 @@ int main(int argn, char** argv) {
 
     using namespace std::chrono_literals;
     auto httpclient = jsonrpc::HttpClient("http://localhost:8383");
-    auto client = NMap::NJsonRPC::TClient{httpclient};
+    auto client = Map::JsonRPC::Client{httpclient};
     try {
         while (true) {
             std::this_thread::sleep_for(1s);

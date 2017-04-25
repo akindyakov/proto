@@ -6,14 +6,14 @@
 
 
 void SnakeAntBodyMoveTest() {
-    auto ant = NAnt::SnakeAntBody({1, 1}, {0, 1});
-    auto diff = ant.DiffHeadMove(NField::Direction::North);
-    auto rightDiff = std::vector<NField::ShortMovement>{
-        NField::ShortMovement{{1, 1}, NField::Direction::North},
-        NField::ShortMovement{{0, 1}, NField::Direction::East},
+    auto ant = Ant::SnakeAntBody({1, 1}, {0, 1});
+    auto diff = ant.DiffHeadMove(Field::Direction::North);
+    auto rightDiff = std::vector<Field::ShortMovement>{
+        Field::ShortMovement{{1, 1}, Field::Direction::North},
+        Field::ShortMovement{{0, 1}, Field::Direction::East},
     };
     if (rightDiff != diff) {
-        auto err = NAntHill::TException();
+        auto err = AntHill::Exception();
         err << "Wrong answer: ";
         for (const auto& d : diff) {
             err

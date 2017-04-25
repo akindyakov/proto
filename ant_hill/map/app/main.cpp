@@ -24,14 +24,14 @@ i........i
 iiiiiiiiii
 )FieldMap";
 
-NField::TField CreateField(const TArgsMap& args) {
+Field::Field CreateField(const ArgsMap& args) {
     const auto& mapFileName = args["map-file"];
     if (mapFileName.empty()) {
         auto in = std::istringstream(DefaultMapText);
-        return NField::ScanFromText(in);
+        return Field::ScanFromText(in);
     }
     auto dataFile = std::ifstream(mapFileName.as<std::string>());
-    return NField::ScanFromText(dataFile);
+    return Field::ScanFromText(dataFile);
 }
 
 int main(int argn, char** argv) {
@@ -40,7 +40,7 @@ int main(int argn, char** argv) {
         return 1;
     }
     auto field = CreateField(std::get<0>(args));
-    TMapServer server{
+    MapServer server{
         std::make_unique<jsonrpc::HttpServer>(
             std::get<0>(args)["port"].as<unsigned>()
         ),
@@ -49,7 +49,7 @@ int main(int argn, char** argv) {
 
     server.StartListening();
     while (true) {
-        NField::PrintToText(std::cout, field);
+        Field::PrintToText(std::cout, field);
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     server.StopListening();
