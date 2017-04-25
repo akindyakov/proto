@@ -7,8 +7,8 @@
 namespace Ant {
 
 SnakeAntBody::SnakeAntBody(
-    Field::TPoint head
-    , Field::TPoint tail
+    Field::Point head
+    , Field::Point tail
 )
     : head_{head}
 {
@@ -22,7 +22,7 @@ SnakeAntBody::DiffHeadMove(
     Field::Direction direction
 ) const {
     auto diff = std::vector<Field::ShortMovement>{};
-    auto nextPoint = Field::TPoint{head_};
+    auto nextPoint = Field::Point{head_};
     diff.emplace_back(nextPoint, direction);
     for (const auto& hDir : tail_) {
        nextPoint = Field::MovePoint(nextPoint, hDir.Inverse());
@@ -54,7 +54,7 @@ SnakeAntBody::AppendPoint(
 void
 SnakeAntBody::DropPoint(Field::Direction direction) {
     if (Size() < 3) {
-        throw AntHill::TException("Ant length must be at list 2");
+        throw AntHill::Exception("Ant length must be at list 2");
     }
     tail_.erase(tail_.begin());
 }

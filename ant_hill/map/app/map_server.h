@@ -39,14 +39,13 @@ public:
     int MoveGroup(const Json::Value& grains) override;
 
     Json::Value YieldMe(
-        const Json::Value& grains
-        , const Json::Value& place
+        const Json::Value& body
     ) override;
 
     int Ping() override;
 
 private:
-    Field::Vector YieldMeImpl(Field::AppearanceTransaction& tr);
+    Field::Point YieldMeImpl(Field::AppearanceTransaction& tr);
 
 private:
     Field::Field& Field;

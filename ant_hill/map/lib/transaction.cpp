@@ -74,14 +74,6 @@ bool MoveTransaction::Apply(Field& where) const {
     return true;
 }
 
-//AppearanceTransaction& AppearanceTransaction::Add(
-//    const Point& pt
-//    , EMaterial material
-//) {
-//    Cells.emplace_back(material, pt);
-//    return *this;
-//}
-
 Point AppearanceTransaction::Apply(Field& where) {
     auto start = Point{0, 0};
     for (auto x = where.min().X; x < where.max().X; ++x) {
@@ -90,7 +82,7 @@ Point AppearanceTransaction::Apply(Field& where) {
             bool vacant = true;
             {
                 auto pt = start;
-                for (auto& cell : Chain) {
+                for (auto& cell : this->chain_) {
                     pt = MovePoint(pt, cell.from);
                     if (!where.At(pt).Grain.IsNone()) {
                         vacant = false;
@@ -100,7 +92,7 @@ Point AppearanceTransaction::Apply(Field& where) {
             }
             if (vacant) {
                 auto pt = start;
-                for (auto& cell : Chain) {
+                for (auto& cell : this->chain_) {
                     pt = MovePoint(pt, cell.from);
                     where.Insert(pt, cell.value);
                 }

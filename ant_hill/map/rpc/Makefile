@@ -6,8 +6,8 @@ all: prepare $(PRODUCT)/server.h $(PRODUCT)/client.h
 
 $(PRODUCT)/server.h $(PRODUCT)/client.h: rpc_spec.json
 	jsonrpcstub $^ \
-    --cpp-server=NMap::NJsonRPC::TServer \
-    --cpp-client=NMap::NJsonRPC::TClient \
+    --cpp-server=Map::JsonRPC::Server \
+    --cpp-client=Map::JsonRPC::Client \
     --cpp-server-file=$(PRODUCT)/server.h \
     --cpp-client-file=$(PRODUCT)/client.h
 

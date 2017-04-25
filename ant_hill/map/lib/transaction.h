@@ -29,7 +29,19 @@ public:
         return Direction(Nowhere);
     }
 
-    constexpr const Direction Inverse() noexcept {
+    static Direction FromInt(int value) noexcept {
+        if (value > Nowhere) {
+            throw AntHill::Exception()
+                << "Direction::FromInt() error. Wrong int value: ("
+                << value << ")"
+            ;
+        }
+        return Direction(
+            static_cast<ECompass>(value)
+        );
+    }
+
+    constexpr const Direction Inverse() const noexcept {
         auto to = Direction::ToNowhere();
         switch (compass_) {
             case East:
@@ -161,12 +173,15 @@ public:
 class AppearanceTransaction {
 public:
     AppearanceTransaction& Add(
-        ChainNode<EMaterial> node
-    );
+        ChainNode<EMaterial>&& node
+    ) {
+        this->chain_.push_back(std::move(node));
+        return *this;
+    }
     Point Apply(Field& where);
 
 private:
-    std::vector<ChainNode<EMaterial>> Chain;
+    std::vector<ChainNode<EMaterial>> chain_;
 };
 
 }  // Field

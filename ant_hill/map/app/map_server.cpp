@@ -90,28 +90,28 @@ int MapServer::MoveGroup(const Json::Value& params) {
 
 Json::Value MapServer::YieldMe(
     const Json::Value& params
-    , const Json::Value& place
 ) {
     std::cerr << "MapServer::YieldMe\n";
     auto tr = Field::AppearanceTransaction{};
-    for (const auto& grain : params["grains"]) {
-        const Json::Value& point = grain["point"];
-        auto x = static_cast<Field::Measure>(point["x"].asInt());
-        auto y = static_cast<Field::Measure>(point["y"].asInt());
-        tr.Add(
-            {x, y},
-            static_cast<EMaterial>(grain["material"].asInt())
+    for (const auto& node : params["body"]) {
+        auto direction = Field::Direction::FromInt(
+            node["direction"].asInt()
         );
-        std::cerr << "MapServer::YieldMe -- Point: (" << x << "; " << y << ")\n";
+        auto material = static_cast<EMaterial>(
+            node["material"].asInt()
+        );
+        tr.Add(
+            Field::ChainNode<EMaterial>{material, direction}
+        );
     }
-    auto shift = this->YieldMeImpl(tr);
+    auto point = this->YieldMeImpl(tr);
     auto jsonShift = Json::Value{};
-    jsonShift["x"] = shift.X;
-    jsonShift["y"] = shift.Y;
+    jsonShift["x"] = point.X;
+    jsonShift["y"] = point.Y;
     return jsonShift;
 }
 
-Field::Vector MapServer::YieldMeImpl(Field::AppearanceTransaction& tr) {
+Field::Point MapServer::YieldMeImpl(Field::AppearanceTransaction& tr) {
     std::lock_guard<std::mutex> lock{FieldMutex};
     return tr.Apply(Field);
 }
