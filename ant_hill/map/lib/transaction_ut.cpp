@@ -102,7 +102,7 @@ i........i
 i........i
 i........i
 i.w......i
-iww......i
+iwww.....i
 iiiiiiiiii
 )FieldMap";
     auto in = std::istringstream(startText);
@@ -124,9 +124,9 @@ iiiiiiiiii
             )
         ;
         auto start = appearance.Apply(field);
-        if (start != Map::Point{3, 3}) {
+        if (start != Map::Point{4, 1}) {
             throw AntHill::Exception("[YieldTest] Wrong shift.")
-                << " Expected: [3, 3]"
+                << " Expected: [4, 1]"
                 << "\nGot: [" << start.X << ", " << start.Y << "]";
         }
     }
@@ -137,10 +137,10 @@ i........i
 i........i
 i........i
 i........i
-i..X.....i
-i..#.....i
-i.w......i
-iww......i
+i........i
+i........i
+i.w.X....i
+iwww#....i
 iiiiiiiiii
 )FieldMap";
     auto out = std::ostringstream();
@@ -160,9 +160,10 @@ void DirecitionTest() {
             << "Wrong not equal operator work";
     }
     if (
-        direction == Map::Direction::West
+        direction != Map::Direction::North
         || direction == Map::Direction::South
         || direction == Map::Direction::East
+        || direction == Map::Direction::West
     ) {
         throw AntHill::Exception()
             << "Wrong equal operator work";

@@ -76,8 +76,8 @@ bool MoveTransaction::Apply(Field& where) const {
 
 Point AppearanceTransaction::Apply(Field& where) {
     auto start = Point{0, 0};
-    for (auto x = where.min().X; x < where.max().X; ++x) {
-        for (auto y = where.min().Y; y < where.max().Y; ++y) {
+    for (auto y = where.min().Y; y < where.max().Y; ++y) {
+        for (auto x = where.min().X; x < where.max().X; ++x) {
             start = Point{x, y};
             bool vacant = true;
             {
