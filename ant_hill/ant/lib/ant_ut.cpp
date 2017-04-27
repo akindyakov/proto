@@ -16,10 +16,7 @@ void SnakeAntBodyMoveTest() {
         auto err = AntHill::Exception();
         err << "Wrong answer: ";
         for (const auto& d : diff) {
-            err
-                << "( " << d.point_.X << ", " << d.point_.Y
-                << ", " << int(d.direction_.compass_) << " ) "
-            ;
+            err << "( " << d.point_.X << ", " << d.point_.Y << " ) ";
         }
         throw err;
     }

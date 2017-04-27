@@ -25,7 +25,7 @@ SnakeAntBody::DiffHeadMove(
     auto nextPoint = Map::Point{head_};
     diff.emplace_back(nextPoint, direction);
     for (const auto& hDir : tail_) {
-       nextPoint = Map::MovePoint(nextPoint, hDir.Inverse());
+       nextPoint = hDir.Inverse().MovePoint(nextPoint);
        diff.emplace_back(nextPoint, hDir);
     }
     if (direction == tail_.begin()->Inverse()) {
@@ -38,7 +38,7 @@ void
 SnakeAntBody::HeadMove(
     Map::Direction direction
 ) {
-    head_ = Map::MovePoint(head_, direction);
+    head_ = direction.MovePoint(head_);
     tail_.insert(tail_.begin(), direction);
     tail_.pop_back();
 }
@@ -47,7 +47,7 @@ void
 SnakeAntBody::AppendPoint(
     Map::Direction direction
 ) {
-    head_ = Map::MovePoint(head_, direction);
+    head_ = direction.MovePoint(head_);
     tail_.push_back(direction);
 }
 

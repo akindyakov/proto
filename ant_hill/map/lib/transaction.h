@@ -4,6 +4,18 @@
 
 namespace Map {
 
+namespace Axis {
+
+enum class Relative {
+    Forward,
+    Left,
+    Backward,
+    Right,
+    Nowhere,
+};
+
+}  // namespace Axis
+
 class Direction {
 public:
     enum ECompass {
@@ -14,7 +26,7 @@ public:
         Nowhere,
     };
 
-public:
+private:
     ECompass compass_;
 
 public:
@@ -29,7 +41,7 @@ public:
         return Direction(Nowhere);
     }
 
-    static Direction FromInt(int value) noexcept {
+    static Direction FromInt(int value) {
         if (value > Nowhere) {
             throw AntHill::Exception()
                 << "Direction::FromInt() error. Wrong int value: ("
@@ -63,41 +75,46 @@ public:
     }
 
     static Direction Diff(const Point& to, const Point& from);
+
+    constexpr const Point MovePoint(Point pt) const noexcept {
+        switch (compass_) {
+            case Direction::North:
+                pt.Y += 1;
+                break;
+            case Direction::West:
+                pt.X -= 1;
+                break;
+            case Direction::South:
+                pt.Y -= 1;
+                break;
+            case Direction::East:
+                pt.X += 1;
+                break;
+            case Direction::Nowhere:
+                // do nothing
+                break;
+        }
+        return pt;
+    }
+
+    friend bool constexpr operator == (
+        Direction first
+        , Direction second
+    ) noexcept;
 };
 
-inline bool operator == (
+inline bool constexpr operator == (
     Direction first
     , Direction second
-) {
+) noexcept {
     return first.compass_ == second.compass_;
 }
 
-inline bool operator != (
+inline bool constexpr operator != (
     Direction first
     , Direction second
-) {
-    return first.compass_ != second.compass_;
-}
-
-constexpr const Point MovePoint(Point pt, Direction direction) noexcept {
-    switch (direction.compass_) {
-        case Direction::North:
-            pt.Y += 1;
-            break;
-        case Direction::West:
-            pt.X -= 1;
-            break;
-        case Direction::South:
-            pt.Y -= 1;
-            break;
-        case Direction::East:
-            pt.X += 1;
-            break;
-        case Direction::Nowhere:
-            // do nothing
-            break;
-    }
-    return pt;
+) noexcept {
+    return !(first == second);
 }
 
 struct Movement {

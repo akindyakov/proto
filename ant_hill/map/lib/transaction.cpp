@@ -46,7 +46,7 @@ MoveTransaction::MoveTransaction(
 }
 
 MoveTransaction& MoveTransaction::Add(const Point& old, Direction direction) {
-    auto action = Movement(MovePoint(old, direction), old);
+    auto action = Movement(direction.MovePoint(old), old);
     // std::cerr << "From: " << action.From.X << ", " << action.From.Y << std::endl;
     // std::cerr << "To: " << action.To.X << ", " << action.To.Y << std::endl;
     Actions.push_back(std::move(action));
@@ -83,7 +83,7 @@ Point AppearanceTransaction::Apply(Field& where) {
             {
                 auto pt = start;
                 for (auto& cell : this->chain_) {
-                    pt = MovePoint(pt, cell.from);
+                    pt = cell.from.MovePoint(pt);
                     if (!where.At(pt).Grain.IsNone()) {
                         vacant = false;
                         break;
@@ -93,7 +93,7 @@ Point AppearanceTransaction::Apply(Field& where) {
             if (vacant) {
                 auto pt = start;
                 for (auto& cell : this->chain_) {
-                    pt = MovePoint(pt, cell.from);
+                    pt = cell.from.MovePoint(pt);
                     where.Insert(pt, cell.value);
                 }
                 return start;
