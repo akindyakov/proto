@@ -4,9 +4,11 @@ PRODUCT = $(ABS_PRODUCT)/map/lib
 
 all: prepare $(PRODUCT)/libmap.a ut
 
-ut: $(PRODUCT)/2d_field_ut  $(PRODUCT)/transaction_ut
+#ut: $(PRODUCT)/2d_field_ut $(PRODUCT)/transaction_ut
+ut: $(PRODUCT)/2d_field_ut
 
-$(PRODUCT)/libmap.a: $(PRODUCT)/2d_field.o $(PRODUCT)/map_symbols.o $(PRODUCT)/transaction.o
+#$(PRODUCT)/libmap.a: $(PRODUCT)/2d_field.o $(PRODUCT)/map_symbols.o $(PRODUCT)/transaction.o
+$(PRODUCT)/libmap.a: $(PRODUCT)/2d_field.o $(PRODUCT)/map_symbols.o
 	ar rcs $@ $^
 
 $(PRODUCT)/2d_field.o: 2d_field.h 2d_field.cpp

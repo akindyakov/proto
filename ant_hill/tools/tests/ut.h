@@ -30,4 +30,17 @@ public:
     }
 };
 
+template<typename T>
+inline void Validate(
+    const T& value
+    , const T& expected
+) {
+    if (value != expected) {
+        throw AntHill::Exception()
+            << "Wrong value: '" << value << "'."
+            << " Expected: '" << expected << "'.";
+        ;
+    }
+}
+
 }

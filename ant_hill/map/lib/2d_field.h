@@ -62,8 +62,15 @@ public:
     /**
     * @return length, raised to the power of 2
     */
-    Measure Lenght() const {
+    constexpr const Measure Lenght() const noexcept {
         return X*X + Y*Y;
+    }
+
+    /**
+    * @return size of vector cube
+    */
+    constexpr const Measure cube() const noexcept {
+        return X * Y;
     }
 
 };
@@ -75,6 +82,16 @@ Point& operator+=(Point& self, const Vector& shift);
 
 Vector operator-(const Point& left, const Point& right);
 Point operator+(const Point& base, const Vector& shift);
+
+}  // namespace Map
+
+std::ostream& operator<<(std::ostream& os, const Map::Point& pt);
+std::ostream& operator<<(std::ostream& os, const Map::Vector& vect);
+std::istream& operator>>(std::istream& is, Map::Point& pt);
+std::istream& operator>>(std::istream& is, Map::Vector& vect);
+
+
+namespace Map {
 
 class Grain {
 public:
@@ -98,16 +115,7 @@ private:
     EMaterial Material;
 };
 
-struct Cell {
-    Cell()
-        : Grain(EMaterial::EmptySpace)
-    {
-    }
-
-    Grain Grain;
-};
-
-
+template<typename TCell>
 class Field {
 private:
     size_t GetIndexByPoint(const Point& pt) const {
@@ -119,13 +127,17 @@ private:
         // std::cerr << "index: " << index << std::endl;
         return index;
     }
+public:
+    using CellType = TCell;
 
 public:
-    Field(Measure xSize, Measure ySize, Point minCorner=Point{0, 0})
-        : size_(xSize, ySize)
-        , min_(minCorner)
-        , field_(xSize * ySize)
+    Field(Vector size, Point min=Point{0, 0})
+        : size_(size)
+        , min_(min)
+        , field_(size_.cube())
     {
+        // std::cerr << "min: " << min << std::endl;
+        // std::cerr << "size: " << size << std::endl;
     }
 
     Field(const Field&) = delete;
@@ -134,6 +146,7 @@ public:
     Field& operator=(const Field&) = delete;
     Field& operator=(Field&&) = default;
 
+    /**
     Measure GetXSize() const {
         return size_.X;
     }
@@ -141,38 +154,42 @@ public:
     Measure GetYSize() const {
         return size_.Y;
     }
+    */
 
-    Cell& At(const Point& pt) {
-        //std::cerr << pt.X << ", " << pt.Y << '\n';
-        return field_.at(GetIndexByPoint(pt));
-    }
-
-    const Cell& At(const Point& pt) const {
+    CellType& At(const Point& pt) {
         // std::cerr << pt.X << ", " << pt.Y << '\n';
         return field_.at(GetIndexByPoint(pt));
     }
 
-    void Insert(const Point& pt, EMaterial material) {
+    const CellType& At(const Point& pt) const {
         // std::cerr << pt.X << ", " << pt.Y << '\n';
-        field_.at(GetIndexByPoint(pt)).Grain = Grain(material);
+        return field_.at(GetIndexByPoint(pt));
     }
 
-    Point min() const {
+    const Point min() const noexcept {
         return min_;
     }
 
-    Point max() const {
+    const Point max() const noexcept {
         return min_ + size_;
+    }
+
+    const Vector size() const noexcept {
+        return size_;
     }
 
 private:
     Vector size_;
     Point min_;
-    std::vector<Cell> field_;
+    std::vector<CellType> field_;
 };
 
+template<typename TCell>
+Field<TCell> ScanFromText(std::istream&);
 
-Field ScanFromText(std::istream&);
-void PrintToText(std::ostream&, const Field&);
+template<typename TCell>
+void PrintToText(std::ostream&, const Field<TCell>&);
 
-}
+}  // namespace Map
+
+#include "2d_field_impl.h"
