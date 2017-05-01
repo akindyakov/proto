@@ -214,24 +214,6 @@ inline bool operator == (
 //     std::vector<Movement> Actions;
 // };
 //
-// template<typename Value>
-// class ChainNode
-// {
-// public:
-//     explicit constexpr ChainNode(
-//         Value value_
-//         , Direction from_ = Direction::Nowhere
-//     ) noexcept
-//         : from(from_)
-//         , value(value_)
-//     {
-//     }
-//
-// public:
-//     Direction from;
-//     Value value;
-// };
-//
 // class AppearanceTransaction {
 // public:
 //     AppearanceTransaction& Add(

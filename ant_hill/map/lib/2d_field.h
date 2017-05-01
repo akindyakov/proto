@@ -128,6 +128,7 @@ private:
     }
 public:
     using CellType = TCell;
+    using FieldStorageType = std::vector<TCell>;
 
 public:
     Field(Vector size, Point min=Point{0, 0})
@@ -180,7 +181,7 @@ public:
 private:
     Vector size_;
     Point min_;
-    std::vector<CellType> field_;
+    FieldStorageType field_;
 };
 
 template<typename TCell>
