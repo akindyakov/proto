@@ -72,24 +72,34 @@ public:
     */
     void pushFrontGrain(
         World::Field& field
-        , Map::Direction direction
+        , Map::Direction frontDirection
     ) = 0;
 
     void popFrontGrain(
         World::Field& field
-        , Map::Direction direction
     ) = 0;
 
     /**
     * Add one more point to the back
     */
-    void PushBackGrain(
+    void pushBackGrain(
         World::Field& field
-        , Map::Direction direction
+        , Map::Direction backDirection
     ) = 0;
-    void PopBackGrain(
+
+    void popBackGrain(
         World::Field& field
-        , Map::Direction direction
+    ) = 0;
+
+    void appear(
+        World::Field& field
+        , std::vector<Map::RelativeDirection>
+    ) = 0;
+
+    void look(
+        World::Field& field
+        , Map::RelativeDirection
+        , size_t segment = 0
     ) = 0;
 };
 
