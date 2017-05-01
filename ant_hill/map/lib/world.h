@@ -105,3 +105,6 @@ public:
 
 
 }  // namespace Map
+
+std::ostream& operator<<(std::ostream& os, const Map::WorldCell& cell);
+std::istream& operator>>(std::istream& is, Map::WorldCell& cell);
