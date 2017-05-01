@@ -13,11 +13,11 @@ Vector& operator+=(Vector& self, const Vector& shift) {
 }
 
 bool operator!=(const Vector& first, const Vector& second) {
-    return first.X != second.X && first.X != second.X;
+    return first.X != second.X || first.Y != second.Y;
 }
 
 bool operator!=(const Point& first, const Point& second) {
-    return first.X != second.X && first.X != second.X;
+    return first.X != second.X || first.Y != second.Y;
 }
 
 Point& operator+=(Point& self, const Vector& shift) {

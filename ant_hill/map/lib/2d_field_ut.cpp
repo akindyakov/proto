@@ -6,6 +6,42 @@
 #include <sstream>
 #include <string>
 
+void CompareTest() {
+    ValidateEqual(
+        Map::Point{-12, 317},
+        Map::Point{-12, 317}
+    );
+    ValidateNotEqual(
+        Map::Point{12, 317},
+        Map::Point{-12, 317}
+    );
+    ValidateNotEqual(
+        Map::Point{12, 17},
+        Map::Point{-12, 317}
+    );
+    ValidateNotEqual(
+        Map::Point{12, 17},
+        Map::Point{12, 7}
+    );
+
+    ValidateEqual(
+        Map::Vector{-12, 317},
+        Map::Vector{-12, 317}
+    );
+    ValidateNotEqual(
+        Map::Vector{12, 317},
+        Map::Vector{-12, 317}
+    );
+    ValidateNotEqual(
+        Map::Vector{12, 17},
+        Map::Vector{-12, 317}
+    );
+    ValidateNotEqual(
+        Map::Vector{12, 17},
+        Map::Vector{12, 7}
+    );
+}
+
 void PointStreamIO() {
     std::string text = "  ( -123   ,   289 )";
     auto expectedPt = Map::Point{-123, 289};
@@ -13,7 +49,7 @@ void PointStreamIO() {
     auto pt = Map::Point{0, 0};
     in >> pt;
     if (pt != expectedPt) {
-        throw AntHill::Exception()
+        throw Exception()
             << "Expected: " << expectedPt.X << " " << expectedPt.Y
             << "\nGot: " << pt.X << " " << pt.Y;
     }
@@ -22,7 +58,7 @@ void PointStreamIO() {
     auto outStr = out.str();
     auto expectedStr = std::string("(-123,289)(-123,289)");
     if (outStr != expectedStr) {
-        throw AntHill::Exception()
+        throw Exception()
             << "Expected: " << expectedStr
             << "\nGot: " << outStr;
     }
@@ -35,7 +71,7 @@ void VectorStreamIO() {
     auto vect = Map::Vector{0, 0};
     in >> vect;
     if (vect != expectedPt) {
-        throw AntHill::Exception()
+        throw Exception()
             << "Expected: " << expectedPt.X << " " << expectedPt.Y
             << "\nGot: " << vect.X << " " << vect.Y;
     }
@@ -44,7 +80,7 @@ void VectorStreamIO() {
     auto outStr = out.str();
     auto expectedStr = std::string("<21239,-2349><21239,-2349>");
     if (outStr != expectedStr) {
-        throw AntHill::Exception()
+        throw Exception()
             << "Expected: " << expectedStr
             << "\nGot: " << outStr;
     }
@@ -66,9 +102,9 @@ iw...m..si
 )FieldMap";
     auto in = std::istringstream(text);
     auto field = Map::ScanFromText<char>(in);
-    auto element = field.At(Map::Point(4, 6));
+    auto element = field.at(Map::Point(4, 6));
     if (element != 'a') {
-        throw AntHill::Exception()
+        throw Exception()
             << "Expected: 'a'"
             << "\nGot: '" << element << "'";
     }
@@ -77,7 +113,7 @@ iw...m..si
     Map::PrintToText<char>(out, field);
     auto outText = out.str();
     if (text != outText) {
-        throw AntHill::Exception()
+        throw Exception()
             << "Expected: " << text
             << "\nGot: " << outText;
     }
@@ -88,6 +124,7 @@ int main(int argn, char** argv) {
         PointStreamIO();
         VectorStreamIO();
         ScanAndPrintField();
+        CompareTest();
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;
         return 1;
