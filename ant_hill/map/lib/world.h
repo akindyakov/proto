@@ -54,7 +54,7 @@ public:
     /**
     * Move head to specified direction
     */
-    void FrontMove(
+    void frontMove(
         World::Field& field
         , Map::Direction direction
     ) = 0;
@@ -62,7 +62,7 @@ public:
     /**
     * Move back to specified direction
     */
-    void BackMove(
+    void backMove(
         World::Field& field
         , Map::Direction direction
     ) = 0;
@@ -70,11 +70,12 @@ public:
     /**
     * Add one more point to the front
     */
-    void PushFrontGrain(
+    void pushFrontGrain(
         World::Field& field
         , Map::Direction direction
     ) = 0;
-    void PopFrontGrain(
+
+    void popFrontGrain(
         World::Field& field
         , Map::Direction direction
     ) = 0;
