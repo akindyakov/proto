@@ -59,9 +59,49 @@ private:
     std::map<ObjectId, std::shared_ptr<IObject>> objects_;
 };
 
-std::ostream& operator<<(std::ostream& os, const Map::Point& pt);
-std::ostream& operator<<(std::ostream& os, const Map::Vector& vect);
-std::istream& operator>>(std::istream& is, Map::Point& pt);
-std::istream& operator>>(std::istream& is, Map::Vector& vect);
+class IObject
+{
+public:
+    /**
+    * Move head to specified direction
+    */
+    void FrontMove(
+        World::Field& field
+        , Map::Direction direction
+    ) = 0;
+
+    /**
+    * Move back to specified direction
+    */
+    void BackMove(
+        World::Field& field
+        , Map::Direction direction
+    ) = 0;
+
+    /**
+    * Add one more point to the front
+    */
+    void PushFrontGrain(
+        World::Field& field
+        , Map::Direction direction
+    ) = 0;
+    void PopFrontGrain(
+        World::Field& field
+        , Map::Direction direction
+    ) = 0;
+
+    /**
+    * Add one more point to the back
+    */
+    void PushBackGrain(
+        World::Field& field
+        , Map::Direction direction
+    ) = 0;
+    void PopBackGrain(
+        World::Field& field
+        , Map::Direction direction
+    ) = 0;
+};
+
 
 }  // namespace Map
