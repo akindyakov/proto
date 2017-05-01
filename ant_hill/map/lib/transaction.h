@@ -4,69 +4,70 @@
 
 namespace Map {
 
-enum class RelativeDirection {
-    Forward,
-    Left,
-    Backward,
-    Right,
-    Nowhere,
-};
+class Direction;
+class RelativeDirection;
+
+std::ostream& operator<<(std::ostream& os, const Map::Direction& adir);
+std::istream& operator>>(std::istream&, Map::Direction&);
+
+std::ostream& operator<<(std::ostream&, const Map::RelativeDirection&);
+std::istream& operator>>(std::istream&, Map::RelativeDirection&);
 
 class Direction {
-public:
-    enum ECompass {
-        North,
-        West,
-        South,
-        East,
-        Nowhere,
-    };
-
 private:
-    ECompass compass_;
+    using Type = int;
+    Type compass_;
 
-public:
+    static constexpr Type north_ = 0;
+    static constexpr Type west_ = 1;
+    static constexpr Type south_ = 2;
+    static constexpr Type east_ = 3;
+    static constexpr Type all_ = 4;
+
     constexpr Direction(
-        ECompass compass
+        Type compass
     ) noexcept
         : compass_(compass)
     {
     }
 
+public:
+    Direction() = delete;
+
+    static constexpr const Direction North() noexcept {
+        return north_;
+    }
+    static constexpr const Direction West() noexcept {
+        return west_;
+    }
+    static constexpr const Direction South() noexcept {
+        return south_;
+    }
+    static constexpr const Direction East() noexcept {
+        return east_;
+    }
+
     static constexpr const Direction ToNowhere() noexcept {
-        return Direction(Nowhere);
+        return Direction(all_);
     }
 
     static Direction FromInt(int value) {
-        if (value > Nowhere) {
-            throw AntHill::Exception()
+        if (value >= all_) {
+            throw Exception()
                 << "Direction::FromInt() error. Wrong int value: ("
                 << value << ")"
             ;
         }
-        return Direction(
-            static_cast<ECompass>(value)
-        );
+        return value;
+    }
+
+    constexpr void normalize() noexcept {
+        compass_ = compass_ % all_;
     }
 
     constexpr const Direction Inverse() const noexcept {
-        auto to = Direction::ToNowhere();
-        switch (compass_) {
-            case East:
-                to = West;
-                break;
-            case West:
-                to = East;
-                break;
-            case North:
-                to = South;
-                break;
-            case South:
-                to = North;
-                break;
-            case Nowhere:
-                break;
-        }
+        auto to = Direction(compass_ + all_ / 2);
+        to.normalize();
         return to;
     }
 
@@ -74,20 +75,17 @@ public:
 
     constexpr const Point MovePoint(Point pt) const noexcept {
         switch (compass_) {
-            case Direction::North:
+            case north_:
                 pt.Y += 1;
                 break;
-            case Direction::West:
+            case west_:
                 pt.X -= 1;
                 break;
-            case Direction::South:
+            case south_:
                 pt.Y -= 1;
                 break;
-            case Direction::East:
+            case east_:
                 pt.X += 1;
-                break;
-            case Direction::Nowhere:
-                // do nothing
                 break;
         }
         return pt;
@@ -97,6 +95,11 @@ public:
         Direction first
         , Direction second
     ) noexcept;
+
+    friend class RelativeDirection;
+
+    friend std::ostream& operator<<(std::ostream& os, const Map::Direction& adir);
+    friend std::istream& operator>>(std::istream&, Map::Direction&);
 };
 
 inline bool constexpr operator == (
@@ -112,6 +115,52 @@ inline bool constexpr operator != (
 ) noexcept {
     return !(first == second);
 }
+
+class RelativeDirection {
+private:
+    using Type = int;
+    Type rdir_;
+
+    static constexpr Type forward_ = 0;
+    static constexpr Type left_ = 1;
+    static constexpr Type backward_ = 2;
+    static constexpr Type right_ = 3;
+
+    constexpr RelativeDirection(
+        Type dir
+    ) noexcept
+        : rdir_(dir)
+    {
+    }
+
+    friend std::ostream& operator<<(std::ostream&, const Map::RelativeDirection&);
+    friend std::istream& operator>>(std::istream&, Map::RelativeDirection&);
+public:
+    static constexpr const RelativeDirection Forward() noexcept {
+        return forward_;
+    }
+    static constexpr const RelativeDirection Left() noexcept {
+        return left_;
+    }
+    static constexpr const RelativeDirection Backward() noexcept {
+        return backward_;
+    }
+    static constexpr const RelativeDirection Right() noexcept {
+        return right_;
+    }
+
+public:
+    RelativeDirection() = delete;
+
+    constexpr const Direction Turn(
+        Direction dir
+    ) const noexcept {
+        dir.compass_ += rdir_;
+        dir.normalize();
+        return dir;
+    }
+};
+
 
 struct Movement {
     Point To;
@@ -153,48 +202,54 @@ inline bool operator == (
 }
 
 
-class MoveTransaction {
-public:
-    explicit MoveTransaction() = default;
-    explicit MoveTransaction(const std::vector<ShortMovement>& movement);
-
-    MoveTransaction& Add(const Point& pt, Direction direction);
-    bool Apply(Field& where) const;
-
-private:
-    std::vector<Movement> Actions;
-};
-
-template<typename Value>
-class ChainNode
-{
-public:
-    explicit constexpr ChainNode(
-        Value value_
-        , Direction from_ = Direction::Nowhere
-    ) noexcept
-        : from(from_)
-        , value(value_)
-    {
-    }
-
-public:
-    Direction from;
-    Value value;
-};
-
-class AppearanceTransaction {
-public:
-    AppearanceTransaction& Add(
-        ChainNode<EMaterial>&& node
-    ) {
-        this->chain_.push_back(std::move(node));
-        return *this;
-    }
-    Point Apply(Field& where);
-
-private:
-    std::vector<ChainNode<EMaterial>> chain_;
-};
+// class MoveTransaction {
+// public:
+//     explicit MoveTransaction() = default;
+//     explicit MoveTransaction(const std::vector<ShortMovement>& movement);
+//
+//     MoveTransaction& Add(const Point& pt, Direction direction);
+//     bool Apply(Field& where) const;
+//
+// private:
+//     std::vector<Movement> Actions;
+// };
+//
+// template<typename Value>
+// class ChainNode
+// {
+// public:
+//     explicit constexpr ChainNode(
+//         Value value_
+//         , Direction from_ = Direction::Nowhere
+//     ) noexcept
+//         : from(from_)
+//         , value(value_)
+//     {
+//     }
+//
+// public:
+//     Direction from;
+//     Value value;
+// };
+//
+// class AppearanceTransaction {
+// public:
+//     AppearanceTransaction& Add(
+//         ChainNode<EMaterial>&& node
+//     ) {
+//         this->chain_.push_back(std::move(node));
+//         return *this;
+//     }
+//     Point Apply(Field& where);
+//
+// private:
+//     std::vector<ChainNode<EMaterial>> chain_;
+// };
 
 }  // namespace Map
+
+using Map::operator<<;
+using Map::operator>>;
+
+using Map::operator<<;
+using Map::operator>>;
