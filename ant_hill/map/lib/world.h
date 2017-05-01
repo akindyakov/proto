@@ -56,7 +56,7 @@ public:
     */
     void frontMove(
         World::Field& field
-        , Map::Direction direction
+        , Map::Direction frontDirection
     ) = 0;
 
     /**
@@ -64,7 +64,7 @@ public:
     */
     void backMove(
         World::Field& field
-        , Map::Direction direction
+        , Map::Direction backDirection
     ) = 0;
 
     /**
