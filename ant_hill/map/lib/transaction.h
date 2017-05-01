@@ -4,17 +4,13 @@
 
 namespace Map {
 
-namespace Axis {
-
-enum class Relative {
+enum class RelativeDirection {
     Forward,
     Left,
     Backward,
     Right,
     Nowhere,
 };
-
-}  // namespace Axis
 
 class Direction {
 public:

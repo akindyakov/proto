@@ -100,7 +100,7 @@ public:
         World::Field& field
         , Map::RelativeDirection
         , size_t segment = 0
-    ) = 0;
+    ) const = 0;
 };
 
 
