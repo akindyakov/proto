@@ -65,8 +65,6 @@ Grain& Grain::operator=(const Grain& other) {
     return *this;
 }
 
-}  // namespace Map
-
 namespace {
     static constexpr auto DimensionsDelimiter = ',';
     static constexpr auto PointLeftBrace = '(';
@@ -97,11 +95,11 @@ std::ostream& operator<<(std::ostream& os, const Map::Vector& vect) {
 std::istream& operator>>(std::istream& is, Map::Point& pt) {
     auto ch = Space;
     is >> std::skipws >> ch;
-    AntHill::Validate(ch, PointLeftBrace);
+    Validate(ch, PointLeftBrace);
     is >> pt.X >> ch;
-    AntHill::Validate(ch, DimensionsDelimiter);
+    Validate(ch, DimensionsDelimiter);
     is >> pt.Y >> ch;
-    AntHill::Validate(ch, PointRightBrace);
+    Validate(ch, PointRightBrace);
     is >> std::noskipws;
     return is;
 }
@@ -110,12 +108,13 @@ std::istream& operator>>(std::istream& is, Map::Vector& vect) {
     is >> std::skipws;
     auto ch = Space;
     is >> std::skipws >> ch;
-    AntHill::Validate(ch, VectorLeftBrace);
+    Validate(ch, VectorLeftBrace);
     is >> vect.X >> ch;
-    AntHill::Validate(ch, DimensionsDelimiter);
+    Validate(ch, DimensionsDelimiter);
     is >> vect.Y >> ch;
-    AntHill::Validate(ch, VectorRightBrace);
+    Validate(ch, VectorRightBrace);
     is >> std::noskipws;
     return is;
 }
+}  // namespace Map
 

@@ -16,6 +16,15 @@ namespace Map {
 
 using Measure = int;
 
+class Point;
+class Vector;
+
+std::ostream& operator<<(std::ostream& os, const Map::Point& pt);
+std::ostream& operator<<(std::ostream& os, const Map::Vector& vect);
+std::istream& operator>>(std::istream& is, Map::Point& pt);
+std::istream& operator>>(std::istream& is, Map::Vector& vect);
+
+
 class Point {
 public:
     Measure X;
@@ -82,16 +91,6 @@ Point& operator+=(Point& self, const Vector& shift);
 
 Vector operator-(const Point& left, const Point& right);
 Point operator+(const Point& base, const Vector& shift);
-
-}  // namespace Map
-
-std::ostream& operator<<(std::ostream& os, const Map::Point& pt);
-std::ostream& operator<<(std::ostream& os, const Map::Vector& vect);
-std::istream& operator>>(std::istream& is, Map::Point& pt);
-std::istream& operator>>(std::istream& is, Map::Vector& vect);
-
-
-namespace Map {
 
 class Grain {
 public:
@@ -193,3 +192,6 @@ void PrintToText(std::ostream&, const Field<TCell>&);
 }  // namespace Map
 
 #include "2d_field_impl.h"
+
+using Map::operator<<;
+using Map::operator>>;
