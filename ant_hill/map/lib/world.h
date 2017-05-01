@@ -1,4 +1,6 @@
 #include "2d_field.h"
+#include "map_symbols.h"
+#include "transaction.h"
 
 
 namespace Map {
@@ -10,7 +12,7 @@ public:
     Type id;
 
 private:
-    static constexpr InvalidId_ = Type{0};
+    static constexpr auto InvalidId_ = Type{0};
 
 public:
     explicit constexpr ObjectId(
@@ -20,7 +22,7 @@ public:
     {
     }
 
-    constexpr const ObjectId Invalid() noexcept {
+    static constexpr const ObjectId Invalid() noexcept {
         return ObjectId(InvalidId_);
     }
 };
@@ -29,7 +31,7 @@ struct WorldCell {
     explicit WorldCell() = default;
 
     explicit WorldCell(
-        EMaterial::EmptySpace grain_
+        EMaterial grain_
     )
         : grain(grain_)
     {
@@ -39,9 +41,27 @@ struct WorldCell {
         return grain == EMaterial::EmptySpace;
     }
 
-    Grain grain = EMaterial::EmptySpace;
+    EMaterial grain = EMaterial::EmptySpace;
     ObjectId objectId = ObjectId::Invalid();
 };
+
+template<typename Value>
+struct ChainNode
+{
+    explicit constexpr ChainNode(
+        Value value_
+        , Direction from_ = Direction::ToNowhere()
+    ) noexcept
+        : from(from_)
+        , value(value_)
+    {
+    }
+
+    Direction from;
+    Value value;
+};
+
+class IObject;
 
 class World {
 public:
@@ -60,55 +80,55 @@ public:
     */
     virtual void frontMove(
         World::Field& field
-        , Map::Direction frontDirection
-    ) override;
+        , Map::RelativeDirection frontDirection
+    ) = 0;;
 
     /**
     * Move back to specified direction
     */
     virtual void backMove(
         World::Field& field
-        , Map::Direction backDirection
-    ) override;
+        , Map::RelativeDirection backDirection
+    ) = 0;;
 
     /**
     * Add one more point to the front
     */
     virtual void pushFrontGrain(
         World::Field& field
-        , Map::Direction frontDirection
-    ) override;
+        , Map::RelativeDirection frontDirection
+    ) = 0;;
 
-    void popFrontGrain(
+    virtual void popFrontGrain(
         World::Field& field
-    ) override;
+    ) = 0;
 
     /**
     * Add one more point to the back
     */
-    void pushBackGrain(
+    virtual void pushBackGrain(
         World::Field& field
-        , Map::Direction backDirection
-    ) override;
+        , Map::RelativeDirection backDirection
+    ) = 0;
 
-    void popBackGrain(
+    virtual void popBackGrain(
         World::Field& field
-    ) override;
+    ) = 0;;
 
-    void appear(
-        World::Field& field
-        , std::vector<Map::RelativeDirection>
-    ) override;
-
-    void look(
+    virtual void look(
         World::Field& field
         , Map::RelativeDirection
         , size_t segment = 0
-    ) const override;
+    ) const = 0;
+
+    virtual ObjectId id() const = 0;;
 };
-
-
-}  // namespace Map
 
 std::ostream& operator<<(std::ostream& os, const Map::WorldCell& cell);
 std::istream& operator>>(std::istream& is, Map::WorldCell& cell);
+
+}  // namespace Map
+
+using Map::operator<<;
+using Map::operator>>;
+

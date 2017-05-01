@@ -1,5 +1,6 @@
 #include "world.h"
 
+namespace Map {
 
 std::ostream& operator<<(std::ostream& os, const Map::WorldCell& cell) {
     os << GetSymbolMap().GetSymbol(cell.grain);
@@ -9,6 +10,8 @@ std::ostream& operator<<(std::ostream& os, const Map::WorldCell& cell) {
 std::istream& operator>>(std::istream& is, Map::WorldCell& cell) {
     auto ch = char{0};
     is.get(ch);
-    cell.grain = GetSymbolMap().GetSymbol(ch);
+    cell.grain = GetSymbolMap().GetMaterial(ch);
     return is;
+}
+
 }

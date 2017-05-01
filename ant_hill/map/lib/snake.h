@@ -2,6 +2,8 @@
 
 #include "world.h"
 
+#include <deque>
+
 namespace Map {
 
 class SnakeObj
@@ -9,36 +11,21 @@ class SnakeObj
 {
 public:
     SnakeObj(
-        Map::Point head
-        , Map::Point tail
-    );
+        Point head
+        , std::vector<Map::Direction> tail
+        , ObjectId id
+    )
+        : id_(id)
+        , head_(head)
+        , tail_(tail.begin(), tail.end())
+    {
+    }
 
-    /**
-    * Get diff for moving head to specified direction
-    */
-    std::vector<Map::ShortMovement>
-    DiffHeadMove(Map::Direction direction) const;
-
-    /**
-    * Move head to specified direction
-    */
-    void HeadMove(Map::Direction direction);
-
-    /**
-    * Add one more point to head side
-    */
-    void AppendPoint(Map::Direction direction);
-
-    /**
-    * Drop first point from head side
-    */
-    void DropPoint(Map::Direction direction);
-
-    size_t Size() const;
+    size_t size() const;
 
     void frontMove(
         World::Field& field
-        , Map::Direction frontDirection
+        , RelativeDirection frontDirection
     ) override;
 
     /**
@@ -46,7 +33,7 @@ public:
     */
     void backMove(
         World::Field& field
-        , Map::Direction backDirection
+        , RelativeDirection backDirection
     ) override;
 
     /**
@@ -54,7 +41,7 @@ public:
     */
     void pushFrontGrain(
         World::Field& field
-        , Map::Direction frontDirection
+        , RelativeDirection frontDirection
     ) override;
 
     void popFrontGrain(
@@ -66,24 +53,28 @@ public:
     */
     void pushBackGrain(
         World::Field& field
-        , Map::Direction backDirection
+        , RelativeDirection backDirection
     ) override;
 
     void popBackGrain(
         World::Field& field
     ) override;
 
-    void appear(
-        World::Field& field
-        , std::vector<Map::RelativeDirection>
-        , std::vector<Map::EMaterial>
-    ) override;
+    static SnakeObj appear(
+        World::Field& where
+        , std::vector<ChainNode<EMaterial>> chain
+        , ObjectId id
+    );
 
     void look(
         World::Field& field
-        , Map::RelativeDirection
+        , RelativeDirection
         , size_t segment = 0
     ) const override;
+
+    ObjectId id() const override {
+        return id_;
+    }
 
 private:
     /**
@@ -92,6 +83,7 @@ private:
     *   *-------> *------------> *--------------->  |
     *          \___/          \___/          \______/
     */
+    ObjectId id_;
     Map::Point head_;
     std::deque<Map::Direction> tail_;
 };
