@@ -51,8 +51,11 @@ struct WorldCell {
 };
 
 class World {
+public:
+    using Field = Field<WorldCell>;
+
 private:
-    Field<WorldCell> field_;
+    Field field_;
     std::map<ObjectId, std::shared_ptr<IObject>> objects_;
 };
 
