@@ -35,6 +35,10 @@ struct WorldCell {
     {
     }
 
+    bool isFree() const {
+        return grain == EMaterial::EmptySpace;
+    }
+
     Grain grain = EMaterial::EmptySpace;
     ObjectId objectId = ObjectId::Invalid();
 };
@@ -54,30 +58,30 @@ public:
     /**
     * Move head to specified direction
     */
-    void frontMove(
+    virtual void frontMove(
         World::Field& field
         , Map::Direction frontDirection
-    ) = 0;
+    ) override;
 
     /**
     * Move back to specified direction
     */
-    void backMove(
+    virtual void backMove(
         World::Field& field
         , Map::Direction backDirection
-    ) = 0;
+    ) override;
 
     /**
     * Add one more point to the front
     */
-    void pushFrontGrain(
+    virtual void pushFrontGrain(
         World::Field& field
         , Map::Direction frontDirection
-    ) = 0;
+    ) override;
 
     void popFrontGrain(
         World::Field& field
-    ) = 0;
+    ) override;
 
     /**
     * Add one more point to the back
@@ -85,22 +89,22 @@ public:
     void pushBackGrain(
         World::Field& field
         , Map::Direction backDirection
-    ) = 0;
+    ) override;
 
     void popBackGrain(
         World::Field& field
-    ) = 0;
+    ) override;
 
     void appear(
         World::Field& field
         , std::vector<Map::RelativeDirection>
-    ) = 0;
+    ) override;
 
     void look(
         World::Field& field
         , Map::RelativeDirection
         , size_t segment = 0
-    ) const = 0;
+    ) const override;
 };
 
 

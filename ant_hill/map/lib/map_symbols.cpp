@@ -31,7 +31,7 @@ MapSymbols::MapSymbols()
 const EMaterial MapSymbols::GetMaterial(char ch) const {
     auto it = CharToMaterial.find(ch);
     if (it == CharToMaterial.end()) {
-        throw AntHill::Exception("Unexpected material character")
+        throw Exception("Unexpected material character")
             << "[" << ch << "]";
     }
     return it->second;
@@ -40,7 +40,7 @@ const EMaterial MapSymbols::GetMaterial(char ch) const {
 const char MapSymbols::GetSymbol(EMaterial m) const {
     auto it = MaterialToChar.find(m);
     if (it == MaterialToChar.end()) {
-        throw AntHill::Exception("Unexpected material code")
+        throw Exception("Unexpected material code")
             << "[" << static_cast<int>(m) << "]";
     }
     // std::cerr << "[" << it->second << "]\n";

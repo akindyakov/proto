@@ -26,9 +26,9 @@ Field<TCell> ScanFromText(std::istream& is) {
                         std::numeric_limits<std::streamsize>::max(),
                         '\n'
                     );
-                    AntHill::Validate(pt.X, field.min().X);
+                    Validate(pt.X, field.min().X);
                 }
-                is >> field.At(pt);
+                is >> field.at(pt);
             }
         }
     }
@@ -42,7 +42,7 @@ void PrintToText(std::ostream& os, const Field<TCell>& field) {
     auto pt = field.min();
     for (; pt.Y < field.max().Y; ++pt.Y) {
         for (pt.X = field.min().X; pt.X < field.max().X; ++pt.X) {
-            os << field.At(pt);
+            os << field.at(pt);
         }
         os << '\n';
     }

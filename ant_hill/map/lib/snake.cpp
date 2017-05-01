@@ -4,9 +4,9 @@
 
 #include <algorithm>
 
-namespace Ant {
+namespace Map {
 
-SnakeAntBody::SnakeAntBody(
+SnakeObj::SnakeObj(
     Map::Point head
     , Map::Point tail
 )
@@ -18,7 +18,7 @@ SnakeAntBody::SnakeAntBody(
 }
 
 std::vector<Map::ShortMovement>
-SnakeAntBody::DiffHeadMove(
+SnakeObj::DiffHeadMove(
     Map::Direction direction
 ) const {
     auto diff = std::vector<Map::ShortMovement>{};
@@ -35,16 +35,48 @@ SnakeAntBody::DiffHeadMove(
 }
 
 void
-SnakeAntBody::HeadMove(
-    Map::Direction direction
+SnakeObj::frontMove(
+    World::Field& field
+    , RelativeDirection frontDirection
 ) {
-    head_ = direction.MovePoint(head_);
-    tail_.insert(tail_.begin(), direction);
+    auto direction = 0;
+    // lock here
+    auto pt = direction.MovePoint(head_);
+    if (!field.at(newHead).isFree()) {
+        throw AntHill::Exception("There is no free space for that move.");
+    }
+    using std::swap;
+    std::swap(head_, pt);
+    std::swap(
+        field.at(head_),
+        field.at(pt)
+    );
+    for (const auto& dir : tail_) {
+        auto prev = dir.Inverse().MovePoint(pt);
+        std::swap(
+            field.at(pt),
+            field.at(prev)
+        );
+        std::swap(pt, prev);
+    }
+    tail_.push_front(direction);
     tail_.pop_back();
 }
 
 void
-SnakeAntBody::AppendPoint(
+SnakeObj::backMove(
+    World::Field& field
+    , Map::Direction backDirection
+) {
+    // lock here
+    auto pt = direction.MovePoint(head_);
+
+    tail_.push_front(direction);
+    tail_.pop_back();
+}
+
+void
+SnakeObj::AppendPoint(
     Map::Direction direction
 ) {
     head_ = direction.MovePoint(head_);
@@ -52,7 +84,7 @@ SnakeAntBody::AppendPoint(
 }
 
 void
-SnakeAntBody::DropPoint(Map::Direction direction) {
+SnakeObj::DropPoint(Map::Direction direction) {
     if (Size() < 3) {
         throw AntHill::Exception("Ant length must be at list 2");
     }
@@ -60,8 +92,8 @@ SnakeAntBody::DropPoint(Map::Direction direction) {
 }
 
 size_t
-SnakeAntBody::Size() const {
-    return 1 + tail_.size();
+SnakeObj::Size() const {
+    return tail_.size();
 }
 
 bool FreeLoader::Step() {

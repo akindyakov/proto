@@ -120,7 +120,7 @@ private:
     size_t GetIndexByPoint(const Point& pt) const {
         auto signedIndex = (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
         if (signedIndex < 0) {
-            throw AntHill::Exception("Access by outrange point");
+            throw Exception("Access by outrange point");
         }
         auto index = static_cast<size_t>(signedIndex);
         // std::cerr << "index: " << index << std::endl;
@@ -155,12 +155,12 @@ public:
     }
     */
 
-    CellType& At(const Point& pt) {
+    CellType& at(const Point& pt) {
         // std::cerr << pt.X << ", " << pt.Y << '\n';
         return field_.at(GetIndexByPoint(pt));
     }
 
-    const CellType& At(const Point& pt) const {
+    const CellType& at(const Point& pt) const {
         // std::cerr << pt.X << ", " << pt.Y << '\n';
         return field_.at(GetIndexByPoint(pt));
     }
