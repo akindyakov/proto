@@ -35,17 +35,6 @@ struct WorldCell {
     {
     }
 
-    explicit WorldCell(
-        char grain_
-    )
-        : grain(GetSymbolMap().GetMaterial(grain_))
-    {
-    }
-
-    char ToChar() const {
-        return GetSymbolMap().GetSymbol(grain);
-    }
-
     Grain grain = EMaterial::EmptySpace;
     ObjectId objectId = ObjectId::Invalid();
 };
