@@ -1,5 +1,6 @@
 #pragma once
 
+#include "chain.h"
 #include "world.h"
 
 #include <deque>
@@ -20,6 +21,8 @@ public:
         , tail_(tail.begin(), tail.end())
     {
     }
+
+    ~SnakeObj() override = default;
 
     size_t size() const;
 
@@ -62,7 +65,7 @@ public:
 
     static SnakeObj appear(
         World::Field& where
-        , std::vector<ChainNode<EMaterial>> chain
+        , const Chain<RelativeDirection, EMaterial>& chain
         , ObjectId id
     );
 

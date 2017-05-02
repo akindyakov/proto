@@ -194,5 +194,3 @@ void PrintToText(std::ostream&, const Field<TCell>&);
 
 #include "2d_field_impl.h"
 
-using Map::operator<<;
-using Map::operator>>;

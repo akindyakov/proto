@@ -45,29 +45,12 @@ struct WorldCell {
     ObjectId objectId = ObjectId::Invalid();
 };
 
-template<typename Value>
-struct ChainNode
-{
-    explicit constexpr ChainNode(
-        Value value_
-        , Direction from_ = Direction::ToNowhere()
-    ) noexcept
-        : from(from_)
-        , value(value_)
-    {
-    }
-
-    Direction from;
-    Value value;
-};
-
 class IObject;
 
 class World {
 public:
     using Field = Field<WorldCell>;
 
-private:
     Field field_;
     std::map<ObjectId, std::shared_ptr<IObject>> objects_;
 };
@@ -75,6 +58,8 @@ private:
 class IObject
 {
 public:
+    virtual ~IObject() = default;
+
     /**
     * Move head to specified direction
     */
@@ -89,7 +74,7 @@ public:
     virtual void backMove(
         World::Field& field
         , Map::RelativeDirection backDirection
-    ) = 0;;
+    ) = 0;
 
     /**
     * Add one more point to the front
@@ -97,7 +82,7 @@ public:
     virtual void pushFrontGrain(
         World::Field& field
         , Map::RelativeDirection frontDirection
-    ) = 0;;
+    ) = 0;
 
     virtual void popFrontGrain(
         World::Field& field
@@ -113,7 +98,7 @@ public:
 
     virtual void popBackGrain(
         World::Field& field
-    ) = 0;;
+    ) = 0;
 
     virtual void look(
         World::Field& field
@@ -128,7 +113,4 @@ std::ostream& operator<<(std::ostream& os, const Map::WorldCell& cell);
 std::istream& operator>>(std::istream& is, Map::WorldCell& cell);
 
 }  // namespace Map
-
-using Map::operator<<;
-using Map::operator>>;
 

@@ -53,6 +53,41 @@ SnakeObj::frontMove(
     tail_.pop_back();
 }
 
+void SnakeObj::backMove(
+    World::Field& /*field*/
+    , RelativeDirection /*backDirection*/
+) {
+}
+
+void SnakeObj::pushFrontGrain(
+    World::Field& field
+    , RelativeDirection frontDirection
+) {
+}
+
+void SnakeObj::popFrontGrain(
+    World::Field& field
+) {
+}
+
+void SnakeObj::pushBackGrain(
+    World::Field& field
+    , RelativeDirection backDirection
+) {
+}
+
+void SnakeObj::popBackGrain(
+    World::Field& field
+) {
+}
+
+void SnakeObj::look(
+    World::Field& field
+    , RelativeDirection
+    , size_t segment
+) const {
+}
+
 // void
 // SnakeObj::AppendPoint(
 //     Map::Direction direction
@@ -60,7 +95,7 @@ SnakeObj::frontMove(
 //     head_ = direction.MovePoint(head_);
 //     tail_.push_back(direction);
 // }
-// 
+//
 // void
 // SnakeObj::DropPoint(Map::Direction direction) {
 //     if (Size() < 3) {
@@ -71,36 +106,41 @@ SnakeObj::frontMove(
 
 SnakeObj SnakeObj::appear(
     World::Field& where
-    , std::vector<ChainNode<EMaterial>> chain
+    , const Chain<RelativeDirection, EMaterial>& chain
     , ObjectId id
 ) {
+    auto startDir = Direction::North();
     auto start = Point{0, 0};
-    for (start.Y = where.min().Y; start.Y < where.max().Y; ++start.Y) {
-        for (start.X = where.min().X; start.X < where.max().X; ++start.X) {
-            bool vacant = true;
-            {
-                auto pt = start;
-                for (auto& el : chain) {
-                    pt = el.from.MovePoint(pt);
-                    if (!where.at(pt).isFree()) {
-                        vacant = false;
-                        break;
+    while (startDir.counter() == 0) {
+        for (start.Y = where.min().Y; start.Y < where.max().Y; ++start.Y) {
+            for (start.X = where.min().X; start.X < where.max().X; ++start.X) {
+                bool vacant = true;
+                {
+                    auto pt = start;
+                    for (auto& el : chain) {
+                        pt = el.from.Turn(startDir).MovePoint(pt);
+                        if (!where.at(pt).isFree()) {
+                            vacant = false;
+                            break;
+                        }
                     }
                 }
-            }
-            if (vacant) {
-                auto pt = start;
-                auto tail = std::vector<Map::Direction>{};
-                for (auto& el : chain) {
-                    tail.push_back(el.from);
-                    pt = el.from.MovePoint(pt);
-                    auto& cell = where.at(pt);
-                    cell.grain = el.value;
-                    cell.objectId = id;
+                if (vacant) {
+                    auto pt = start;
+                    auto tail = std::vector<Map::Direction>{};
+                    for (auto& el : chain) {
+                        auto from = el.from.Turn(startDir);
+                        tail.push_back(from);
+                        pt = from.MovePoint(pt);
+                        auto& cell = where.at(pt);
+                        cell.grain = el.value;
+                        cell.objectId = id;
+                    }
+                    return SnakeObj(pt, tail, id);
                 }
-                return SnakeObj(pt, tail, id);
             }
         }
+        ++startDir;
     }
     throw Exception("There is no vacant position");
 }

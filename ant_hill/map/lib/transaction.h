@@ -17,6 +17,7 @@ class Direction {
 private:
     using Type = int;
     Type compass_;
+    Type counter_ = 0;
 
     static constexpr Type north_ = 0;
     static constexpr Type west_ = 1;
@@ -62,7 +63,9 @@ public:
     }
 
     constexpr void normalize() noexcept {
+        counter_ += compass_ / all_;
         compass_ = compass_ % all_;
+        compass_ = compass_ < 0 ? all_ - compass_ : compass_;
     }
 
     constexpr const Direction Inverse() const noexcept {
@@ -89,6 +92,22 @@ public:
                 break;
         }
         return pt;
+    }
+
+    Direction& operator ++ () noexcept {
+        ++compass_;
+        normalize();
+        return *this;
+    }
+
+    Direction& operator -- () noexcept {
+        --compass_;
+        normalize();
+        return *this;
+    }
+
+    constexpr const Type counter() const noexcept {
+        return counter_;
     }
 
     friend bool constexpr operator == (
@@ -125,6 +144,11 @@ private:
     static constexpr Type left_ = 1;
     static constexpr Type backward_ = 2;
     static constexpr Type right_ = 3;
+    static constexpr Type all_ = 4;
+
+    constexpr void normalize() noexcept {
+        rdir_ = rdir_ % all_;
+    }
 
     constexpr RelativeDirection(
         Type dir
@@ -229,9 +253,3 @@ inline bool operator == (
 // };
 
 }  // namespace Map
-
-using Map::operator<<;
-using Map::operator>>;
-
-using Map::operator<<;
-using Map::operator>>;
