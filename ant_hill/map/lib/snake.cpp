@@ -109,17 +109,17 @@ SnakeObj SnakeObj::appear(
     , const Chain<RelativeDirection, EMaterial>& chain
     , ObjectId id
 ) {
-    auto startDir = Direction::North();
     auto start = Point{0, 0};
-    while (startDir.counter() == 0) {
-        for (start.Y = where.min().Y; start.Y < where.max().Y; ++start.Y) {
-            for (start.X = where.min().X; start.X < where.max().X; ++start.X) {
+    for (start.Y = where.min().Y; start.Y < where.max().Y; ++start.Y) {
+        for (start.X = where.min().X; start.X < where.max().X; ++start.X) {
+            auto startDir = Direction::North();
+            while (startDir.counter() == 0) {
                 bool vacant = true;
                 {
                     auto pt = start;
                     for (auto& el : chain) {
                         pt = el.from.Turn(startDir).MovePoint(pt);
-                        if (!where.at(pt).isFree()) {
+                        if (!where.inRange(pt) || !where.at(pt).isFree()) {
                             vacant = false;
                             break;
                         }
@@ -138,9 +138,9 @@ SnakeObj SnakeObj::appear(
                     }
                     return SnakeObj(pt, tail, id);
                 }
+                ++startDir;
             }
         }
-        ++startDir;
     }
     throw Exception("There is no vacant position");
 }

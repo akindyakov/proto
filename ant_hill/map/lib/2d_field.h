@@ -117,15 +117,29 @@ private:
 template<typename TCell>
 class Field {
 private:
-    size_t GetIndexByPoint(const Point& pt) const {
-        auto signedIndex = (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
-        if (signedIndex < 0) {
-            throw Exception("Access by outrange point");
-        }
-        auto index = static_cast<size_t>(signedIndex);
-        // std::cerr << "index: " << index << std::endl;
-        return index;
+    Measure signedIndexByPoint(const Point& pt) const noexcept {
+        return (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
     }
+
+    Measure signedInRange(const Point& pt) const noexcept {
+        auto index = signedIndexByPoint(pt);
+        return (
+            static_cast<size_t>(index) < field_.size()
+            && pt.X >= this->min_.X
+            && pt.Y >= this->min_.Y
+        ) ? index : -1;
+    }
+
+    size_t safeIndexByPoint(const Point& pt) const {
+        auto signedIndex = signedInRange(pt);
+        if (signedIndex < 0) {
+            throw Exception("Access by out range point: ")
+                << pt << " not in [" << this->min() << ", " << this->max() << "]"
+            ;
+        }
+        return static_cast<size_t>(signedIndex);
+    }
+
 public:
     using CellType = TCell;
     using FieldStorageType = std::vector<TCell>;
@@ -136,8 +150,6 @@ public:
         , min_(min)
         , field_(size_.cube())
     {
-        // std::cerr << "min: " << min << std::endl;
-        // std::cerr << "size: " << size << std::endl;
     }
 
     Field(const Field&) = delete;
@@ -156,14 +168,16 @@ public:
     }
     */
 
+    bool inRange(const Point& pt) const noexcept {
+        return signedInRange(pt) > 0;
+    }
+
     CellType& at(const Point& pt) {
-        // std::cerr << pt.X << ", " << pt.Y << '\n';
-        return field_.at(GetIndexByPoint(pt));
+        return field_[safeIndexByPoint(pt)];
     }
 
     const CellType& at(const Point& pt) const {
-        // std::cerr << pt.X << ", " << pt.Y << '\n';
-        return field_.at(GetIndexByPoint(pt));
+        return field_[safeIndexByPoint(pt)];
     }
 
     const Point min() const noexcept {
