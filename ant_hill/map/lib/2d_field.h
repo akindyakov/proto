@@ -145,7 +145,7 @@ public:
     using FieldStorageType = std::vector<TCell>;
 
 public:
-    Field(Vector size, Point min=Point{0, 0})
+    explicit Field(Vector size, Point min=Point{0, 0})
         : size_(size)
         , min_(min)
         , field_(size_.cube())
@@ -158,18 +158,8 @@ public:
     Field& operator=(const Field&) = delete;
     Field& operator=(Field&&) = default;
 
-    /**
-    Measure GetXSize() const {
-        return size_.X;
-    }
-
-    Measure GetYSize() const {
-        return size_.Y;
-    }
-    */
-
     bool inRange(const Point& pt) const noexcept {
-        return signedInRange(pt) > 0;
+        return signedInRange(pt) >= 0;
     }
 
     CellType& at(const Point& pt) {
