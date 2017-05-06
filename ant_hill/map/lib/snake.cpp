@@ -162,7 +162,7 @@ SnakeObj SnakeObj::appear(
 
 size_t
 SnakeObj::size() const {
-    return tail_.size();
+    return tail_.size() + 1;
 }
 
 }
