@@ -304,11 +304,23 @@ i.l
 
 int main(int argn, char** argv) {
     try {
+        std::cerr << " - appear\n";
         appearTest();
+        std::cerr << " pass\n";
+        std::cerr << " - frontMove\n";
         frontMoveTest();
+        std::cerr << " pass\n";
+        std::cerr << " - backMove\n";
         backMoveTest();
+        std::cerr << " pass\n";
+        std::cerr << " - pickUpAndDrop\n";
         pickUpAndDropTest();
+        std::cerr << " pass\n";
+        std::cerr << " - lookTo\n";
+        lookToTest();
+        std::cerr << " pass\n";
     } catch (const std::exception& except) {
+        std::cerr << "fail\n";
         std::cerr << except.what() << std::endl;
         return 1;
     }

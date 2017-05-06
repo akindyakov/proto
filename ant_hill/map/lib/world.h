@@ -69,8 +69,10 @@ struct WorldCell {
 
 class IObject;
 
-class World {
+class World
+{
 public:
+    using Cell = WorldCell;
     using Field = Field<WorldCell>;
 
     Field field_;
@@ -128,11 +130,14 @@ public:
         , size_t segment
     ) const = 0;
 
+    virtual std::vector<RelativeDirection> pose() const = 0;
+
     virtual ObjectId id() const = 0;;
 };
 
-std::ostream& operator<<(std::ostream& is, const ObjectId& vect);
+std::ostream& operator<<(std::ostream& os, const ObjectId& vect);
 std::istream& operator>>(std::istream& is, ObjectId& vect);
+
 std::ostream& operator<<(std::ostream& os, const Map::WorldCell& cell);
 std::istream& operator>>(std::istream& is, Map::WorldCell& cell);
 

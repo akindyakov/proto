@@ -11,7 +11,7 @@ class SnakeObj
     : public IObject
 {
 public:
-    SnakeObj(
+    explicit SnakeObj(
         Point head
         , std::vector<Map::Direction> tail
         , ObjectId id
