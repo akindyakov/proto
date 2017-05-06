@@ -43,8 +43,19 @@ const char MapSymbols::GetSymbol(EMaterial m) const {
         throw Exception("Unexpected material code")
             << "[" << static_cast<int>(m) << "]";
     }
-    // std::cerr << "[" << it->second << "]\n";
     return it->second;
+}
+
+std::ostream& operator<<(std::ostream& os, const EMaterial& material) {
+    os << GetSymbolMap().GetSymbol(material);
+    return os;
+}
+
+std::istream& operator>>(std::istream& is, EMaterial& material) {
+    auto ch = char{0};
+    is.get(ch);
+    material = GetSymbolMap().GetMaterial(ch);
+    return is;
 }
 
 }  // namespace Map

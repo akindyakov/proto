@@ -40,4 +40,7 @@ private:
 
 const MapSymbols& GetSymbolMap();
 
+std::ostream& operator<<(std::ostream& is, const EMaterial& material);
+std::istream& operator>>(std::istream& is, EMaterial& material);
+
 }  // namespace Map
