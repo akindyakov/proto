@@ -122,10 +122,10 @@ public:
         World::Field& field
     ) = 0;
 
-    virtual void look(
-        World::Field& field
-        , Map::RelativeDirection
-        , size_t segment = 0
+    virtual const World::Cell& lookTo(
+        const World::Field& field
+        , RelativeDirection to
+        , size_t segment
     ) const = 0;
 
     virtual ObjectId id() const = 0;;

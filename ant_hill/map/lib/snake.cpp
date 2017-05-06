@@ -126,9 +126,9 @@ void SnakeObj::popBackGrain(
 ) {
 }
 
-void SnakeObj::look(
-    World::Field& field
-    , RelativeDirection
+const World::Cell& SnakeObj::lookTo(
+    const World::Field& field
+    , RelativeDirection to
     , size_t segment
 ) const {
 }
