@@ -106,35 +106,50 @@ void SnakeObj::look(
 
 SnakeObj SnakeObj::appear(
     World::Field& where
-    , const Chain<RelativeDirection, EMaterial>& chain
+    , const std::vector<EMaterial>& body
     , ObjectId id
 ) {
+    /**
+    // сделай тут тупой поиск свободных мест нужного размера без всяких цепочек
+    */
+    auto chain = std::vector<RelativeDirection>(
+        body.size() - 1,
+        Map::RelativeDirection::Forward()
+    );
     auto start = Point{0, 0};
     for (start.Y = where.min().Y; start.Y < where.max().Y; ++start.Y) {
         for (start.X = where.min().X; start.X < where.max().X; ++start.X) {
             auto startDir = Direction::North();
             while (startDir.counter() == 0) {
                 bool vacant = true;
-                {
+                if (where.inRange(start) && where.at(start).isFree()) {
                     auto pt = start;
                     for (auto& el : chain) {
-                        pt = el.from.Turn(startDir).MovePoint(pt);
+                        pt = el.Turn(startDir).MovePoint(pt);
                         if (!where.inRange(pt) || !where.at(pt).isFree()) {
                             vacant = false;
                             break;
                         }
                     }
+                } else {
+                    vacant = false;
                 }
                 if (vacant) {
-                    auto pt = start;
+                    auto materialIt = body.begin();
+                    auto& cell = where.at(start);
+                    cell.objectId = id;
+                    cell.grain = *materialIt;
+                    ++materialIt;
                     auto tail = std::vector<Map::Direction>{};
+                    auto pt = start;
                     for (auto& el : chain) {
-                        auto from = el.from.Turn(startDir);
+                        auto from = el.Turn(startDir);
                         tail.push_back(from);
                         pt = from.MovePoint(pt);
                         auto& cell = where.at(pt);
-                        cell.grain = el.value;
                         cell.objectId = id;
+                        cell.grain = *materialIt;
+                        ++materialIt;
                     }
                     return SnakeObj(pt, tail, id);
                 }

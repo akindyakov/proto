@@ -6,14 +6,14 @@
 #include <sstream>
 #include <string>
 
-void AppearTest() {
-    auto chain = Map::Chain<Map::RelativeDirection, Map::EMaterial>{
-        {Map::RelativeDirection::Forward(), Map::EMaterial::AntBody},
-        {Map::RelativeDirection::Forward(), Map::EMaterial::AntHead},
-        {Map::RelativeDirection::Left(),    Map::EMaterial::Water},
+void appearTest() {
+    auto chain = std::vector<Map::EMaterial>{
+        Map::EMaterial::AntBody,
+        Map::EMaterial::AntHead,
+        Map::EMaterial::Water,
     };
     {
-        std::string text = R"FieldMap(<5,5>
+        std::string text = R"FieldMap(<5,4>
 (0,0)
 .....
 .....
@@ -28,12 +28,11 @@ void AppearTest() {
             chain,
             Map::ObjectId(2)
         );
-        std::string rightAnswer = R"FieldMap(<5,5>
+        std::string rightAnswer = R"FieldMap(<5,4>
 (0,0)
-.#X..
-..a..
-.....
-.....
+#....
+X....
+a....
 .....
 )FieldMap";
         auto out = std::ostringstream();
@@ -41,13 +40,12 @@ void AppearTest() {
         ValidateEqual(rightAnswer, out.str());
     }
     {
-        std::string text = R"FieldMap(<5,5>
+        std::string text = R"FieldMap(<5,4>
 (0,0)
 iiiii
-ii..i
 ii.ii
-iiiii
-iiiii
+ii.ii
+ii.ii
 )FieldMap";
         auto in = std::istringstream(text);
         auto field = Map::ScanFromText<Map::WorldCell>(in);
@@ -56,13 +54,12 @@ iiiii
             chain,
             Map::ObjectId(2)
         );
-        std::string rightAnswer = R"FieldMap(<5,5>
+        std::string rightAnswer = R"FieldMap(<5,4>
 (0,0)
 iiiii
-iiXai
 ii#ii
-iiiii
-iiiii
+iiXii
+iiaii
 )FieldMap";
         auto out = std::ostringstream();
         Map::PrintToText(out, field);
@@ -70,9 +67,60 @@ iiiii
     }
 }
 
+void frontMoveTest() {
+    auto chain = std::vector<Map::EMaterial>{
+        Map::EMaterial::AntBody,
+        Map::EMaterial::AntHead,
+    };
+    std::string text = R"FieldMap(<5,5>
+(0,0)
+.....
+.....
+.....
+.....
+.....
+)FieldMap";
+    auto in = std::istringstream(text);
+    auto field = Map::ScanFromText<Map::WorldCell>(in);
+    auto ant = Map::SnakeObj::appear(
+        field,
+        chain,
+        Map::ObjectId(2)
+    );
+    Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Forward());
+    Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Forward());
+    Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Forward());
+    Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Right());
+    Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Forward());
+    Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Forward());
+    Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Forward());
+    Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Right());
+    Map::PrintToText(std::cerr, field);
+    auto out = std::ostringstream();
+    Map::PrintToText(out, field);
+    std::string rightAnswer = R"FieldMap(<5,5>
+(0,0)
+.....
+.....
+.....
+....X
+....#
+)FieldMap";
+    ValidateEqual(rightAnswer, out.str());
+}
+
 int main(int argn, char** argv) {
     try {
-        AppearTest();
+        appearTest();
+        frontMoveTest();
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;
         return 1;

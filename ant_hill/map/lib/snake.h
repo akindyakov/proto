@@ -65,7 +65,7 @@ public:
 
     static SnakeObj appear(
         World::Field& where
-        , const Chain<RelativeDirection, EMaterial>& chain
+        , const std::vector<EMaterial>& body
         , ObjectId id
     );
 
