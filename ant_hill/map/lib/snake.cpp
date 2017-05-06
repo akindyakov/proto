@@ -54,9 +54,53 @@ SnakeObj::frontMove(
 }
 
 void SnakeObj::backMove(
-    World::Field& /*field*/
-    , RelativeDirection /*backDirection*/
+    World::Field& field
+    , RelativeDirection backDirection
 ) {
+    auto direction = backDirection.Turn(tail_.back());
+    // get last point
+    auto pt = head_;
+    for (const auto& dir : tail_) {
+        pt = dir.Inverse().MovePoint(pt);
+    }
+    auto prev = direction.MovePoint(pt);
+    /*
+    [head]
+     ...
+    [tail] <- pt
+    [new place] <- prev
+    */
+    if (!field.at(prev).isFree()) {
+        throw Exception("There is no free space for that move.");
+    }
+    std::swap(
+        field.at(prev),
+        field.at(pt)
+    );
+    std::swap(prev, pt);
+    /*
+    [head]
+     ...
+    [tail] <- prev
+    [new place] <- pt
+    */
+    for (const auto& dir : tail_) {
+        pt = dir.MovePoint(prev);
+        std::swap(
+            field.at(prev),
+            field.at(pt)
+        );
+        std::swap(prev, pt);
+    }
+    /*
+    [old head] <- prev
+    [head] <- pt
+     ...
+    [tail]
+    */
+    std::swap(pt, head_);
+    tail_.push_back(direction.Inverse());
+    tail_.pop_front();
 }
 
 void SnakeObj::pushFrontGrain(

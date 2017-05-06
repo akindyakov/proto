@@ -87,23 +87,23 @@ void frontMoveTest() {
         chain,
         Map::ObjectId(2)
     );
-    Map::PrintToText(std::cerr, field);
+    //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Forward());
-    Map::PrintToText(std::cerr, field);
+    //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Forward());
-    Map::PrintToText(std::cerr, field);
+    //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Forward());
-    Map::PrintToText(std::cerr, field);
+    //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Right());
-    Map::PrintToText(std::cerr, field);
+    //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Forward());
-    Map::PrintToText(std::cerr, field);
+    //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Forward());
-    Map::PrintToText(std::cerr, field);
+    //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Forward());
-    Map::PrintToText(std::cerr, field);
+    //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Right());
-    Map::PrintToText(std::cerr, field);
+    //**/ Map::PrintToText(std::cerr, field);
     auto out = std::ostringstream();
     Map::PrintToText(out, field);
     std::string rightAnswer = R"FieldMap(<5,5>
@@ -117,10 +117,58 @@ void frontMoveTest() {
     ValidateEqual(rightAnswer, out.str());
 }
 
+void backMoveTest() {
+    auto chain = std::vector<Map::EMaterial>{
+        Map::EMaterial::AntBody,
+        Map::EMaterial::AntHead,
+    };
+    std::string text = R"FieldMap(<5,4>
+(0,0)
+.....
+.....
+.....
+.....
+)FieldMap";
+    auto in = std::istringstream(text);
+    auto field = Map::ScanFromText<Map::WorldCell>(in);
+    auto ant = Map::SnakeObj::appear(
+        field,
+        chain,
+        Map::ObjectId(2)
+    );
+    /**/ Map::PrintToText(std::cerr, field);
+    ant.backMove(field, Map::RelativeDirection::Right());
+    /**/ Map::PrintToText(std::cerr, field);
+    ant.backMove(field, Map::RelativeDirection::Backward());
+    /**/ Map::PrintToText(std::cerr, field);
+    ant.backMove(field, Map::RelativeDirection::Backward());
+    /**/ Map::PrintToText(std::cerr, field);
+    ant.backMove(field, Map::RelativeDirection::Backward());
+    /**/ Map::PrintToText(std::cerr, field);
+    ant.backMove(field, Map::RelativeDirection::Right());
+    /**/ Map::PrintToText(std::cerr, field);
+    ant.backMove(field, Map::RelativeDirection::Backward());
+    /**/ Map::PrintToText(std::cerr, field);
+    ant.backMove(field, Map::RelativeDirection::Backward());
+    /**/ Map::PrintToText(std::cerr, field);
+
+    auto out = std::ostringstream();
+    Map::PrintToText(out, field);
+    std::string rightAnswer = R"FieldMap(<5,4>
+(0,0)
+.....
+.....
+....X
+....#
+)FieldMap";
+    ValidateEqual(rightAnswer, out.str());
+}
+
 int main(int argn, char** argv) {
     try {
         appearTest();
         frontMoveTest();
+        backMoveTest();
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;
         return 1;
