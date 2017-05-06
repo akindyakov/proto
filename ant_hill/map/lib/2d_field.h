@@ -19,10 +19,10 @@ using Measure = int;
 class Point;
 class Vector;
 
-std::ostream& operator<<(std::ostream& os, const Map::Point& pt);
-std::ostream& operator<<(std::ostream& os, const Map::Vector& vect);
-std::istream& operator>>(std::istream& is, Map::Point& pt);
-std::istream& operator>>(std::istream& is, Map::Vector& vect);
+std::ostream& operator<<(std::ostream& os, const Point& pt);
+std::ostream& operator<<(std::ostream& os, const Vector& vect);
+std::istream& operator>>(std::istream& is, Point& pt);
+std::istream& operator>>(std::istream& is, Vector& vect);
 
 
 class Point {

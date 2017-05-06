@@ -22,10 +22,32 @@ public:
     {
     }
 
+    constexpr bool isValid() noexcept {
+        return id != InvalidId_;
+    }
+
     static constexpr const ObjectId Invalid() noexcept {
         return ObjectId(InvalidId_);
     }
 };
+
+inline bool operator == (
+    const ObjectId& first
+    , const ObjectId& second
+) {
+    return (
+        first.id == second.id
+    );
+}
+
+inline bool operator != (
+    const ObjectId& first
+    , const ObjectId& second
+) {
+    return (
+        first.id != second.id
+    );
+}
 
 struct WorldCell {
     explicit WorldCell() = default;
@@ -109,8 +131,11 @@ public:
     virtual ObjectId id() const = 0;;
 };
 
+std::ostream& operator<<(std::ostream& is, const ObjectId& vect);
+std::istream& operator>>(std::istream& is, ObjectId& vect);
 std::ostream& operator<<(std::ostream& os, const Map::WorldCell& cell);
 std::istream& operator>>(std::istream& is, Map::WorldCell& cell);
+
 
 }  // namespace Map
 

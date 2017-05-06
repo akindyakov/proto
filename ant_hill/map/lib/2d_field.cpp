@@ -74,7 +74,7 @@ namespace {
     static constexpr auto Space = ' ';
 }
 
-std::ostream& operator<<(std::ostream& os, const Map::Point& pt) {
+std::ostream& operator<<(std::ostream& os, const Point& pt) {
     os
         << PointLeftBrace
         << pt.X << DimensionsDelimiter << pt.Y
@@ -83,7 +83,7 @@ std::ostream& operator<<(std::ostream& os, const Map::Point& pt) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const Map::Vector& vect) {
+std::ostream& operator<<(std::ostream& os, const Vector& vect) {
     os
         << VectorLeftBrace
         << vect.X << DimensionsDelimiter << vect.Y
@@ -92,7 +92,7 @@ std::ostream& operator<<(std::ostream& os, const Map::Vector& vect) {
     return os;
 }
 
-std::istream& operator>>(std::istream& is, Map::Point& pt) {
+std::istream& operator>>(std::istream& is, Point& pt) {
     auto ch = Space;
     is >> std::skipws >> ch;
     Validate(ch, PointLeftBrace);
@@ -104,7 +104,7 @@ std::istream& operator>>(std::istream& is, Map::Point& pt) {
     return is;
 }
 
-std::istream& operator>>(std::istream& is, Map::Vector& vect) {
+std::istream& operator>>(std::istream& is, Vector& vect) {
     is >> std::skipws;
     auto ch = Space;
     is >> std::skipws >> ch;

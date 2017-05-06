@@ -30,8 +30,8 @@ SnakeObj::frontMove(
 ) {
     // the last move vector is our direction now
     auto direction = frontDirection.Turn(tail_.front());
-    // lock here
     auto pt = direction.MovePoint(head_);
+    // lock here
     if (!field.at(pt).isFree()) {
         throw Exception("There is no free space for that move.");
     }
@@ -70,6 +70,7 @@ void SnakeObj::backMove(
     [tail] <- pt
     [new place] <- prev
     */
+    // lock here
     if (!field.at(prev).isFree()) {
         throw Exception("There is no free space for that move.");
     }
@@ -107,11 +108,28 @@ void SnakeObj::pushFrontGrain(
     World::Field& field
     , RelativeDirection frontDirection
 ) {
+    auto direction = frontDirection.Turn(tail_.front());
+    auto pt = direction.MovePoint(head_);
+    // lock here
+    auto& cell = field.at(pt);
+    if (cell.objectId.isValid()) {
+        throw Exception("This grain belongs to other ant. Theft is outlow!");
+    }
+    cell.objectId = id_;
+    std::swap(pt, head_);
+    tail_.push_front(direction);
 }
 
 void SnakeObj::popFrontGrain(
     World::Field& field
 ) {
+    if (tail_.empty()) {
+        throw Exception("There is nothing to drop.");
+    }
+    // lock here
+    field.at(head_).objectId = ObjectId::Invalid();
+    head_ = tail_.front().Inverse().MovePoint(head_);
+    tail_.pop_front();
 }
 
 void SnakeObj::pushBackGrain(
