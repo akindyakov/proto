@@ -6,23 +6,6 @@
 
 namespace Map {
 
-// std::vector<Map::ShortMovement>
-// SnakeObj::DiffHeadMove(
-//     Map::Direction direction
-// ) const {
-//     auto diff = std::vector<Map::ShortMovement>{};
-//     auto nextPoint = Map::Point{head_};
-//     diff.emplace_back(nextPoint, direction);
-//     for (const auto& hDir : tail_) {
-//        nextPoint = hDir.Inverse().MovePoint(nextPoint);
-//        diff.emplace_back(nextPoint, hDir);
-//     }
-//     if (direction == tail_.begin()->Inverse()) {
-//         std::reverse(diff.begin(), diff.end());
-//     }
-//     return diff;
-// }
-
 void
 SnakeObj::frontMove(
     World::Field& field
