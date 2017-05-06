@@ -271,12 +271,58 @@ void RelativeDirectionTurn() {
     }
 }
 
+void DirectionSub() {
+    {
+        auto rdir = Map::Direction::North() - Map::Direction::North();
+        Validate(
+            rdir,
+            Map::RelativeDirection::Forward()
+        );
+    }
+    {
+        auto rdir = Map::Direction::West() - Map::Direction::West();
+        Validate(
+            rdir,
+            Map::RelativeDirection::Forward()
+        );
+    }
+    {
+        auto rdir = Map::Direction::East() - Map::Direction::West();
+        Validate(
+            rdir,
+            Map::RelativeDirection::Backward()
+        );
+    }
+    {
+        auto rdir = Map::Direction::West() - Map::Direction::East();
+        Validate(
+            rdir,
+            Map::RelativeDirection::Backward()
+        );
+    }
+    {
+        auto rdir = Map::Direction::South() - Map::Direction::East();
+        Validate(
+            rdir,
+            Map::RelativeDirection::Right()
+        );
+    }
+    {
+        auto rdir = Map::Direction::South() - Map::Direction::West();
+        Validate(
+            rdir,
+            Map::RelativeDirection::Left()
+        );
+    }
+}
+
 int main(int argn, char** argv) {
     try {
         DirectionInverse();
         DirectionDiff();
         DirectionMovePoint();
         RelativeDirectionTurn();
+        DirectionSub();
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;
         return 1;

@@ -153,21 +153,15 @@ const World::Cell& SnakeObj::lookTo(
     return field.at(toPt);
 }
 
-// void
-// SnakeObj::AppendPoint(
-//     Map::Direction direction
-// ) {
-//     head_ = direction.MovePoint(head_);
-//     tail_.push_back(direction);
-// }
-//
-// void
-// SnakeObj::DropPoint(Map::Direction direction) {
-//     if (Size() < 3) {
-//         throw AntHill::Exception("Ant length must be at list 2");
-//     }
-//     tail_.erase(tail_.begin());
-// }
+std::vector<RelativeDirection>
+SnakeObj::pose() const {
+    auto pose_ = std::vector<RelativeDirection>{};
+    auto prev = this->tail_.front();
+    for (const auto& cur : tail_) {
+        pose_.push_back(prev - cur);
+    }
+    return pose_;
+}
 
 SnakeObj SnakeObj::appear(
     World::Field& where

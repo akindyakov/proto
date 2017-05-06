@@ -32,6 +32,11 @@ private:
     {
     }
 
+    friend RelativeDirection constexpr operator - (
+        Direction first
+        , Direction second
+    ) noexcept;
+
 public:
     Direction() = delete;
 
@@ -65,7 +70,7 @@ public:
     constexpr void normalize() noexcept {
         counter_ += compass_ / all_;
         compass_ = compass_ % all_;
-        compass_ = compass_ < 0 ? all_ - compass_ : compass_;
+        compass_ = compass_ < 0 ? all_ + compass_ : compass_;
     }
 
     constexpr const Direction Inverse() const noexcept {
@@ -146,10 +151,6 @@ private:
     static constexpr Type right_ = 3;
     static constexpr Type all_ = 4;
 
-    constexpr void normalize() noexcept {
-        rdir_ = rdir_ % all_;
-    }
-
     constexpr RelativeDirection(
         Type dir
     ) noexcept
@@ -159,6 +160,17 @@ private:
 
     friend std::ostream& operator<<(std::ostream&, const Map::RelativeDirection&);
     friend std::istream& operator>>(std::istream&, Map::RelativeDirection&);
+
+    friend RelativeDirection constexpr operator - (
+        Direction first
+        , Direction second
+    ) noexcept;
+
+    friend bool constexpr operator == (
+        RelativeDirection first
+        , RelativeDirection second
+    ) noexcept;
+
 public:
     static constexpr const RelativeDirection Forward() noexcept {
         return forward_;
@@ -176,6 +188,11 @@ public:
 public:
     RelativeDirection() = delete;
 
+    constexpr void normalize() noexcept {
+        rdir_ = rdir_ % all_;
+        rdir_ = rdir_ < 0 ? all_ + rdir_ : rdir_;
+    }
+
     constexpr const Direction Turn(
         Direction dir
     ) const noexcept {
@@ -185,6 +202,32 @@ public:
     }
 };
 
+inline bool constexpr operator == (
+    RelativeDirection first
+    , RelativeDirection second
+) noexcept {
+    return first.rdir_ == second.rdir_;
+}
+
+inline bool constexpr operator != (
+    RelativeDirection first
+    , RelativeDirection second
+) noexcept {
+    return !(first == second);
+}
+
+inline RelativeDirection constexpr operator - (
+    Direction first
+    , Direction second
+) noexcept {
+    auto dir = RelativeDirection{
+        static_cast<RelativeDirection::Type>(
+            first.compass_ - second.compass_
+        )
+    };
+    dir.normalize();
+    return dir;
+}
 
 struct Movement {
     Point To;

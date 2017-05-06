@@ -69,11 +69,13 @@ public:
         , ObjectId id
     );
 
-    void look(
-        World::Field& field
-        , RelativeDirection
-        , size_t segment = 0
+    const World::Cell& lookTo(
+        const World::Field& field
+        , RelativeDirection to
+        , size_t segment
     ) const override;
+
+    std::vector<RelativeDirection> pose() const override;
 
     ObjectId id() const override {
         return id_;
@@ -81,10 +83,10 @@ public:
 
 private:
     /**
-    *          /^^^\          /^^^\            /^^^^^^\
-    * tail_back |   | tail_... |   | tail_front | head_|
-    *   *-------> *------------> *--------------->  |
-    *          \___/          \___/            \______/
+    * /^^^^^^\            /^^^\          /^^^\           /^^^\
+    * | head_| tail_front |   | tail_... |   | tail_back |   |
+    * |    <---------------* <------------* <-------------*  |
+    * \______/            \___/          \___/           \___/
     */
     ObjectId id_;
     Map::Point head_;
