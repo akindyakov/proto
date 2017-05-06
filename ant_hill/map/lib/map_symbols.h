@@ -16,7 +16,7 @@ enum class EMaterial {
     Water,
     AntHead,
     AntBody,
-    Invalid
+    Unknown
 };
 
 class MapSymbols {

@@ -20,7 +20,7 @@ MapSymbols::MapSymbols()
         {EMaterial::Water,        'a'},
         {EMaterial::AntHead,      'X'},
         {EMaterial::AntBody,      '#'},
-        {EMaterial::Invalid,      '?'},
+        {EMaterial::Unknown,      '?'},
     }
 {
     for (const auto& p : MaterialToChar) {
