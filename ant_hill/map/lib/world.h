@@ -130,7 +130,7 @@ public:
         , size_t segment
     ) const = 0;
 
-    virtual std::vector<RelativeDirection> pose() const = 0;
+    virtual std::vector<RelativeDirection> getPose() const = 0;
 
     virtual ObjectId id() const = 0;;
 };

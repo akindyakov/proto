@@ -154,7 +154,7 @@ const World::Cell& SnakeObj::lookTo(
 }
 
 std::vector<RelativeDirection>
-SnakeObj::pose() const {
+SnakeObj::getPose() const {
     auto pose_ = std::vector<RelativeDirection>{};
     auto prev = this->tail_.front();
     for (const auto& cur : tail_) {

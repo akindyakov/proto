@@ -1,44 +1,61 @@
 [
     {
-        "name": "SeeGrain",
+        "name": "appear",
+        "returns" : 1
+    },
+    {
+        "name": "front_move",
         "params": {
-            "x": 1,
-            "y": 2
+            "id": 1,
+            "direction": 1
         },
         "returns" : 1
     },
     {
-        "name": "MoveGroup",
+        "name": "back_move",
         "params": {
-            "grains": [
-                {
-                    "from": {
-                        "x": 1,
-                        "y": 2
-                    },
-                    "direction": 1
-                }
-            ]
+            "id": 1,
+            "direction": 1
         },
         "returns" : 1
     },
     {
-        "name": "YieldMe",
+        "name": "pick_ut_front",
         "params": {
-            "body": [
-                {
-                    "direction": 1,
-                    "material": 1
-                }
-            ]
+            "id": 1,
+            "direction": 1
         },
-        "returns" : {
-            "x": 1,
-            "y": 2
-        }
+        "returns" : 1
     },
     {
-        "name" : "Ping",
+        "name": "drop_front",
+        "params": {
+            "id": 1,
+            "direction": 1
+        },
+        "returns" : 1
+    },
+    {
+        "name": "look_to",
+        "params": {
+            "id": 1,
+            "direction": 1
+        },
+        "returns" : 1
+    },
+    {
+        "name": "get_pose",
+        "params": {
+            "id": 1,
+            "pose": [1]
+        },
+        "returns" : 1
+    },
+    {
+        "name" : "ping",
+        "params": {
+            "id": 1
+        },
         "returns" : 0
     }
 ]

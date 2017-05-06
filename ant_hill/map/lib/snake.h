@@ -75,7 +75,7 @@ public:
         , size_t segment
     ) const override;
 
-    std::vector<RelativeDirection> pose() const override;
+    std::vector<RelativeDirection> getPose() const override;
 
     ObjectId id() const override {
         return id_;
