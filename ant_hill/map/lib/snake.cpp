@@ -131,6 +131,26 @@ const World::Cell& SnakeObj::lookTo(
     , RelativeDirection to
     , size_t segment
 ) const {
+    if (segment >= this->size()) {
+        throw Exception("There is no segment with number ") << segment;
+    }
+    auto vecIt = tail_.begin();
+    auto pt = head_;
+    for (size_t seg = 0; seg < segment; ++seg) {
+        pt = vecIt->Inverse().MovePoint(pt);
+        ++vecIt;
+    }
+
+    auto absTo = Direction::ToNowhere();
+    if (vecIt == tail_.end()) {
+        // the last segment situation
+        absTo = tail_.back();
+    } else {
+        absTo = *vecIt;
+    }
+    auto toPt = to.Turn(absTo).MovePoint(pt);
+    // lock here
+    return field.at(toPt);
 }
 
 // void

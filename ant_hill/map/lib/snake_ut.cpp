@@ -240,6 +240,68 @@ void pickUpAndDropTest() {
     ValidateEqual(rightAnswer, out.str());
 }
 
+void lookToTest() {
+    auto chain = std::vector<Map::EMaterial>{
+        Map::EMaterial::AntBody,
+        Map::EMaterial::AntHead,
+    };
+    std::string text = R"FieldMap(<3,4>
+(0,0)
+.w.
+m.a
+i.l
+?.s
+)FieldMap";
+    auto in = std::istringstream(text);
+    auto field = Map::ScanFromText<Map::WorldCell>(in);
+    auto antId = Map::ObjectId(131);
+    auto ant = Map::SnakeObj::appear(
+        field,
+        chain,
+        antId
+    );
+    {
+        auto cell = ant.lookTo(field, Map::RelativeDirection::Forward(), 0);
+        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
+        ValidateEqual(cell.grain, Map::EMaterial::EmptySpace);
+    }
+    {
+        auto cell = ant.lookTo(field, Map::RelativeDirection::Left(), 0);
+        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
+        ValidateEqual(cell.grain, Map::EMaterial::Iron);
+    }
+    {
+        auto cell = ant.lookTo(field, Map::RelativeDirection::Right(), 0);
+        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
+        ValidateEqual(cell.grain, Map::EMaterial::Loam);
+    }
+    {
+        auto cell = ant.lookTo(field, Map::RelativeDirection::Backward(), 0);
+        ValidateEqual(cell.objectId, antId);
+        ValidateEqual(cell.grain, Map::EMaterial::AntBody);
+    }
+    {
+        auto cell = ant.lookTo(field, Map::RelativeDirection::Forward(), 1);
+        ValidateEqual(cell.objectId, antId);
+        ValidateEqual(cell.grain, Map::EMaterial::AntHead);
+    }
+    {
+        auto cell = ant.lookTo(field, Map::RelativeDirection::Left(), 1);
+        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
+        ValidateEqual(cell.grain, Map::EMaterial::Marble);
+    }
+    {
+        auto cell = ant.lookTo(field, Map::RelativeDirection::Right(), 1);
+        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
+        ValidateEqual(cell.grain, Map::EMaterial::Water);
+    }
+    {
+        auto cell = ant.lookTo(field, Map::RelativeDirection::Backward(), 1);
+        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
+        ValidateEqual(cell.grain, Map::EMaterial::Wood);
+    }
+}
+
 int main(int argn, char** argv) {
     try {
         appearTest();
