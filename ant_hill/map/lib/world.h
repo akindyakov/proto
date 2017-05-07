@@ -133,6 +133,8 @@ public:
         ObjectId id
     ) const;
 
+    void print(std::ostream&) const;
+
 private:
     std::shared_ptr<IObject> findObject(
         ObjectId id

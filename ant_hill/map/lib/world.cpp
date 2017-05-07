@@ -105,6 +105,10 @@ std::shared_ptr<IObject> World::findObject(
     return obj;
 }
 
+void World::print(std::ostream& os) const {
+    PrintToText(os, this->field_);
+}
+
 std::ostream& operator<<(std::ostream& os, const ObjectId& oid) {
     os << oid.id;
     return os;
