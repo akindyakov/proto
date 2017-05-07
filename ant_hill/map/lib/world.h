@@ -2,6 +2,9 @@
 #include "map_symbols.h"
 #include "transaction.h"
 
+#include <mutex>
+#include <unordered_map>
+
 
 namespace Map {
 
@@ -49,6 +52,10 @@ inline bool operator != (
     );
 }
 
+// struct ObjectIdHash {
+//     std::hash<std::string>{}(s.first_name);
+// };
+
 struct WorldCell {
     explicit WorldCell() = default;
 
@@ -69,15 +76,63 @@ struct WorldCell {
 
 class IObject;
 
+const auto ObjectHash = [](const ObjectId& id) {
+    return std::hash<ObjectId::Type>{}(id.id);
+};
+
 class World
 {
 public:
     using Cell = WorldCell;
     using Field = Field<WorldCell>;
 
+    enum class Side {
+        Front,
+        Back,
+    };
+
+private:
     Field field_;
-    std::mutex fieldMutex;
-    std::map<ObjectId, std::shared_ptr<IObject>> objects_;
+    std::mutex globalMutex;
+    //std::map<ObjectId, std::shared_ptr<IObject>> objects_;
+    std::unordered_map<
+        ObjectId,
+        std::shared_ptr<IObject>,
+        decltype(ObjectHash)
+    > objects_;
+
+public:
+    void move(
+        ObjectId id
+        , Map::RelativeDirection direction
+        , Side side
+    );
+
+    void pickUpGrain(
+        ObjectId id
+        , Map::RelativeDirection direction
+        , Side side
+    );
+
+    void dropGrain(
+        ObjectId id
+        , Side side
+    );
+
+    const World::Cell& lookTo(
+        ObjectId id
+        , RelativeDirection to
+        , size_t segment
+    ) const;
+
+    std::vector<RelativeDirection> getPose(
+        ObjectId id
+    ) const;
+
+private:
+    std::shared_ptr<IObject> findObject(
+        ObjectId id
+    ) const;
 };
 
 class IObject
@@ -136,12 +191,12 @@ public:
     virtual ObjectId id() const = 0;;
 };
 
+
 std::ostream& operator<<(std::ostream& os, const ObjectId& vect);
 std::istream& operator>>(std::istream& is, ObjectId& vect);
 
 std::ostream& operator<<(std::ostream& os, const Map::WorldCell& cell);
 std::istream& operator>>(std::istream& is, Map::WorldCell& cell);
-
 
 }  // namespace Map
 

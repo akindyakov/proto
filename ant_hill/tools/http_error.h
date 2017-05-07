@@ -55,8 +55,27 @@ public:
     {
     }
 };
-//      : HTTPError(403, "Forbidden («запрещено»)[2][3];
-//      : HTTPError(404, "Not Found («не найдено»)[2][3];
+
+class NotFound
+    : public HTTPError
+{
+public:
+    explicit NotFound()
+        : HTTPError(404, "Not Found. ")
+    {
+    }
+};
+
+class LockedError
+    : public HTTPError
+{
+public:
+    explicit LockedError()
+        : HTTPError(423, "Locked .")
+    {
+    }
+};
+
 //      : HTTPError(405, "Method Not Allowed («метод не поддерживается»)[2][3];
 //      : HTTPError(406, "Not Acceptable («неприемлемо»)[2][3];
 //      : HTTPError(408, "Request Timeout («истекло время ожидания»)[2][3];
@@ -70,7 +89,7 @@ public:
 //      : HTTPError(416, "Requested Range Not Satisfiable («запрашиваемый диапазон не достижим»)[3];
 //      : HTTPError(417, "Expectation Failed («ожидаемое неприемлемо»)[3];
 //      : HTTPError(422, "Unprocessable Entity («необрабатываемый экземпляр»);
-//      : HTTPError(423, "Locked («заблокировано»);
+
 //      : HTTPError(424, "Failed Dependency («невыполненная зависимость»);
 //      : HTTPError(425, "Unordered Collection («неупорядоченный набор»)[8];
 //      : HTTPError(426, "Upgrade Required («необходимо обновление»);
