@@ -1,7 +1,9 @@
 [
     {
         "name": "appear",
-        "returns" : 1
+        "returns" : {
+            "id": 2
+        }
     },
     {
         "name": "front_move",
