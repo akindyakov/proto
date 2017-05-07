@@ -1,6 +1,6 @@
 #include "snake.h"
 
-#include <tools/tests/ut.h>
+#include <tools/http_error.h>
 
 #include <algorithm>
 
@@ -16,7 +16,7 @@ SnakeObj::frontMove(
     auto pt = direction.MovePoint(head_);
     // lock here
     if (!field.at(pt).isFree()) {
-        throw Exception("There is no free space for that move.");
+        throw Forbidden() << "There is no free space for that move.";
     }
     using std::swap;
     std::swap(head_, pt);
@@ -55,7 +55,7 @@ void SnakeObj::backMove(
     */
     // lock here
     if (!field.at(prev).isFree()) {
-        throw Exception("There is no free space for that move.");
+        throw Forbidden() << "There is no free space for that move.";
     }
     std::swap(
         field.at(prev),
@@ -96,7 +96,7 @@ void SnakeObj::pushFrontGrain(
     // lock here
     auto& cell = field.at(pt);
     if (cell.objectId.isValid()) {
-        throw Exception("This grain belongs to other ant. Theft is outlow!");
+        throw Forbidden() << "This grain belongs to other ant. Theft is outlow!";
     }
     cell.objectId = id_;
     std::swap(pt, head_);
@@ -107,7 +107,7 @@ void SnakeObj::popFrontGrain(
     World::Field& field
 ) {
     if (tail_.empty()) {
-        throw Exception("There is nothing to drop.");
+        throw BadRequest() << "There is nothing to drop.";
     }
     // lock here
     field.at(head_).objectId = ObjectId::Invalid();
@@ -132,7 +132,7 @@ const World::Cell& SnakeObj::lookTo(
     , size_t segment
 ) const {
     if (segment >= this->size()) {
-        throw Exception("There is no segment with number ") << segment;
+        throw BadRequest() << "There is no segment with number " << segment;
     }
     auto vecIt = tail_.begin();
     auto pt = head_;
@@ -216,7 +216,7 @@ SnakeObj SnakeObj::appear(
             }
         }
     }
-    throw Exception("There is no vacant position");
+    throw InternalServerError("There is no vacant position");
 }
 
 size_t

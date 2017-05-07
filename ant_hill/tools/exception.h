@@ -12,10 +12,13 @@ private:
     std::string whatHappen;
 
 public:
-    Exception() {}
+    Exception() = default;
+
     Exception(const std::string& what)
         : whatHappen(what) {
     }
+
+    virtual ~Exception() = default;
 
     template<typename T>
     Exception& operator<<(const T& val) {

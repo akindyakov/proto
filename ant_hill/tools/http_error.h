@@ -15,6 +15,7 @@ public:
         , code_(code)
     {
     }
+    virtual ~HTTPError() = default;
 
     int code() {
         return code_;
@@ -43,6 +44,14 @@ class Unauthorized
     }
 };
 
+class Forbidden
+    : public HTTPError
+{
+    explicit Forbidden()
+        : HTTPError(403, "Forbidden. ")
+    {
+    }
+};
 //      : HTTPError(403, "Forbidden («запрещено»)[2][3];
 //      : HTTPError(404, "Not Found («не найдено»)[2][3];
 //      : HTTPError(405, "Method Not Allowed («метод не поддерживается»)[2][3];
@@ -68,6 +77,22 @@ class Unauthorized
 //      : HTTPError(444, "Закрывает соединение без передачи заголовка ответа. Нестандартный код[10];
 //      : HTTPError(449, "Retry With («повторить с»)[1];
 //      : HTTPError(451, "Unavailable For Legal Reasons («недоступно по юридическим причинам»)[11].
+
 // 5xx: Server Error (ошибка сервера):
-//      : HTTPError(500 Internal Server Error («внутренняя ошибка сервера»)[2][3];
-//      : HTTPError(501 Not Implemented («не реализовано»)[2][3];
+class InternalServerError
+    : public HTTPError
+{
+    explicit InternalServerError()
+        : HTTPError(500, "Internal Server Error. ")
+    {
+    }
+};
+
+class NotImplemented
+    : public HTTPError
+{
+    explicit NotImplemented()
+        : HTTPError(501, "Not Implemented. ")
+    {
+    }
+};
