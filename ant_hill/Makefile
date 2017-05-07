@@ -6,7 +6,7 @@ export CC := clang++ $(CC_FLAGS)
 
 LOCAL_PRODUCT = $(PRODUCT)
 
-TARGETS := map #ant doc
+TARGETS := map ant doc
 
 .PHONY: all $(TARGETS)
 
