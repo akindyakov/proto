@@ -23,16 +23,25 @@ void Scout::appear() {
 
 void Scout::step() {
     try {
-        auto view = this->client_.look_to(
-            0,
-            id_.id,
-            0
-        );
-        if (view["material"] == 0) {
-            this->client_.front_move(
-                0,
-                id_.id
+        for (const auto& dir : {
+            Map::RelativeDirection::Forward(),
+            Map::RelativeDirection::Left(),
+            Map::RelativeDirection::Backward(),
+            Map::RelativeDirection::Right(),
+        }) {
+            const auto segment = 0;  // head
+            auto view = this->client_.look_to(
+                dir.toInt(),
+                id_.id,
+                segment
             );
+            if (view["material"].asInt() == 0) {
+                this->client_.front_move(
+                    dir.toInt(),
+                    id_.id
+                );
+                break;
+            }
         }
     } catch (const jsonrpc::JsonRpcException& err) {
         std::cerr << err.what();
