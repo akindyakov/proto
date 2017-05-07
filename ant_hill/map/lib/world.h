@@ -76,6 +76,7 @@ public:
     using Field = Field<WorldCell>;
 
     Field field_;
+    std::mutex fieldMutex;
     std::map<ObjectId, std::shared_ptr<IObject>> objects_;
 };
 
@@ -90,7 +91,7 @@ public:
     virtual void frontMove(
         World::Field& field
         , Map::RelativeDirection frontDirection
-    ) = 0;;
+    ) = 0;
 
     /**
     * Move back to specified direction
