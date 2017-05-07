@@ -4,7 +4,7 @@ PRODUCT := $(ABS_PRODUCT)/ant/app
 
 all: prepare $(PRODUCT)/ant
 
-$(PRODUCT)/ant: $(PRODUCT)/main.o $(PRODUCT)/args.o
+$(PRODUCT)/ant: $(PRODUCT)/main.o $(PRODUCT)/args.o $(ABS_PRODUCT)/ant/lib/libant.a
 	$(CC) \
     -lcurl \
     -ljsoncpp \
