@@ -52,10 +52,6 @@ inline bool operator != (
     );
 }
 
-// struct ObjectIdHash {
-//     std::hash<std::string>{}(s.first_name);
-// };
-
 struct WorldCell {
     explicit WorldCell() = default;
 
