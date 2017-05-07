@@ -6,6 +6,14 @@
 
 namespace Map {
 
+World::World(
+    std::istream& fieldStream
+)
+    : field_(Map::ScanFromText<World::Cell>(fieldStream))
+    , objects_(128, ObjectHash)
+{
+}
+
 void World::move(
     ObjectId id
     , Map::RelativeDirection direction

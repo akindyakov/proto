@@ -102,6 +102,10 @@ private:
     > objects_;
 
 public:
+    explicit World(
+        std::istream& fieldStream
+    );
+
     void move(
         ObjectId id
         , Map::RelativeDirection direction
