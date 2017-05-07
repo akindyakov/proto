@@ -216,7 +216,7 @@ SnakeObj SnakeObj::appear(
             }
         }
     }
-    throw InternalServerError("There is no vacant position");
+    throw InternalServerError() << "There is no vacant position";
 }
 
 size_t

@@ -29,6 +29,7 @@ private:
 class BadRequest
     : public HTTPError
 {
+public:
     explicit BadRequest()
         : HTTPError(400, "Bad Request. ")
     {
@@ -38,6 +39,7 @@ class BadRequest
 class Unauthorized
     : public HTTPError
 {
+public:
     explicit Unauthorized()
         : HTTPError(401, "Unauthorized. ")
     {
@@ -47,6 +49,7 @@ class Unauthorized
 class Forbidden
     : public HTTPError
 {
+public:
     explicit Forbidden()
         : HTTPError(403, "Forbidden. ")
     {
@@ -82,6 +85,7 @@ class Forbidden
 class InternalServerError
     : public HTTPError
 {
+public:
     explicit InternalServerError()
         : HTTPError(500, "Internal Server Error. ")
     {
@@ -91,6 +95,7 @@ class InternalServerError
 class NotImplemented
     : public HTTPError
 {
+public:
     explicit NotImplemented()
         : HTTPError(501, "Not Implemented. ")
     {
