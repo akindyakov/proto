@@ -1,5 +1,4 @@
-#include <map/lib/2d_field.h>
-#include <map/lib/transaction.h>
+#include <map/lib/world.h>
 #include <map/rpc/server.h>
 
 #include <jsonrpccpp/server/connectors/httpserver.h>
@@ -31,23 +30,23 @@ class MapServer
 {
 public:
     MapServer(
-        std::unique_ptr<jsonrpc::AbstractServerConnector>&& connector
-        , Map::Field& field
+        std::unique_ptr<jsonrpc::AbstractServerConnector> connector
+        , std::istream& fieldStream
     );
 
-    int SeeGrain(int x, int y) override;
-    int MoveGroup(const Json::Value& grains) override;
+    int appear() override;
+    int front_move(int direction, int id) override;
+    int back_move(int direction, int id) override;
+    int pick_ut_front(int direction, int id) override;
+    int drop_front(int direction, int id) override;
+    int look_to(int direction, int id) override;
+    Json::Value get_pose(int id) override;
+    int ping(int id) override;
 
-    Json::Value YieldMe(
-        const Json::Value& body
-    ) override;
-
-    int Ping() override;
+public:
+    void print(std::ostream& os) const;
 
 private:
-    Map::Point YieldMeImpl(Map::AppearanceTransaction& tr);
-
-private:
-    Map::Field& Field;
+    Map::World world;
     std::mutex FieldMutex;
 };
