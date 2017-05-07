@@ -12,7 +12,10 @@ Scout::Scout(
 
 
 void Scout::appear() {
-    this->id_ = Map::ObjectId(client_.appear());
+    auto ret = client_.appear();
+    this->id_ = Map::ObjectId(
+        ret["id"].asInt()
+    );
     if (!this->id_.isValid()) {
         throw Exception("Invalid id, wtf?");
     }
