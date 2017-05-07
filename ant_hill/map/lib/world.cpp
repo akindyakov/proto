@@ -91,6 +91,12 @@ std::vector<RelativeDirection> World::getPose(
     return obj->getPose();
 }
 
+void World::ping(
+    ObjectId id
+) const {
+    World::findObject(id);
+}
+
 std::shared_ptr<IObject> World::findObject(
     ObjectId id
 ) const {

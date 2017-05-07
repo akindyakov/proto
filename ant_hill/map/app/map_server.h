@@ -38,8 +38,8 @@ public:
     int front_move(int direction, int id) override;
     int back_move(int direction, int id) override;
     int pick_ut_front(int direction, int id) override;
-    int drop_front(int direction, int id) override;
-    int look_to(int direction, int id) override;
+    int drop_front(int id) override;
+    Json::Value look_to(int direction, int id, int segment) override;
     Json::Value get_pose(int id) override;
     int ping(int id) override;
 

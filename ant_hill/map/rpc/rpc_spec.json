@@ -30,8 +30,7 @@
     {
         "name": "drop_front",
         "params": {
-            "id": 1,
-            "direction": 1
+            "id": 1
         },
         "returns" : 1
     },
@@ -39,16 +38,22 @@
         "name": "look_to",
         "params": {
             "id": 1,
+            "segment": 1,
             "direction": 1
         },
-        "returns" : 1
+        "returns" : {
+            "owner_id": 1,
+            "material": 1
+        }
     },
     {
         "name": "get_pose",
         "params": {
             "id": 1
         },
-        "returns" : [1]
+        "returns" : {
+            "pose": [1]
+        }
     },
     {
         "name" : "ping",

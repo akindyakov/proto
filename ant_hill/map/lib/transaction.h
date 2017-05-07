@@ -151,13 +151,6 @@ private:
     static constexpr Type right_ = 3;
     static constexpr Type all_ = 4;
 
-    constexpr RelativeDirection(
-        Type dir
-    ) noexcept
-        : rdir_(dir)
-    {
-    }
-
     friend std::ostream& operator<<(std::ostream&, const Map::RelativeDirection&);
     friend std::istream& operator>>(std::istream&, Map::RelativeDirection&);
 
@@ -188,6 +181,14 @@ public:
 public:
     RelativeDirection() = delete;
 
+    constexpr RelativeDirection(
+        Type dir
+    ) noexcept
+        : rdir_(dir)
+    {
+        this->normalize();
+    }
+
     constexpr void normalize() noexcept {
         rdir_ = rdir_ % all_;
         rdir_ = rdir_ < 0 ? all_ + rdir_ : rdir_;
@@ -199,6 +200,10 @@ public:
         dir.compass_ += rdir_;
         dir.normalize();
         return dir;
+    }
+
+    int toInt() const {
+        return static_cast<int>(this->rdir_);
     }
 };
 

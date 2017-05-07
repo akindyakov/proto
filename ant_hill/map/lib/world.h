@@ -129,6 +129,10 @@ public:
         ObjectId id
     ) const;
 
+    void ping(
+        ObjectId id
+    ) const;
+
     void print(std::ostream&) const;
 
 private:

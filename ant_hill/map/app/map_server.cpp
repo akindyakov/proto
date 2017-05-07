@@ -28,31 +28,69 @@ int MapServer::appear() {
 }
 
 int MapServer::front_move(int direction, int id) {
+    this->world.move(
+        Map::ObjectId(id),
+        Map::RelativeDirection(direction),
+        Map::World::Side::Front
+    );
     return 0;
 }
 
 int MapServer::back_move(int direction, int id) {
+    this->world.move(
+        Map::ObjectId(id),
+        Map::RelativeDirection(direction),
+        Map::World::Side::Back
+    );
     return 0;
 }
 
 int MapServer::pick_ut_front(int direction, int id) {
+    this->world.pickUpGrain(
+        Map::ObjectId(id),
+        Map::RelativeDirection(direction),
+        Map::World::Side::Front
+    );
     return 0;
 }
 
-int MapServer::drop_front(int direction, int id) {
+int MapServer::drop_front(int id) {
+    this->world.dropGrain(
+        Map::ObjectId(id),
+        Map::World::Side::Front
+    );
     return 0;
 }
 
-int MapServer::look_to(int direction, int id) {
-    return 0;
+Json::Value MapServer::look_to(int direction, int id, int segment) {
+    auto cell = this->world.lookTo(
+        Map::ObjectId(id),
+        Map::RelativeDirection(direction),
+        static_cast<size_t>(segment)
+    );
+    auto val = Json::Value{};
+    val["owner_id"] = cell.objectId.id;
+    val["material"] = static_cast<int>(cell.grain);
+    return val;
 }
 
 Json::Value MapServer::get_pose(int id) {
-    return Json::Value{};
+    auto pose = this->world.getPose(
+        Map::ObjectId(id)
+    );
+    auto val = Json::Value{};
+    auto& p = val["pose"];
+    p = Json::arrayValue;
+    for (const auto& dir : pose) {
+        p.append(dir.toInt());
+    }
+    return val;
 }
 
 int MapServer::ping(int id) {
-    std::cerr << "MapServer::Ping\n";
+    this->world.ping(
+        Map::ObjectId(id)
+    );
     return 0;
 }
 
