@@ -23,8 +23,10 @@ MapServer::MapServer(
 }
 
 
-int MapServer::appear() {
-    return 0;
+Json::Value MapServer::appear() {
+    auto val = Json::Value{};
+    val["id"] = this->world.appear().id;
+    return val;
 }
 
 int MapServer::front_move(int direction, int id) {

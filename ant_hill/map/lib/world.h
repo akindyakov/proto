@@ -1,7 +1,10 @@
+#pragma once
+
 #include "2d_field.h"
 #include "map_symbols.h"
 #include "transaction.h"
 
+#include <atomic>
 #include <mutex>
 #include <unordered_map>
 
@@ -96,11 +99,14 @@ private:
         std::shared_ptr<IObject>,
         decltype(ObjectHash)
     > objects_;
+    std::atomic<ObjectId::Type> nextFreeId_;
 
 public:
     explicit World(
         std::istream& fieldStream
     );
+
+    ObjectId appear();
 
     void move(
         ObjectId id

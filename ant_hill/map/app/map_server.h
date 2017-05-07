@@ -34,7 +34,7 @@ public:
         , std::istream& fieldStream
     );
 
-    int appear() override;
+    Json::Value appear() override;
     int front_move(int direction, int id) override;
     int back_move(int direction, int id) override;
     int pick_ut_front(int direction, int id) override;

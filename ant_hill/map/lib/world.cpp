@@ -1,4 +1,5 @@
 #include "world.h"
+#include "snake.h"
 
 #include <tools/http_error.h>
 
@@ -11,7 +12,27 @@ World::World(
 )
     : field_(Map::ScanFromText<World::Cell>(fieldStream))
     , objects_(128, ObjectHash)
+    , nextFreeId_(ObjectId::Invalid().id + 1)
 {
+}
+
+ObjectId World::appear() {
+    auto newId = ObjectId(nextFreeId_.fetch_add(1));
+    std::lock_guard<std::mutex> lock(globalMutex);
+    auto obj = std::make_shared<SnakeObj>(
+        SnakeObj::appear(
+            this->field_,
+            {
+                Map::EMaterial::AntBody,
+                Map::EMaterial::AntHead,
+            },
+            newId
+        )
+    );
+    objects_.insert(
+        std::make_pair(newId, obj)
+    );
+    return newId;
 }
 
 void World::move(
