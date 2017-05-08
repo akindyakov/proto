@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 
+
 class Exception
     : public std::exception
 {
@@ -12,24 +13,76 @@ private:
     std::string whatHappen;
 
 public:
-    Exception() = default;
+    explicit Exception() = default;
 
-    Exception(const std::string& what)
-        : whatHappen(what) {
+    explicit Exception(
+        std::string msg
+    )
+        : whatHappen(std::move(msg))
+    {
     }
 
     virtual ~Exception() = default;
 
-    template<typename T>
-    Exception& operator<<(const T& val) {
-        std::ostringstream ostr(whatHappen, std::ios_base::ate);
-        ostr << val;
-        whatHappen = ostr.str();
-        return *this;
-    }
-
     const char* what() const throw() override {
         return whatHappen.c_str();
     }
+
+    const std::string& message() const noexcept{
+        return whatHappen;
+    }
+
+    void append(std::string str) {
+        whatHappen.append(str);
+    }
 };
 
+/*
+ * another posible implementations:
+ *
+ * template<
+ *     typename Err
+ *     , typename Val
+ * , typename = typename std::enable_if<
+ *     std::is_convertible<
+ *         typename std::add_lvalue_reference<
+ *             typename std::remove_cv<
+ *                 typename std::remove_reference<Err>::type
+ *             >::type
+ *         >::type,
+ *         std::add_lvalue_reference<ExceptionPrivate>::type
+ *     >::value
+ * >::type
+ *
+ * template<
+ *     typename Err
+ *     , typename Val
+ *     , typename = typename std::enable_if<
+ *         std::is_convertible<
+ *             typename std::remove_cv<
+ *                 typename std::remove_reference<Err>::type
+ *             >::type&,
+ *             ExceptionPrivate&
+ *         >::value
+ *     >::type
+ * >
+*/
+template<
+    typename Err
+    , typename Val
+    , typename = typename std::enable_if<
+        std::is_convertible<
+            typename std::decay<Err>::type&,
+            Exception&
+        >::value
+    >::type
+>
+inline Err&& operator<<(
+    Err&& err
+    , const Val& val
+) {
+    std::ostringstream ostr(std::ios_base::ate);
+    ostr << val;
+    err.append(ostr.str());
+    return std::forward<Err>(err);
+}
