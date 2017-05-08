@@ -7,7 +7,7 @@ class HTTPError
     : public Exception
 {
 public:
-    HTTPError(
+    explicit HTTPError(
         int code
         , const std::string& text
     )
@@ -17,7 +17,7 @@ public:
     }
     virtual ~HTTPError() = default;
 
-    int code() {
+    int code() const noexcept {
         return code_;
     }
 
