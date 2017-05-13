@@ -4,6 +4,13 @@
 
 #include <iostream>
 
+void NilTest() {
+    ValidateEqual(
+        Lisp::Nil{} == Lisp::Nil{},
+        true
+    );
+}
+
 template<typename T>
 void CheckTagTempl() {
     auto v = Lisp::Cell(T{});
@@ -42,6 +49,7 @@ void CellGet() {
 
 int main() {
     try {
+        NilTest();
         CellCheckTypeTag();
         CellGet();
     } catch (const std::exception& except) {

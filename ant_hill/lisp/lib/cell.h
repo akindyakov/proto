@@ -1,5 +1,7 @@
 #pragma once
 
+#include <tools/exception.h>
+
 #include <boost/variant.hpp>
 #include <boost/variant/get.hpp>
 
@@ -15,11 +17,24 @@ class Nil
 {
 };
 
+constexpr inline bool operator == (
+    Nil first
+    , Nil second
+) noexcept {
+    return true;
+}
+
 class Cons {
 public:
     CellPtr car;
     CellPtr cdr;
 };
+
+using Integer = long;
+using Float = double;
+using String = std::string;
+using Symbol = String::value_type;
+using Table = std::unordered_map<String, CellPtr>;
 
 class Function
 {
@@ -30,12 +45,80 @@ public:
 
 using FunctionPtr = std::shared_ptr<Function>;
 
-using Integer = long;
-using Float = double;
-using String = std::string;
-using Symbol = String::value_type;
-using Table = std::unordered_map<String, CellPtr>;
+template<typename T>
+class TypeInfo;
 
+template<>
+class TypeInfo<Nil>
+{
+public:
+    static constexpr const char* name() {
+        return "nil";
+    }
+};
+
+template<>
+class TypeInfo<Integer>
+{
+public:
+    static constexpr const char* name() {
+        return "nil";
+    }
+};
+
+template<>
+class TypeInfo<Float>
+{
+public:
+    static constexpr const char* name() {
+        return "nil";
+    }
+};
+
+template<>
+class TypeInfo<Symbol>
+{
+public:
+    static constexpr const char* name() {
+        return "standard-char";
+    }
+};
+
+template<>
+class TypeInfo<String>
+{
+public:
+    static constexpr const char* name() {
+        return "simple-base-string";
+    }
+};
+
+template<>
+class TypeInfo<Cons>
+{
+public:
+    static constexpr const char* name() {
+        return "cons";
+    }
+};
+
+template<>
+class TypeInfo<Table>
+{
+public:
+    static constexpr const char* name() {
+        return "table";
+    }
+};
+
+template<>
+class TypeInfo<FunctionPtr>
+{
+public:
+    static constexpr const char* name() {
+        return "function";
+    }
+};
 
 class Cell
 {
@@ -62,6 +145,11 @@ public:
         Function,
     };
 
+    class Exception
+        : public ::Exception
+    {
+    };
+
     template<typename T>
     explicit Cell(const T& v)
         : value(v)
@@ -81,14 +169,52 @@ public:
         );
     }
 
+    class BadGet
+        : public Exception
+    {
+    };
+
     template<typename T>
     const T& get() const {
-        return boost::get<T>(value);
+        try {
+            return boost::get<T>(value);
+        } catch (const boost::bad_get& err) {
+            throw BadGet()
+                << "Wrong type. "
+                << this->toString()
+                << " is not a " << TypeInfo<T>::name() << '.'
+            ;
+        }
     }
 
     template<typename T>
     T& get() {
-        return boost::get<T>(value);
+        try {
+            return boost::get<T>(value);
+        } catch (const boost::bad_get& err) {
+            throw BadGet()
+                << "Wrong type. "
+                << this->toString()
+                << " is not a " << TypeInfo<T>::name() << '.'
+            ;
+        }
+    }
+
+    template<typename T>
+    using Visitor = boost::static_visitor<T>;
+
+    template<typename TVisitor>
+    typename TVisitor::result_type visit(TVisitor& visitor) {
+        return boost::apply_visitor(visitor, value);
+    }
+
+    std::string toString() const {
+        // FIXME
+        return std::to_string(
+            static_cast<std::underlying_type<Tag>::type>(
+                this->tag()
+            )
+        );
     }
 
 public:

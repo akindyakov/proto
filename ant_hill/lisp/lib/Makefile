@@ -12,8 +12,8 @@ $(PRODUCT)/cell.o: cell.cpp cell.h
 
 ut: $(PRODUCT)/cell_ut
 
-$(PRODUCT)/cell_ut.o: cell_ut.cpp
-	$(CC) -c -o $@ $^
+$(PRODUCT)/cell_ut.o: cell_ut.cpp cell.h
+	$(CC) -c -o $@ $<
 
 $(PRODUCT)/cell_ut: $(PRODUCT)/cell_ut.o $(PRODUCT)/liblisp.a
 	$(CC) -o $@ $^
