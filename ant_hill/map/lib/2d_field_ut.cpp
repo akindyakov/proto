@@ -6,7 +6,8 @@
 #include <sstream>
 #include <string>
 
-void CompareTest() {
+void compareTest() {
+    std::cerr << " - compareTest\n";
     ValidateEqual(
         Map::Point{-12, 317},
         Map::Point{-12, 317}
@@ -42,7 +43,8 @@ void CompareTest() {
     );
 }
 
-void PointStreamIO() {
+void pointStreamIO() {
+    std::cerr << " - pointStreamIO\n";
     std::string text = "  ( -123   ,   289 )";
     auto expectedPt = Map::Point{-123, 289};
     auto in = std::istringstream(text);
@@ -64,7 +66,8 @@ void PointStreamIO() {
     }
 }
 
-void VectorStreamIO() {
+void vectorStreamIO() {
+    std::cerr << " - vectorStreamIO\n";
     std::string text = "   <   21239   ,   -2349     >";
     auto expectedPt = Map::Vector{21239, -2349};
     auto in = std::istringstream(text);
@@ -86,7 +89,8 @@ void VectorStreamIO() {
     }
 }
 
-void ScanAndPrintField() {
+void scanAndPrintField() {
+    std::cerr << " - scanAndPrintField\n";
     std::string text = R"FieldMap(<10,10>
 (-1,1)
 1iiiiiiii2
@@ -121,10 +125,12 @@ iw...m..si
 
 int main(int argn, char** argv) {
     try {
-        PointStreamIO();
-        VectorStreamIO();
-        ScanAndPrintField();
-        CompareTest();
+        std::cerr << "2d_field_ut:\n";
+        pointStreamIO();
+        vectorStreamIO();
+        scanAndPrintField();
+        compareTest();
+        std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;
         return 1;

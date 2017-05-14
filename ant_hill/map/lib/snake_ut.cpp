@@ -7,6 +7,7 @@
 #include <string>
 
 void appearTest() {
+    std::cerr << " - appearTest\n";
     auto chain = std::vector<Map::EMaterial>{
         Map::EMaterial::AntBody,
         Map::EMaterial::AntHead,
@@ -68,6 +69,7 @@ iiaii
 }
 
 void frontMoveTest() {
+    std::cerr << " - frontMoveTest\n";
     auto chain = std::vector<Map::EMaterial>{
         Map::EMaterial::AntBody,
         Map::EMaterial::AntHead,
@@ -119,6 +121,7 @@ void frontMoveTest() {
 }
 
 void backMoveTest() {
+    std::cerr << " - backMoveTest\n";
     auto chain = std::vector<Map::EMaterial>{
         Map::EMaterial::AntBody,
         Map::EMaterial::AntHead,
@@ -166,6 +169,7 @@ void backMoveTest() {
 }
 
 void pickUpAndDropTest() {
+    std::cerr << " - pickUpAndDropTest\n";
     auto chain = std::vector<Map::EMaterial>{
         Map::EMaterial::AntBody,
         Map::EMaterial::AntHead,
@@ -241,6 +245,7 @@ void pickUpAndDropTest() {
 }
 
 void lookToTest() {
+    std::cerr << " - lookToTest\n";
     auto chain = std::vector<Map::EMaterial>{
         Map::EMaterial::AntBody,
         Map::EMaterial::AntHead,
@@ -304,23 +309,15 @@ i.l
 
 int main(int argn, char** argv) {
     try {
-        std::cerr << " - appear\n";
+        std::cerr << "snake_ut:\n";
         appearTest();
-        std::cerr << " pass\n";
-        std::cerr << " - frontMove\n";
         frontMoveTest();
-        std::cerr << " pass\n";
-        std::cerr << " - backMove\n";
         backMoveTest();
-        std::cerr << " pass\n";
-        std::cerr << " - pickUpAndDrop\n";
         pickUpAndDropTest();
-        std::cerr << " pass\n";
-        std::cerr << " - lookTo\n";
         lookToTest();
-        std::cerr << " pass\n";
+        std::cerr << std::endl;
     } catch (const std::exception& except) {
-        std::cerr << "fail\n";
+        std::cerr << "failed:\n";
         std::cerr << except.what() << std::endl;
         return 1;
     }

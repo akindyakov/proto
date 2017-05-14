@@ -173,7 +173,8 @@
 //     }
 // }
 
-void DirectionInverse() {
+void directionInverse() {
+    std::cerr << " - directionInverse\n";
     {
         auto dir = Map::Direction::North().Inverse();
         Validate(dir, Map::Direction::South());
@@ -192,7 +193,8 @@ void DirectionInverse() {
     }
 }
 
-void DirectionDiff() {
+void directionDiff() {
+    std::cerr << " - directionDiff\n";
     Validate(
         Map::Direction::Diff({0, 1}, {0, 0}),
         Map::Direction::North()
@@ -215,7 +217,8 @@ void DirectionDiff() {
     );
 }
 
-void DirectionMovePoint() {
+void directionMovePoint() {
+    std::cerr << " - directionMovePoint\n";
     Validate(
         Map::Direction::East().MovePoint({1, 1}),
         Map::Point{2, 1}
@@ -234,7 +237,8 @@ void DirectionMovePoint() {
     );
 }
 
-void RelativeDirectionTurn() {
+void relativeDirectionTurn() {
+    std::cerr << " - relativeDirectionTurn\n";
     {
         auto dir = Map::Direction::North();
         Validate(
@@ -271,7 +275,8 @@ void RelativeDirectionTurn() {
     }
 }
 
-void DirectionSub() {
+void directionSub() {
+    std::cerr << " - directionSub\n";
     {
         auto rdir = Map::Direction::North() - Map::Direction::North();
         Validate(
@@ -318,11 +323,13 @@ void DirectionSub() {
 
 int main(int argn, char** argv) {
     try {
-        DirectionInverse();
-        DirectionDiff();
-        DirectionMovePoint();
-        RelativeDirectionTurn();
-        DirectionSub();
+        std::cerr << "transaction_ut:\n";
+        directionInverse();
+        directionDiff();
+        directionMovePoint();
+        relativeDirectionTurn();
+        directionSub();
+        std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;
         return 1;

@@ -4,7 +4,8 @@
 
 #include <iostream>
 
-void NilTest() {
+void nilTest() {
+    std::cerr << " - nilTest\n";
     ValidateEqual(
         Lisp::Nil{} == Lisp::Nil{},
         true
@@ -12,7 +13,7 @@ void NilTest() {
 }
 
 template<typename T>
-void CheckTagTempl() {
+void checkTagTempl() {
     auto v = Lisp::Cell(T{});
     ValidateEqual(
         static_cast<int>(v.tag()),
@@ -20,19 +21,20 @@ void CheckTagTempl() {
     );
 }
 
-void CellCheckTypeTag() {
-    CheckTagTempl<Lisp::Nil        >();
-    CheckTagTempl<Lisp::Integer    >();
-    CheckTagTempl<Lisp::Float      >();
-    CheckTagTempl<Lisp::Symbol     >();
-    CheckTagTempl<Lisp::String     >();
-    CheckTagTempl<Lisp::ConsPtr    >();
-//    CheckTagTempl<Lisp::Table      >();
-    CheckTagTempl<Lisp::FunctionPtr>();
+void cellCheckTypeTag() {
+    std::cerr << " - cellCheckTypeTag\n";
+    checkTagTempl<Lisp::Nil        >();
+    checkTagTempl<Lisp::Integer    >();
+    checkTagTempl<Lisp::Float      >();
+    checkTagTempl<Lisp::Symbol     >();
+    checkTagTempl<Lisp::String     >();
+    checkTagTempl<Lisp::ConsPtr    >();
+//    checkTagTempl<Lisp::Table      >();
+    checkTagTempl<Lisp::FunctionPtr>();
 }
 
 template<typename T>
-void CheckCellGet(const T& bv) {
+void checkCellGet(const T& bv) {
     auto v = Lisp::Cell(bv);
     ValidateEqual(
         v.get<T>(),
@@ -40,14 +42,16 @@ void CheckCellGet(const T& bv) {
     );
 }
 
-void CellGet() {
-    CheckCellGet(Lisp::Integer{123});
-    CheckCellGet(Lisp::Float{123.01});
-    CheckCellGet(Lisp::Symbol{'%'});
-    CheckCellGet(Lisp::String{"What is real?"});
+void cellGet() {
+    std::cerr << " - cellGet\n";
+    checkCellGet(Lisp::Integer{123});
+    checkCellGet(Lisp::Float{123.01});
+    checkCellGet(Lisp::Symbol{'%'});
+    checkCellGet(Lisp::String{"What is real?"});
 }
 
-void CellToStringTest() {
+void cellToStringTest() {
+    std::cerr << " - cellToStringTest\n";
     ValidateEqual(
         Lisp::toString(Lisp::Integer{999223}),
         std::string("999223")
@@ -67,10 +71,12 @@ void CellToStringTest() {
 }
 int main() {
     try {
-        NilTest();
-        CellCheckTypeTag();
-        CellGet();
-        CellToStringTest();
+        std::cerr << "cell_ut:\n";
+        nilTest();
+        cellCheckTypeTag();
+        cellGet();
+        cellToStringTest();
+        std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << "failed: " << except.what() << std::endl;
         return 1;
