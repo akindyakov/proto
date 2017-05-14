@@ -22,12 +22,12 @@ void CheckTagTempl() {
 
 void CellCheckTypeTag() {
     CheckTagTempl<Lisp::Nil        >();
-    CheckTagTempl<Lisp::Cons       >();
     CheckTagTempl<Lisp::Integer    >();
     CheckTagTempl<Lisp::Float      >();
     CheckTagTempl<Lisp::Symbol     >();
     CheckTagTempl<Lisp::String     >();
-    CheckTagTempl<Lisp::Table      >();
+    CheckTagTempl<Lisp::ConsPtr    >();
+//    CheckTagTempl<Lisp::Table      >();
     CheckTagTempl<Lisp::FunctionPtr>();
 }
 

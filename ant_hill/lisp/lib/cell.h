@@ -11,7 +11,6 @@
 namespace Lisp {
 
 class Cell;
-using CellPtr = std::shared_ptr<Cell>;
 
 class Nil
 {
@@ -26,23 +25,20 @@ constexpr inline bool operator == (
     return true;
 }
 
-class Cons {
-public:
-    CellPtr car;
-    CellPtr cdr;
-};
+class Cons;
+using ConsPtr = std::shared_ptr<Cons>;
 
 using Integer = long;
 using Float = double;
 using String = std::string;
 using Symbol = String::value_type;
-using Table = std::unordered_map<String, CellPtr>;
+// using Table = std::unordered_map<String, Cell>;
 
 class Function
 {
 public:
-    using Args = std::vector<CellPtr>;
-    virtual CellPtr call(Args args) const = 0;
+    using Args = std::vector<Cell>;
+    virtual Cell call(const Args& args) const = 0;
 };
 
 using FunctionPtr = std::shared_ptr<Function>;
@@ -138,8 +134,8 @@ public:
         , Float
         , Symbol
         , String
-        , Cons
-        , Table
+        , ConsPtr
+//        , Table
         , FunctionPtr
     >;
 
@@ -150,20 +146,63 @@ public:
         Symbol,
         String,
         Cons,
-        Table,
+//        Table,
         Function,
     };
+
+    ~Cell() = default;
 
     class Exception
         : public ::Exception
     {
     };
 
-    template<typename T>
-    explicit Cell(const T& v)
+    explicit Cell(Nil v)
         : value(v)
     {
     }
+    explicit Cell(Integer v)
+        : value(v)
+    {
+    }
+    explicit Cell(Float v)
+        : value(v)
+    {
+    }
+    explicit Cell(Symbol v)
+        : value(v)
+    {
+    }
+    explicit Cell(const String& v)
+        : value(v)
+    {
+    }
+    explicit Cell(const ConsPtr& v)
+        : value(v)
+    {
+    }
+    explicit Cell(ConsPtr&& v)
+        : value(std::move(v))
+    {
+    }
+ //   explicit Cell(const Table& v)
+ //       : value(v)
+ //   {
+ //   }
+ //   explicit Cell(Table&& v)
+ //       : value(std::move(v))
+ //   {
+ //   }
+    explicit Cell(FunctionPtr ptr)
+        : value(ptr)
+    {
+    }
+
+    Cell(Cell&&) = default;
+    Cell(const Cell&) = default;
+
+    Cell& operator=(Cell&&) = default;
+    Cell& operator=(const Cell&) = default;
 
     Tag tag() const {
         return static_cast<Tag>(
@@ -178,10 +217,29 @@ public:
         );
     }
 
+    template<typename T>
+    bool is() const {
+        return this->tag() == tagOf<T>();
+    }
+
     class BadGetError
         : public Exception
     {
     };
+
+    Float asRealNumber() const {
+        auto realV = Float{};
+        if (this->is<Float>()) {
+            realV = this->get<Float>();
+        } else if (this->is<Integer>()) {
+            realV = static_cast<Float>(
+                this->get<Integer>()
+            );
+        } else {
+            throw BadGetError() << this->toString() << "is not a real number";
+        }
+        return realV;
+    }
 
     template<typename T>
     const T& get() const {
@@ -239,39 +297,55 @@ public:
     Value value;
 };
 
+bool operator == (
+    const Cell& first
+    , const Cell& second
+);
+
+bool operator != (
+    const Cell& first
+    , const Cell& second
+);
+
+class Cons {
+public:
+    Cell car;
+    Cell cdr;
+};
+
 template<>
-class TypeInfo<Cons>
+class TypeInfo<ConsPtr>
 {
 public:
     static constexpr const char* name() {
         return "cons";
     }
-    static std::string toString(const Cons& cons) {
+    static std::string toString(const ConsPtr& cons) {
         auto out = std::ostringstream();
         out << '('
-            << (cons.car ? TypeInfo<Nil>::toString() : cons.car->toString())
+            << (cons ? cons->car.toString() : "?")
             << " . "
-            << (cons.cdr ? TypeInfo<Nil>::toString() : cons.cdr->toString())
+            << (cons ? cons->cdr.toString() : "?")
             << ')';
         return out.str();
     }
 };
 
-template<>
-class TypeInfo<Table>
-{
-public:
-    static constexpr const char* name() {
-        return "table";
-    }
-    static std::string toString(const Table& table) {
-        auto out = std::ostringstream();
-        for (const auto& it : table) {
-            out << ":" << it.first << " " << it.second->toString() << " ";
-        }
-        return out.str();
-    }
-};
+// template<>
+// class TypeInfo<Table>
+// {
+// public:
+//     static constexpr const char* name() {
+//         return "table";
+//     }
+//     static std::string toString(const Table& table) {
+//         auto out = std::ostringstream();
+//         for (const auto& it : table) {
+//             out << ":" << it.first << " " << it.second->toString() << " ";
+//         }
+//         return out.str();
+//     }
+// };
 
 
 }  // namespace Lisp

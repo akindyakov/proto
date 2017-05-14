@@ -24,4 +24,18 @@ std::string Cell::toString() const {
     );
 }
 
+bool operator == (
+    const Cell& first
+    , const Cell& second
+) {
+    return first.value == second.value;
+}
+
+bool operator != (
+    const Cell& first
+    , const Cell& second
+) {
+    return !(first == second);
+}
+
 }  // namespace Lisp
