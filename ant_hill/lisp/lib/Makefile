@@ -4,7 +4,7 @@ PRODUCT = $(ABS_PRODUCT)/lisp/lib
 
 all: prepare $(PRODUCT)/liblisp.a ut
 
-$(PRODUCT)/liblisp.a: $(PRODUCT)/cell.o $(PRODUCT)/math_functions.o
+$(PRODUCT)/liblisp.a: $(PRODUCT)/cell.o $(PRODUCT)/math_functions.o $(PRODUCT)/parser.o
 	ar rcs $@ $^
 
 # all ut
