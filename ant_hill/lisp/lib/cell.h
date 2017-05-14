@@ -178,7 +178,7 @@ public:
         );
     }
 
-    class BadGet
+    class BadGetError
         : public Exception
     {
     };
@@ -188,7 +188,7 @@ public:
         try {
             return boost::get<T>(value);
         } catch (const boost::bad_get& err) {
-            throw BadGet()
+            throw BadGetError()
                 << "Wrong type. "
                 << this->toString()
                 << " is not a " << TypeInfo<T>::name() << '.'
@@ -201,7 +201,7 @@ public:
         try {
             return boost::get<T>(value);
         } catch (const boost::bad_get& err) {
-            throw BadGet()
+            throw BadGetError()
                 << "Wrong type. "
                 << this->toString()
                 << " is not a " << TypeInfo<T>::name() << '.'
