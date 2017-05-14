@@ -15,6 +15,8 @@ using CellPtr = std::shared_ptr<Cell>;
 
 class Nil
 {
+public:
+    constexpr Nil() noexcept = default;
 };
 
 constexpr inline bool operator == (
@@ -48,12 +50,20 @@ using FunctionPtr = std::shared_ptr<Function>;
 template<typename T>
 class TypeInfo;
 
+template<typename T>
+std::string toString(const T& v) {
+    return TypeInfo<T>::toString(v);
+}
+
 template<>
 class TypeInfo<Nil>
 {
 public:
     static constexpr const char* name() {
         return "nil";
+    }
+    static std::string toString(Nil = Nil{}) {
+        return name();
     }
 };
 
@@ -62,7 +72,10 @@ class TypeInfo<Integer>
 {
 public:
     static constexpr const char* name() {
-        return "nil";
+        return "integer";
+    }
+    static std::string toString(Integer v) {
+        return std::to_string(v);
     }
 };
 
@@ -71,7 +84,10 @@ class TypeInfo<Float>
 {
 public:
     static constexpr const char* name() {
-        return "nil";
+        return "float";
+    }
+    static std::string toString(Float v) {
+        return std::to_string(v);
     }
 };
 
@@ -82,6 +98,9 @@ public:
     static constexpr const char* name() {
         return "standard-char";
     }
+    static std::string toString(Symbol ch) {
+        return std::string("#\\") + ch;
+    }
 };
 
 template<>
@@ -91,23 +110,8 @@ public:
     static constexpr const char* name() {
         return "simple-base-string";
     }
-};
-
-template<>
-class TypeInfo<Cons>
-{
-public:
-    static constexpr const char* name() {
-        return "cons";
-    }
-};
-
-template<>
-class TypeInfo<Table>
-{
-public:
-    static constexpr const char* name() {
-        return "table";
+    static std::string toString(const String& str) {
+        return '"' + str + '"';
     }
 };
 
@@ -117,6 +121,11 @@ class TypeInfo<FunctionPtr>
 public:
     static constexpr const char* name() {
         return "function";
+    }
+    static std::string toString(FunctionPtr ptr) {
+        auto out = std::ostringstream();
+        out << name() << ": " << ptr.get();
+        return out.str();
     }
 };
 
@@ -181,7 +190,7 @@ public:
         } catch (const boost::bad_get& err) {
             throw BadGet()
                 << "Wrong type. "
-                << this->toString()
+                << this->_toString()
                 << " is not a " << TypeInfo<T>::name() << '.'
             ;
         }
@@ -194,7 +203,7 @@ public:
         } catch (const boost::bad_get& err) {
             throw BadGet()
                 << "Wrong type. "
-                << this->toString()
+                << this->_toString()
                 << " is not a " << TypeInfo<T>::name() << '.'
             ;
         }
@@ -203,22 +212,66 @@ public:
     template<typename T>
     using Visitor = boost::static_visitor<T>;
 
-    template<typename TVisitor>
-    typename TVisitor::result_type visit(TVisitor& visitor) {
+    template<
+        typename TVisitor
+        , typename TResult = typename TVisitor::result_type
+    >
+    TResult visit(TVisitor visitor) {
         return boost::apply_visitor(visitor, value);
     }
 
-    std::string toString() const {
-        // FIXME
-        return std::to_string(
-            static_cast<std::underlying_type<Tag>::type>(
-                this->tag()
-            )
-        );
+    template<
+        typename TVisitor
+        , typename TResult = typename TVisitor::result_type
+    >
+    TResult visit(const TVisitor& visitor) const {
+        return boost::apply_visitor(visitor, value);
     }
+
+    // template<typename TVisitor>
+    // void visit(TVisitor& visitor) {
+    //     boost::apply_visitor(visitor, value);
+    // }
+
+    std::string _toString() const;
 
 public:
     Value value;
 };
+
+template<>
+class TypeInfo<Cons>
+{
+public:
+    static constexpr const char* name() {
+        return "cons";
+    }
+    static std::string toString(const Cons& cons) {
+        auto out = std::ostringstream();
+        out << '('
+            << (cons.car ? TypeInfo<Nil>::toString() : cons.car->_toString())
+            << " . "
+            << (cons.cdr ? TypeInfo<Nil>::toString() : cons.cdr->_toString())
+            << ')';
+        return out.str();
+    }
+};
+
+template<>
+class TypeInfo<Table>
+{
+public:
+    static constexpr const char* name() {
+        return "table";
+    }
+    static std::string toString(const Table& table) {
+        auto out = std::ostringstream();
+        for (const auto& it : table) {
+            out << ":" << it.first << " " << it.second->_toString() << " ";
+        }
+        return out.str();
+    }
+};
+
 
 }  // namespace Lisp

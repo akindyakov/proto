@@ -12,7 +12,7 @@ $(PRODUCT)/cell.o: cell.cpp cell.h
 
 ut: $(PRODUCT)/cell_ut
 
-$(PRODUCT)/cell_ut.o: cell_ut.cpp cell.h
+$(PRODUCT)/cell_ut.o: cell_ut.cpp cell.h $(SRC_PATH)/tools/tests/ut.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/cell_ut: $(PRODUCT)/cell_ut.o $(PRODUCT)/liblisp.a

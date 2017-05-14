@@ -23,7 +23,7 @@ inline void ValidateEqual(
 ) {
     if (!(value == other)) {
         throw Exception()
-            << "'" << value << " is suppose to be equal to '" << other << "'."
+            << "'" << value << "' is suppose to be equal to '" << other << "'."
         ;
     }
 }
@@ -35,7 +35,7 @@ inline void ValidateNotEqual(
 ) {
     if (!(value != other)) {
         throw Exception()
-            << "'" << value << " is suppose to be not equal to '" << other << "'."
+            << "'" << value << "' is suppose to be not equal to '" << other << "'."
         ;
     }
 }

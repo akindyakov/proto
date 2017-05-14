@@ -47,11 +47,30 @@ void CellGet() {
     CheckCellGet(Lisp::String{"What is real?"});
 }
 
+void CellToStringTest() {
+    ValidateEqual(
+        Lisp::toString(Lisp::Integer{999223}),
+        std::string("999223")
+    );
+    ValidateEqual(
+        Lisp::toString(Lisp::Float{342.341000}),
+        std::string("342.341000")
+    );
+    ValidateEqual(
+        Lisp::toString(Lisp::Symbol{'@'}),
+        std::string("#\\@")
+    );
+    ValidateEqual(
+        Lisp::toString(Lisp::String{"How do you define real?"}),
+        std::string("\"How do you define real?\"")
+    );
+}
 int main() {
     try {
         NilTest();
         CellCheckTypeTag();
         CellGet();
+        CellToStringTest();
     } catch (const std::exception& except) {
         std::cerr << "failed: " << except.what() << std::endl;
         return 1;
