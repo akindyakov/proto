@@ -190,7 +190,7 @@ public:
         } catch (const boost::bad_get& err) {
             throw BadGet()
                 << "Wrong type. "
-                << this->_toString()
+                << this->toString()
                 << " is not a " << TypeInfo<T>::name() << '.'
             ;
         }
@@ -203,7 +203,7 @@ public:
         } catch (const boost::bad_get& err) {
             throw BadGet()
                 << "Wrong type. "
-                << this->_toString()
+                << this->toString()
                 << " is not a " << TypeInfo<T>::name() << '.'
             ;
         }
@@ -233,7 +233,7 @@ public:
     //     boost::apply_visitor(visitor, value);
     // }
 
-    std::string _toString() const;
+    std::string toString() const;
 
 public:
     Value value;
@@ -249,9 +249,9 @@ public:
     static std::string toString(const Cons& cons) {
         auto out = std::ostringstream();
         out << '('
-            << (cons.car ? TypeInfo<Nil>::toString() : cons.car->_toString())
+            << (cons.car ? TypeInfo<Nil>::toString() : cons.car->toString())
             << " . "
-            << (cons.cdr ? TypeInfo<Nil>::toString() : cons.cdr->_toString())
+            << (cons.cdr ? TypeInfo<Nil>::toString() : cons.cdr->toString())
             << ')';
         return out.str();
     }
@@ -267,7 +267,7 @@ public:
     static std::string toString(const Table& table) {
         auto out = std::ostringstream();
         for (const auto& it : table) {
-            out << ":" << it.first << " " << it.second->_toString() << " ";
+            out << ":" << it.first << " " << it.second->toString() << " ";
         }
         return out.str();
     }

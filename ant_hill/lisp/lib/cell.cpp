@@ -18,7 +18,7 @@ public:
 
 }
 
-std::string Cell::_toString() const {
+std::string Cell::toString() const {
     return this->visit(
         ToStringVisitor()
     );
