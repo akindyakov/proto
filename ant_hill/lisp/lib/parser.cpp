@@ -21,9 +21,9 @@ Cell parseFloat(const std::string& str) {
 }
 
 Cell parseRational(const std::string& str, size_t slashPos) {
-    auto numerator =   std::atoll(str.substr(0, slashPos).c_str());
-    auto deNumerator = std::atoll(str.substr(slashPos).c_str());
-    // FIXME
+    auto numerator = std::atoll(str.substr(0, slashPos).c_str());
+    auto deNumerator = std::atoll(str.substr(slashPos + 1).c_str());
+    // FIXME: use truly rational type here
     return Cell(
         static_cast<Float>(
             numerator
@@ -50,10 +50,16 @@ Cell readRealNumber(std::istream& is) {
 }
 
 Cell readStringValue(std::istream& is) {
+    static constexpr auto quote = '"';
     auto value = String{};
     auto ch = String::value_type{};
-    while (is && is.peek() != '"') {
-        is >> ch;
+    if (is && is.peek() == quote) {
+        is.ignore();
+    } else {
+        throw ParserError() << "String value should to starts with '" << quote << "'";
+    }
+    while (is && is.peek() != quote) {
+        is.get(ch);
         value.push_back(ch);
     }
     if (is) {
