@@ -6,7 +6,7 @@
 
 void parseIntegerTest() {
     std::cerr << " - parseIntegerTest\n";
-    auto cell = Lisp::parseInteger("123  ");
+    auto cell = Lisp::RealNumberParser::parseInteger("123  ");
     ValidateEqual(
         cell.get<Lisp::Integer>(),
         Lisp::Integer{123}
@@ -15,7 +15,7 @@ void parseIntegerTest() {
 
 void parseFloatTest() {
     std::cerr << " - parseFloatTest\n";
-    auto cell = Lisp::parseFloat("1.23  ");
+    auto cell = Lisp::RealNumberParser::parseFloat("1.23  ");
     ValidateEqual(
         cell.get<Lisp::Float>(),
         Lisp::Float{1.23}
@@ -25,7 +25,7 @@ void parseFloatTest() {
 void parseRationalTest() {
     std::cerr << " - parseRationalTest\n";
     const auto str = std::string{"1/2  "};
-    auto cell = Lisp::parseRational(str, str.find('/'));
+    auto cell = Lisp::RealNumberParser::parseRational(str, str.find('/'));
     ValidateEqual(
         cell.get<Lisp::Float>(),
         Lisp::Float{0.5}
@@ -37,7 +37,7 @@ void readRealNumberTest() {
     {
         auto text = std::string{"213180  \"\""};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readRealNumber(in);
+        auto cell = Lisp::RealNumberParser::read(in);
         ValidateEqual(
             cell.get<Lisp::Integer>(),
             Lisp::Integer{213180}
@@ -46,7 +46,7 @@ void readRealNumberTest() {
     {
         auto text = std::string{"-2928 5"};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readRealNumber(in);
+        auto cell = Lisp::RealNumberParser::read(in);
         ValidateEqual(
             cell.get<Lisp::Integer>(),
             Lisp::Integer{-2928}
@@ -55,7 +55,7 @@ void readRealNumberTest() {
     {
         auto text = std::string{"4.36  1"};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readRealNumber(in);
+        auto cell = Lisp::RealNumberParser::read(in);
         ValidateEqual(
             cell.get<Lisp::Float>(),
             Lisp::Float{4.36}
@@ -64,7 +64,7 @@ void readRealNumberTest() {
     {
         auto text = std::string{"-82.91  4"};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readRealNumber(in);
+        auto cell = Lisp::RealNumberParser::read(in);
         ValidateEqual(
             cell.get<Lisp::Float>(),
             Lisp::Float{-82.91}
@@ -73,7 +73,7 @@ void readRealNumberTest() {
     {
         auto text = std::string{"-1/2 1"};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readRealNumber(in);
+        auto cell = Lisp::RealNumberParser::read(in);
         ValidateEqual(
             cell.get<Lisp::Float>(),
             Lisp::Float{-0.5}
@@ -82,7 +82,7 @@ void readRealNumberTest() {
     {
         auto text = std::string{"1/8 3"};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readRealNumber(in);
+        auto cell = Lisp::RealNumberParser::read(in);
         ValidateEqual(
             cell.get<Lisp::Float>(),
             Lisp::Float{0.125}
@@ -95,7 +95,7 @@ void readSimpleCharacterTest() {
     {
         auto text = std::string{"#\\@ 3"};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readSimpleCharacter(in);
+        auto cell = Lisp::SimpleCharacterParser::read(in);
         ValidateEqual(
             cell.get<Lisp::Symbol>(),
             Lisp::Symbol{'@'}
@@ -104,7 +104,7 @@ void readSimpleCharacterTest() {
     {
         auto text = std::string{"#\\\\  2"};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readSimpleCharacter(in);
+        auto cell = Lisp::SimpleCharacterParser::read(in);
         ValidateEqual(
             cell.get<Lisp::Symbol>(),
             Lisp::Symbol{'\\'}
@@ -113,7 +113,7 @@ void readSimpleCharacterTest() {
     {
         auto text = std::string{"#\\$  1"};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readSimpleCharacter(in);
+        auto cell = Lisp::SimpleCharacterParser::read(in);
         ValidateEqual(
             cell.get<Lisp::Symbol>(),
             Lisp::Symbol{'$'}
@@ -126,7 +126,7 @@ void readStringValueTest() {
     {
         auto text = std::string{"\"If you're talking about what you can feel, what you can smell, what you can taste and see, then real is simply electrical signals interpreted by your brain.\"  1 2 3"};
         auto in = std::istringstream(text);
-        auto cell = Lisp::readStringValue(in);
+        auto cell = Lisp::StringValueParser::read(in);
         ValidateEqual(
             cell.get<Lisp::String>(),
             Lisp::String{"If you're talking about what you can feel, what you can smell, what you can taste and see, then real is simply electrical signals interpreted by your brain."}
@@ -139,7 +139,7 @@ void readNameTest() {
     {
         auto text = std::string{"Welcome-to_the*Desert@of the real"};
         auto in = std::istringstream(text);
-        auto name = Lisp::readName(in);
+        auto name = Lisp::NameParser::read(in);
         ValidateEqual(
             name,
             std::string{"Welcome-to_the*Desert@of"}

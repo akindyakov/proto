@@ -121,10 +121,10 @@ public:
 public:
     Cell call(const Function::Args& args) const override {
         if (args.size() < 2) {
-            throw TError() << "given too few arguments";
+            throw TError() << "given too few arguments: " << args.size();
         }
         if (args.size() > 2) {
-            throw TError() << "given too many arguments";
+            throw TError() << "given too many arguments: " << args.size();
         }
         return op(args.front(), args.back());
     }

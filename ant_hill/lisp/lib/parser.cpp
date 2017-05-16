@@ -3,7 +3,20 @@
 
 namespace Lisp {
 
-Cell parseInteger(const std::string& str) {
+bool RealNumberParser::checkPrefix(char ch) {
+    return std::isdigit(ch) || ch == minusMark;
+}
+
+bool RealNumberParser::isAcceptable(char ch) {
+    return (
+        std::isdigit(ch)
+        || ch == divMark
+        || ch == decimalMark
+        || ch == minusMark
+    );
+}
+
+Cell RealNumberParser::parseInteger(const std::string& str) {
     return Cell(
         static_cast<Integer>(
             std::atoll(str.c_str())
@@ -11,7 +24,7 @@ Cell parseInteger(const std::string& str) {
     );
 }
 
-Cell parseFloat(const std::string& str) {
+Cell RealNumberParser::parseFloat(const std::string& str) {
     char* end;
     return Cell(
         static_cast<Float>(
@@ -20,7 +33,7 @@ Cell parseFloat(const std::string& str) {
     );
 }
 
-Cell parseRational(const std::string& str, size_t slashPos) {
+Cell RealNumberParser::parseRational(const std::string& str, size_t slashPos) {
     auto numerator = std::atoll(str.substr(0, slashPos).c_str());
     auto deNumerator = std::atoll(str.substr(slashPos + 1).c_str());
     // FIXME: use truly rational type here
@@ -34,12 +47,15 @@ Cell parseRational(const std::string& str, size_t slashPos) {
     );
 }
 
-Cell readRealNumber(std::istream& is) {
+Cell RealNumberParser::read(std::istream& is) {
     auto number = std::string{};
-    is >> number;
-    size_t pos = number.find('.');
+    while (is && isAcceptable(is.peek())) {
+        number.push_back(is.get());
+    }
+
+    size_t pos = number.find(decimalMark);
     if (pos == std::string::npos) {
-        pos = number.find('/');
+        pos = number.find(divMark);
         if (pos == std::string::npos) {
             return parseInteger(number);
         } else {
@@ -49,8 +65,13 @@ Cell readRealNumber(std::istream& is) {
     return parseFloat(number);
 }
 
-Cell readStringValue(std::istream& is) {
-    static constexpr auto quote = '"';
+constexpr char StringValueParser::quote;
+
+bool StringValueParser::checkPrefix(char ch) {
+    return ch == quote;
+}
+
+Cell StringValueParser::read(std::istream& is) {
     auto value = String{};
     auto ch = String::value_type{};
     if (is && is.peek() == quote) {
@@ -58,29 +79,29 @@ Cell readStringValue(std::istream& is) {
     } else {
         throw ParserError() << "String value should to starts with '" << quote << "'";
     }
-    while (is && is.peek() != quote) {
-        is.get(ch);
+    while (is && is.get(ch) && ch != quote) {
         value.push_back(ch);
-    }
-    if (is) {
-        // skip last quote
-        is.ignore();
     }
     return Cell(value);
 }
 
-Cell readSimpleCharacter(std::istream& is) {
+bool SimpleCharacterParser::checkPrefix(char ch) {
+    return ch == '#';
+}
+
+Cell SimpleCharacterParser::read(std::istream& is) {
     auto str = std::string{};
     is >> str;
-    if (str.size() != 3) {
+    auto ch = Symbol{};
+    if (str.size() == 3) {
+        ch = str.back();
+    } else {
         throw ParserError() << "Simple character input should have prefix '#\\'";
     }
-    auto ch = Symbol{};
-    ch = str.back();
     return Cell(ch);
 }
 
-std::string readName(std::istream& is) {
+std::string NameParser::read(std::istream& is) {
     auto name = String{};
     // TODO: check characters is valid here
     is >> name;
