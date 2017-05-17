@@ -1,25 +1,15 @@
-#include "boost/variant.hpp"
+#include <lisp/lib/evaluate.h>
+
 #include <iostream>
 
-//class my_visitor : public boost::static_visitor<int>
-//{
-//public:
-//    int operator()(int i) const
-//    {
-//        return i;
-//    }
-//
-//    int operator()(const std::string & str) const
-//    {
-//        return str.length();
-//    }
-//};
 
 int main() {
-   //boost::variant< int, std::string, void > u("hello world");
-   //std::cout << u << '\n'; // output: hello world
-
-   //int result = boost::apply_visitor( my_visitor(), u );
-   //std::cout << result << '\n'; // output: 11 (i.e., length of "hello world")
+    auto loop = Lisp::Main{};
+    auto counter = int{0};
+    while (true) {
+        std::cout << "[" << counter++ << "]> ";
+        auto ret = loop.eval(std::cin);
+        std::cout << ret.toString() << '\n';
+    }
     return 0;
 }
