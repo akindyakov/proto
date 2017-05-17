@@ -31,6 +31,11 @@ bool operator == (
     return first.value == second.value;
 }
 
+std::ostream& operator<<(std::ostream& os, const Nil& v) {
+    os << toString(v);
+    return os;
+}
+
 bool operator != (
     const Cell& first
     , const Cell& second

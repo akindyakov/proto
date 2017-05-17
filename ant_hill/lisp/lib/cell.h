@@ -25,6 +25,8 @@ constexpr inline bool operator == (
     return true;
 }
 
+std::ostream& operator<<(std::ostream& os, const Nil& v);
+
 class Cons;
 using ConsPtr = std::shared_ptr<Cons>;
 
