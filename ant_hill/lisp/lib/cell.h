@@ -160,6 +160,10 @@ public:
     {
     };
 
+    Cell()
+        : value(Nil{})
+    {
+    }
     explicit Cell(Nil v)
         : value(v)
     {
