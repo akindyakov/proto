@@ -7,12 +7,11 @@ bool RealNumberParser::checkPrefix(char ch) {
     return std::isdigit(ch) || ch == minusMark;
 }
 
-bool RealNumberParser::isAcceptable(char ch) {
+bool charIsService(char ch) {
     return (
-        std::isdigit(ch)
-        || ch == divMark
-        || ch == decimalMark
-        || ch == minusMark
+        std::isspace(ch)
+        || ch == ')'
+        || ch == '('
     );
 }
 
@@ -49,7 +48,7 @@ Cell RealNumberParser::parseRational(const std::string& str, size_t slashPos) {
 
 Cell RealNumberParser::read(std::istream& is) {
     auto number = std::string{};
-    while (is && isAcceptable(is.peek())) {
+    while (is && !charIsService(is.peek())) {
         number.push_back(is.get());
     }
 

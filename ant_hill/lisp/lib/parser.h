@@ -20,6 +20,8 @@ public:
     }
 };
 
+bool charIsService(char ch);
+
 class RealNumberParser {
 public:
     static bool checkPrefix(char ch);
@@ -33,7 +35,6 @@ private:
     static constexpr char decimalMark = '.';
     static constexpr char minusMark = '-';
     static constexpr char divMark = '/';
-    static bool isAcceptable(char ch);
 };
 
 class SimpleCharacterParser {
