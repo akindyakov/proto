@@ -41,7 +41,8 @@ public:
     virtual Cell call(const Args& args) const = 0;
 };
 
-using FunctionPtr = std::shared_ptr<Function>;
+//using FunctionPtr = std::shared_ptr<Function>;
+using FunctionPtr = const Function*;
 
 template<typename T>
 class TypeInfo;
@@ -120,7 +121,7 @@ public:
     }
     static std::string toString(FunctionPtr ptr) {
         auto out = std::ostringstream();
-        out << name() << ": " << ptr.get();
+        out << name() << ": " << ptr;
         return out.str();
     }
 };

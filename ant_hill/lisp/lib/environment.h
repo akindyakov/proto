@@ -9,7 +9,7 @@ class Env
 {
 public:
     explicit Env();
-    const Function& findFunction(const std::string& name) const;  // ?
+    FunctionPtr findFunction(const std::string& name) const;  // ?
 
 public:
     class Error
@@ -25,7 +25,7 @@ public:
 private:
     std::unordered_map<
         std::string,
-        FunctionPtr
+        std::unique_ptr<Function>
     > global;
 };
 
