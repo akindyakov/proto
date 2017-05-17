@@ -21,7 +21,7 @@ Env::Env()
 FunctionPtr Env::findFunction(const std::string& name) const {
     auto it = funcs.find(name);
     if (it == funcs.end()) {
-        throw Error() << "There is no such a function name";
+        throw Error() << "There is no function with name '" << name << "'";
     }
     return it->second.get();
 }

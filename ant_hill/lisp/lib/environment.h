@@ -13,7 +13,6 @@ public:
 
     const Cell& findName(const std::string& name) const;
     Cell& findName(const std::string& name);
-
     Cell& addName(const std::string& name, Cell value);
     Cell popName(const std::string& name);
 
