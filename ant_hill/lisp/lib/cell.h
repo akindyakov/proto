@@ -40,7 +40,7 @@ class Function
 {
 public:
     using Args = std::vector<Cell>;
-    virtual Cell call(const Args& args) const = 0;
+    virtual Cell call(Args args) const = 0;
 };
 
 //using FunctionPtr = std::shared_ptr<Function>;

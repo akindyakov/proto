@@ -4,7 +4,7 @@
 namespace Lisp {
 namespace Func {
 
-Cell Abs::call(const Function::Args& args) const {
+Cell Abs::call(Function::Args args) const {
     if (args.empty()) {
         throw AbsError() << "given too few arguments";
     }
@@ -33,7 +33,7 @@ bool realNumberGreater(
 }
 
 }
-Cell Max::call(const Function::Args& args) const {
+Cell Max::call(Function::Args args) const {
     if (args.empty()) {
         throw MaxError() << "given too few arguments";
     }
@@ -60,7 +60,7 @@ bool realNumberLess(
 
 }
 
-Cell Min::call(const Function::Args& args) const {
+Cell Min::call(Function::Args args) const {
     if (args.empty()) {
         throw MinError() << "given too few arguments";
     }

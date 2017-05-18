@@ -19,7 +19,7 @@ public:
     Operation op;
 
 public:
-    Cell call(const Function::Args& args) const override {
+    Cell call(Function::Args args) const override {
         if (args.empty()) {
             throw TError() << "given too few arguments";
         }
@@ -119,7 +119,7 @@ public:
     Operation op;
 
 public:
-    Cell call(const Function::Args& args) const override {
+    Cell call(Function::Args args) const override {
         if (args.size() < 2) {
             throw TError() << "given too few arguments: " << args.size();
         }
@@ -220,7 +220,7 @@ class Abs
     : public Function
 {
 public:
-    Cell call(const Function::Args& args) const override;
+    Cell call(Function::Args args) const override;
 };
 
 /**
@@ -239,7 +239,7 @@ class Max
     : public Function
 {
 public:
-    Cell call(const Function::Args& args) const override;
+    Cell call(Function::Args args) const override;
 
 };
 
@@ -259,7 +259,7 @@ class Min
     : public Function
 {
 public:
-    Cell call(const Function::Args& args) const override;
+    Cell call(Function::Args args) const override;
 
 };
 

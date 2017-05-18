@@ -1,6 +1,8 @@
 #include "evaluate.h"
 #include "parser.h"
 
+#include <tools/tests/ut.h>
+
 #include <cctype>
 
 
@@ -14,7 +16,7 @@ static inline void skipSpaces(std::istream& in) {
     }
 }
 
-class EvalCode
+class EvalInterpret
     : public Function
 {
 public:
@@ -28,24 +30,42 @@ public:
         }
     };
 
-    using ArgNames = std::vector<std::string>;
 
 private:
+    using ArgNames = std::vector<std::string>;
+    Main& glob;
     ArgNames argNames;
+    std::string body;
 
-public:
-    explicit EvalCode(
-        ArgNames names
-        , Main& 
+private:
+    explicit EvalInterpret(
+        Main& glob_
+        , ArgNames argNames_
+        , std::string body_
     )
-        : argNames(std::move(names))
+        : glob(glob_)
+        , argNames(argNames_)
+        , body(body_)
     {
     }
 
-    Cell call(const Function::Args& args) const override {
+public:
+
+    Cell call(Function::Args args) const override {
+        auto localEnv = LocalEnv{};
+        ValidateEqual(args.size(), argNames.size());
+        auto nameIt = argNames.cbegin();
+        for (const auto& val : args) {
+            localEnv.emplace(*nameIt, std::move(val));
+        }
+        glob.pushStackFrame(std::move(localEnv));
+        auto ret = glob.eval(body);
+        glob.popStackFrame();
+        return ret;
     }
 
 };
+
 }
 
 
@@ -59,11 +79,24 @@ Cell Main::eval(std::istream& in) {
     skipSpaces(in);
     auto fname = NameParser::read(in);
     //*dbg*/ std::cerr << "fun: " << fname << '\n';
-    auto&& fun = env.findFunction(fname);
-    auto args = Function::Args{};
 
+    // TODO: create map here
+    if (fname == "defun") {
+        return this->defun(in);
+    }
+    // else {
+    auto&& fun = globalEnv.findFunction(fname);
+    auto args = this->readFunctionArguments(in);
+    //*dbg*/ for (const auto& arg : args) {
+    //*dbg*/     std::cerr << arg.toString() << '\n';
+    //*dbg*/ }
+    return fun->call(args);
+}
+
+Function::Args Main::readFunctionArguments(std::istream& in) {
+    auto args = Function::Args{};
     skipSpaces(in);
-    ch = in.peek();
+    auto ch = in.peek();
     while (in && ch != ')') {
         if (ch == '(') {
             args.push_back(this->eval(in));
@@ -80,7 +113,7 @@ Cell Main::eval(std::istream& in) {
         } else {
             auto varName = NameParser::read(in);
             args.push_back(
-                env.findName(varName)
+                this->findName(varName)
             );
 
         }
@@ -89,11 +122,7 @@ Cell Main::eval(std::istream& in) {
     }
     // drop last brace
     in.ignore();
-
-    //*dbg*/ for (const auto& arg : args) {
-    //*dbg*/     std::cerr << arg.toString() << '\n';
-    //*dbg*/ }
-    return fun->call(args);
+    return args;
 }
 
 Cell Main::eval(const std::string& expr) {
@@ -101,12 +130,20 @@ Cell Main::eval(const std::string& expr) {
     return this->eval(in);
 }
 
-void Main::defun(std::istream& in) {
+Cell Main::setq(std::istream& in) {
+    return Cell{};
+}
+
+Cell Main::let(std::istream& in) {
+    return Cell{};
+}
+
+Cell Main::defun(std::istream& in) {
     skipSpaces(in);
     auto fname = NameParser::read(in);
     skipSpaces(in);
     // read argument list
-    auto argNames = std::vector<std::string>{};
+    auto argNames = EvalInterpret::ArgNames{};
     if (in && in.get() == '(') {
         skipSpaces(in);
         while (in && in.peek() != ')') {
@@ -140,14 +177,44 @@ void Main::defun(std::istream& in) {
     if (in.get() != ')') {
         throw Error();
     }
+    return globalEnv.addFunction(
+        fname,
+        std::make_unique<EvalInterpret>(glob, argNames, fbody)
+    );
 }
-void Main::defvar(std::istream& in) {
+
+void Main::pushStackFrame(LocalEnv lEnv) {
+    localEnv.push_back(std::move(lEnv));
 }
-void Main::setq(std::istream& in) {
+
+void popStackFrame() {
+    localEnv.pop_back();
 }
-void Main::let(std::istream& in) {
+
+const Cell& findName(const std::string& name) const {
+    for (
+        const auto& envIt = this->localEnv.rcbegin();
+        envIt !+ this->localEnv.rcend(); ++envIt
+    ) {
+        auto cit = envIt->find(name);
+        if (cit != envIt->cend()) {
+            return *cit;
+        }
+    }
+    return this->globalEnv.findName(name);
 }
-void Main::flet(std::istream& in) {
+
+Cell& findName(const std::string& name) {
+    for (
+        auto& envIt = this->localEnv.rbegin();
+        envIt !+ this->localEnv.rend(); ++envIt
+    ) {
+        auto cit = envIt->find(name);
+        if (cit != envIt->end()) {
+            return *cit;
+        }
+    }
+    return this->globalEnv.findName(name);
 }
 
 }  // namespace Lisp

@@ -2,6 +2,7 @@
 
 #include "cell.h"
 
+#include <unordered_map>
 
 namespace Lisp {
 
@@ -9,7 +10,12 @@ class Env
 {
 public:
     explicit Env();
+
     FunctionPtr findFunction(const std::string& name) const;  // ?
+    Cell addFunction(
+        const std::string& name
+        , std::unique_ptr<Function> fun
+    );
 
     const Cell& findName(const std::string& name) const;
     Cell& findName(const std::string& name);
@@ -38,5 +44,7 @@ private:
         Cell
     > names;
 };
+
+using LocalEnv = std::unordered_map<std::string, Cell>;
 
 }  // namespace Lisp

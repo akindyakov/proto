@@ -35,9 +35,22 @@ public:
     Cell eval(std::istream& in);
     Cell eval(const std::string& expr);
 
+    void pushStackFrame(LocalEnv);
+    void popStackFrame();
+
+    const Cell& findName(const std::string& name) const;
+    Cell& findName(const std::string& name);
+
+private:
+    Cell setq(std::istream& in);
+    Cell let(std::istream& in);
+    Cell defun(std::istream& in);
+
+    Function::Args readFunctionArguments(std::istream& in);
+
 public:
-    Env env = Env{};
-    std::stack<Env> local;
+    Env globalEnv = Env{};
+    std::vector<LocalEnv> localEnv;
 };
 
 }  // namespace Lisp

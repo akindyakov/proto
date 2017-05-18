@@ -8,14 +8,14 @@ namespace Lisp {
 
 Env::Env()
 {
-    funcs.emplace("+", std::make_unique<Func::Sum>());
-    funcs.emplace("*",  std::make_unique<Func::Product>());
-    funcs.emplace("-", std::make_unique<Func::Subtract>());
-    funcs.emplace("/", std::make_unique<Func::Division>());
-    funcs.emplace("rem", std::make_unique<Func::Remainder>());
-    funcs.emplace("abs", std::make_unique<Func::Abs>());
-    funcs.emplace("max", std::make_unique<Func::Max>());
-    funcs.emplace("min", std::make_unique<Func::Min>());
+    addFunction("+", std::make_unique<Func::Sum>());
+    addFunction("*",  std::make_unique<Func::Product>());
+    addFunction("-", std::make_unique<Func::Subtract>());
+    addFunction("/", std::make_unique<Func::Division>());
+    addFunction("rem", std::make_unique<Func::Remainder>());
+    addFunction("abs", std::make_unique<Func::Abs>());
+    addFunction("max", std::make_unique<Func::Max>());
+    addFunction("min", std::make_unique<Func::Min>());
 }
 
 FunctionPtr Env::findFunction(const std::string& name) const {
@@ -24,6 +24,19 @@ FunctionPtr Env::findFunction(const std::string& name) const {
         throw Error() << "There is no function with name '" << name << "'";
     }
     return it->second.get();
+}
+
+Cell Env::addFunction(
+    const std::string& name
+    , std::unique_ptr<Function> fun
+) {
+    if (funcs.count(name)) {
+        funcs.erase(name);
+        names.erase(name);
+    }
+    funcs.emplace(name, std::move(fun));
+    names.emplace(name, Cell(funcs[name].get()));
+    return findName(name);
 }
 
 const Cell& Env::findName(const std::string& name) const {
