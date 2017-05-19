@@ -84,7 +84,7 @@ void defunTest() {
   "doc string"
   (* 2 n)
 )
-(defun -plus (f s)
+(defun +plus (f s)
   "doc string"
   (+ f s)
 )
@@ -99,10 +99,35 @@ void defunTest() {
     }
     {
         loop.eval(exp);
-        auto v = loop.eval("(-plus 197 804)");
+        auto v = loop.eval("(+plus 197 804)");
         ValidateEqual(
             v.get<Lisp::Integer>(),
             Lisp::Integer{1001}
+        );
+    }
+}
+
+void defunRecursiveTest() {
+    std::cerr << " - defunRecursiveTest\n";
+    auto loop = Lisp::Main{};
+    std::string exp = R"FieldMap(
+(defun _fib (n)
+    "Naive recursive computation of the nth element of the Fibonacci sequence"
+    (if (< n 2)
+        n
+        (+
+            (_fib (- n 1))
+            (_fib (- n 2))
+        )
+    )
+)
+)FieldMap";
+    {
+        loop.eval(exp);
+        auto v = loop.eval("(_fib 4)");
+        ValidateEqual(
+            v.get<Lisp::Integer>(),
+            Lisp::Integer{5}
         );
     }
 }
@@ -113,6 +138,7 @@ int main() {
         singleFunctionsTest();
         nestedFunctionsTest();
         defunTest();
+        defunRecursiveTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << "failed: " << except.what() << std::endl;

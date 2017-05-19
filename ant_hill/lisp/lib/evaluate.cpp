@@ -89,7 +89,7 @@ Cell Main::eval_one(std::istream& in) {
     } else {
         auto&& fun = globalEnv.findFunction(fname);
         auto args = this->readFunctionArguments(in);
-        ans = fun->call(args);
+        ans = fun->call(std::move(args));
     }
     readParenthesesEnd(in);
     return ans;

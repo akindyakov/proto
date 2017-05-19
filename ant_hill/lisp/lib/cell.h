@@ -338,6 +338,8 @@ public:
     }
 };
 
+const auto True = Cell{Integer{1}};
+
 // template<>
 // class TypeInfo<Table>
 // {

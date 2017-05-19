@@ -23,7 +23,7 @@ public:
     };
 
 public:
-    Cell call(const Function::Args& args) const override;
+    Cell call(Function::Args args) const override;
 
 };
 
@@ -42,7 +42,7 @@ public:
     };
 
 public:
-    Cell call(const Function::Args& args) const override;
+    Cell call(Function::Args args) const override;
 
 };
 
@@ -61,7 +61,7 @@ public:
     };
 
 public:
-    Cell call(const Function::Args& args) const override;
+    Cell call(Function::Args args) const override;
 
 };
 
@@ -80,26 +80,7 @@ public:
     };
 
 public:
-    Cell call(const Function::Args& args) const override;
-
-};
-
-class Greater
-    : public Function
-{
-public:
-    class Error
-        : public Exception
-    {
-    public:
-        explicit Error()
-            : Exception("greater: ")
-        {
-        }
-    };
-
-public:
-    Cell call(const Function::Args& args) const override;
+    Cell call(Function::Args args) const override;
 
 };
 
@@ -107,7 +88,7 @@ class Not
     : public Function
 {
 public:
-    Cell call(const Function::Args& args) const override;
+    Cell call(Function::Args args) const override;
 
 };
 

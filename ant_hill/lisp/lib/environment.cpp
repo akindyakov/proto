@@ -1,5 +1,6 @@
 #include "environment.h"
 #include "math_functions.h"
+#include "basic_functions.h"
 
 #include <cctype>
 
@@ -16,6 +17,8 @@ Env::Env()
     addFunction("abs", std::make_unique<Func::Abs>());
     addFunction("max", std::make_unique<Func::Max>());
     addFunction("min", std::make_unique<Func::Min>());
+    addFunction("if", std::make_unique<Func::If>());
+    addFunction("<", std::make_unique<Func::Less>());
 }
 
 FunctionPtr Env::findFunction(const std::string& name) const {
