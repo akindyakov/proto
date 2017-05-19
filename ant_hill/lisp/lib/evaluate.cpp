@@ -78,15 +78,7 @@ Cell Main::eval(std::istream& in) {
 }
 
 Cell Main::eval_one(std::istream& in) {
-    skipSpaces(in);
-    if (!in.good()) {
-        throw Error() << "Unexpected end of file at the begining";
-    }
-    char ch = in.get();
-    if (ch != '(') {
-        throw Error() << "Wrong first character: '" << ch << "'\n";
-    }
-
+    readParenthesesBegin(in);
     skipSpaces(in);
     auto fname = NameParser::read(in);
 
@@ -99,17 +91,30 @@ Cell Main::eval_one(std::istream& in) {
         auto args = this->readFunctionArguments(in);
         ans = fun->call(args);
     }
-
-    skipSpaces(in);
-    // drop last brace
-    if (!in.good()) {
-        throw Error() << "Unexpected end of file at the end";
-    }
-    ch = in.get();
-    if (ch != ')') {
-        throw Error() << "Wrong last character: '" << ch << "'\n";
-    }
+    readParenthesesEnd(in);
     return ans;
+}
+
+void Main::readParenthesesBegin(std::istream& in) {
+    skipSpaces(in);
+    if (!in.good()) {
+        throw Error() << "Unexpected end of file at the begining of parentheses group";
+    }
+    char ch = in.get();
+    if (ch != '(') {
+        throw Error() << "Wrong parentheses group first character: '" << ch << "'\n";
+    }
+}
+void Main::readParenthesesEnd(std::istream& in) {
+    skipSpaces(in);
+    if (!in.good()) {
+        throw Error() << "Unexpected end of file at the end of parentheses group";
+    }
+    char ch = in.get();
+    if (ch != ')') {
+        throw Error()
+            << "Wrong parentheses group last character: '" << ch << "'\n";
+    }
 }
 
 Function::Args Main::readFunctionArguments(std::istream& in) {
@@ -158,21 +163,17 @@ Cell Main::let(std::istream& in) {
 Cell Main::defun(std::istream& in) {
     skipSpaces(in);
     auto fname = NameParser::read(in);
-    skipSpaces(in);
-    // read argument list
+    // read argument list declaration
     auto argNames = EvalInterpret::ArgNames{};
-    auto ch = char{};
-    if (in.good() && in.get(ch) && ch == '(') {
+    readParenthesesBegin(in);
+    skipSpaces(in);
+    while (in.good() && in.peek() != ')') {
+        auto argName = NameParser::read(in);
+        argNames.push_back(argName);
         skipSpaces(in);
-        while (in.good() && in.peek() != ')') {
-            auto argName = NameParser::read(in);
-            argNames.push_back(argName);
-            skipSpaces(in);
-        }
-        in.ignore();  // skip ')'
-    } else {
-        throw Error() << "defun: argument list should to starts with '('";
     }
+    readParenthesesEnd(in);
+
     skipSpaces(in);
     if (in.good() && StringValueParser::checkPrefix(in.peek())) {
         // read doc string
@@ -181,18 +182,14 @@ Cell Main::defun(std::istream& in) {
     skipSpaces(in);
     auto counter = int{0};
     auto fbody = std::string{};
-    if (in.good() && in.get(ch) && ch != '(') {
-        throw Error() << "defun: function body should starts with '" << '(' << "'";
-    }
-    fbody.push_back(ch);
-    ++counter;
-    while (in.good() && counter != 0) {
+    do {
         auto ch = char{};
         in.get(ch);
         counter += ch == '(' ? 1 : 0;
         counter -= ch == ')' ? 1 : 0;
         fbody.push_back(ch);
-    }
+    } while (in.good() && counter != 0);
+
     return globalEnv.addFunction(
         fname,
         std::make_unique<EvalInterpret>(*this, argNames, fbody)

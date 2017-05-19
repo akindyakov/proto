@@ -49,6 +49,9 @@ private:
 
     Function::Args readFunctionArguments(std::istream& in);
 
+    static void readParenthesesBegin(std::istream& in);
+    static void readParenthesesEnd(std::istream& in);
+
 public:
     Env globalEnv = Env{};
     std::vector<LocalEnv> localEnv;
