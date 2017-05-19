@@ -101,17 +101,18 @@ void Main::readParenthesesBegin(std::istream& in) {
         throw Error() << "Unexpected end of file at the begining of parentheses group";
     }
     char ch = in.get();
-    if (ch != '(') {
+    if (ch != PARENT_OPEN) {
         throw Error() << "Wrong parentheses group first character: '" << ch << "'\n";
     }
 }
+
 void Main::readParenthesesEnd(std::istream& in) {
     skipSpaces(in);
     if (!in.good()) {
         throw Error() << "Unexpected end of file at the end of parentheses group";
     }
     char ch = in.get();
-    if (ch != ')') {
+    if (ch != PARENT_CLOSE) {
         throw Error()
             << "Wrong parentheses group last character: '" << ch << "'\n";
     }
@@ -121,8 +122,8 @@ Function::Args Main::readFunctionArguments(std::istream& in) {
     auto args = Function::Args{};
     skipSpaces(in);
     auto ch = in.peek();
-    while (in.good() && ch != ')') {
-        if (ch == '(') {
+    while (in.good() && ch != PARENT_CLOSE) {
+        if (ch == PARENT_OPEN) {
             args.push_back(this->eval_one(in));
 
         } else if (RealNumberParser::checkPrefix(ch)) {
@@ -167,7 +168,7 @@ Cell Main::defun(std::istream& in) {
     auto argNames = EvalInterpret::ArgNames{};
     readParenthesesBegin(in);
     skipSpaces(in);
-    while (in.good() && in.peek() != ')') {
+    while (in.good() && in.peek() != PARENT_CLOSE) {
         auto argName = NameParser::read(in);
         argNames.push_back(argName);
         skipSpaces(in);
@@ -185,8 +186,8 @@ Cell Main::defun(std::istream& in) {
     do {
         auto ch = char{};
         in.get(ch);
-        counter += ch == '(' ? 1 : 0;
-        counter -= ch == ')' ? 1 : 0;
+        counter += ch == PARENT_OPEN ? 1 : 0;
+        counter -= ch == PARENT_CLOSE ? 1 : 0;
         fbody.push_back(ch);
     } while (in.good() && counter != 0);
 

@@ -20,6 +20,13 @@ public:
     }
 };
 
+enum Parentheses
+    : char
+{
+    PARENT_OPEN = '(',
+    PARENT_CLOSE = ')',
+};
+
 bool charIsService(char ch);
 
 class RealNumberParser {

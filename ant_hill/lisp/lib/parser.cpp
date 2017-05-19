@@ -10,8 +10,8 @@ bool RealNumberParser::checkPrefix(char ch) {
 bool charIsService(char ch) {
     return (
         std::isspace(ch)
-        || ch == ')'
-        || ch == '('
+        || ch == PARENT_OPEN
+        || ch == PARENT_CLOSE
     );
 }
 
