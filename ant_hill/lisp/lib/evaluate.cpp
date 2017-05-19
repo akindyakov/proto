@@ -30,14 +30,14 @@ public:
         }
     };
 
+    using ArgNames = std::vector<std::string>;
 
 private:
-    using ArgNames = std::vector<std::string>;
     Main& glob;
     ArgNames argNames;
     std::string body;
 
-private:
+public:
     explicit EvalInterpret(
         Main& glob_
         , ArgNames argNames_
@@ -48,8 +48,6 @@ private:
         , body(body_)
     {
     }
-
-public:
 
     Cell call(Function::Args args) const override {
         auto localEnv = LocalEnv{};
@@ -63,25 +61,38 @@ public:
         glob.popStackFrame();
         return ret;
     }
-
 };
 
 }
 
 
 Cell Main::eval(std::istream& in) {
-    skipSpaces(in);
+    std::cerr << "eval loop\n";
+    auto last = Cell{};
+    while (in.good()) {
+        skipSpaces(in);
+        if (!in.good()) {
+            break;
+        }
+        std::cerr << "->\n";
+        last = this->eval_one(in);
+    }
+    return last;
+}
+
+Cell Main::eval_one(std::istream& in) {
     auto ch = char{};
     in.get(ch);
     if (ch != '(') {
-        throw Error();
+        throw Error() << "Wrong first character: '" << int(ch) << "'\n";
     }
     skipSpaces(in);
     auto fname = NameParser::read(in);
-    //*dbg*/ std::cerr << "fun: " << fname << '\n';
+    /*dbg*/ std::cerr << "fun: " << fname << '\n';
 
     // TODO: create map here
     if (fname == "defun") {
+        std::cerr << "defun\n";
         return this->defun(in);
     }
     // else {
@@ -141,45 +152,50 @@ Cell Main::let(std::istream& in) {
 Cell Main::defun(std::istream& in) {
     skipSpaces(in);
     auto fname = NameParser::read(in);
+    std::cerr << "defun: " << fname << "\n";
     skipSpaces(in);
     // read argument list
     auto argNames = EvalInterpret::ArgNames{};
-    if (in && in.get() == '(') {
+    auto ch = char{};
+    if (in && in.get(ch) && ch == '(') {
         skipSpaces(in);
         while (in && in.peek() != ')') {
-            argNames.push_back(NameParser::read(in));
+            auto argName = NameParser::read(in);
+            argNames.push_back(argName);
             skipSpaces(in);
         }
+        in.ignore();  // skip ')'
     } else {
-        throw Error();
+        throw Error() << "defun: argument list should to starts with '('";
     }
     skipSpaces(in);
     if (in && StringValueParser::checkPrefix(in.peek())) {
         // read doc string
-        StringValueParser::read(in);
+        auto doc = StringValueParser::read(in);
     }
     skipSpaces(in);
     auto counter = int{0};
     auto fbody = std::string{};
-    if (in && in.get() != '(') {
-        throw Error();
+    if (in && in.get(ch) && ch != '(') {
+        throw Error() << "defun: function body should starts with '" << '(' << "'";
     }
+    fbody.push_back(ch);
     ++counter;
-    while (in && counter) {
+    while (in && counter != 0) {
         auto ch = char{};
         in.get(ch);
         counter += ch == '(' ? 1 : 0;
         counter -= ch == ')' ? 1 : 0;
         fbody.push_back(ch);
     }
-    // drop last
     skipSpaces(in);
-    if (in.get() != ')') {
-        throw Error();
+    in.get(ch);
+    if (ch != ')') {
+        throw Error() << "defun: last " << ')' << " was missed";
     }
     return globalEnv.addFunction(
         fname,
-        std::make_unique<EvalInterpret>(glob, argNames, fbody)
+        std::make_unique<EvalInterpret>(*this, argNames, fbody)
     );
 }
 
@@ -187,31 +203,18 @@ void Main::pushStackFrame(LocalEnv lEnv) {
     localEnv.push_back(std::move(lEnv));
 }
 
-void popStackFrame() {
+void Main::popStackFrame() {
     localEnv.pop_back();
 }
 
-const Cell& findName(const std::string& name) const {
+Cell Main::findName(const std::string& name) const {
     for (
-        const auto& envIt = this->localEnv.rcbegin();
-        envIt !+ this->localEnv.rcend(); ++envIt
+        auto envIt = this->localEnv.crbegin();
+        envIt != this->localEnv.crend(); ++envIt
     ) {
         auto cit = envIt->find(name);
         if (cit != envIt->cend()) {
-            return *cit;
-        }
-    }
-    return this->globalEnv.findName(name);
-}
-
-Cell& findName(const std::string& name) {
-    for (
-        auto& envIt = this->localEnv.rbegin();
-        envIt !+ this->localEnv.rend(); ++envIt
-    ) {
-        auto cit = envIt->find(name);
-        if (cit != envIt->end()) {
-            return *cit;
+            return cit->second;
         }
     }
     return this->globalEnv.findName(name);

@@ -101,9 +101,11 @@ Cell SimpleCharacterParser::read(std::istream& is) {
 }
 
 std::string NameParser::read(std::istream& is) {
-    auto name = String{};
     // TODO: check characters is valid here
-    is >> name;
+    auto name = std::string{};
+    while (is && !charIsService(is.peek())) {
+        name.push_back(is.get());
+    }
     return name;
 }
 

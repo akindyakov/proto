@@ -76,11 +76,43 @@ void nestedFunctionsTest() {
     }
 }
 
+void defunTest() {
+    std::cerr << " - defunTest\n";
+    auto loop = Lisp::Main{};
+    std::string exp = R"FieldMap(
+(defun -dup (n)
+  "doc string"
+  (* 2 n)
+)
+(defun -plus (f s)
+  "doc string"
+  (+ f s)
+)
+)FieldMap";
+    {
+        loop.eval(exp);
+        auto v = loop.eval("(-dup 3)");
+        ValidateEqual(
+            v.get<Lisp::Integer>(),
+            Lisp::Integer{6}
+        );
+    }
+    {
+        loop.eval(exp);
+        auto v = loop.eval("(-plus 197 804)");
+        ValidateEqual(
+            v.get<Lisp::Integer>(),
+            Lisp::Integer{1001}
+        );
+    }
+}
+
 int main() {
     try {
         std::cerr << "evaluate_ut:\n";
         singleFunctionsTest();
         nestedFunctionsTest();
+        defunTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << "failed: " << except.what() << std::endl;

@@ -38,10 +38,11 @@ public:
     void pushStackFrame(LocalEnv);
     void popStackFrame();
 
-    const Cell& findName(const std::string& name) const;
-    Cell& findName(const std::string& name);
+    Cell findName(const std::string& name) const;
 
 private:
+    Cell eval_one(std::istream& in);
+
     Cell setq(std::istream& in);
     Cell let(std::istream& in);
     Cell defun(std::istream& in);
