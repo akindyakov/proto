@@ -42,7 +42,7 @@ Cell Env::addFunction(
 const Cell& Env::findName(const std::string& name) const {
     auto it = names.find(name);
     if (it == names.end()) {
-        throw Error() << "There is no such a name";
+        throw Error() << "There is no such a name '" << name << "'";
     }
     return it->second;
 }

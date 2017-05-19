@@ -11,7 +11,7 @@ namespace Lisp {
 namespace {
 
 static inline void skipSpaces(std::istream& in) {
-    while (in && std::isspace(in.peek())) {
+    while (in.good() && std::isspace(in.peek())) {
         in.ignore();
     }
 }
@@ -55,6 +55,7 @@ public:
         auto nameIt = argNames.cbegin();
         for (const auto& val : args) {
             localEnv.emplace(*nameIt, std::move(val));
+            ++nameIt;
         }
         glob.pushStackFrame(std::move(localEnv));
         auto ret = glob.eval(body);
@@ -67,50 +68,57 @@ public:
 
 
 Cell Main::eval(std::istream& in) {
-    std::cerr << "eval loop\n";
     auto last = Cell{};
+    skipSpaces(in);
     while (in.good()) {
-        skipSpaces(in);
-        if (!in.good()) {
-            break;
-        }
-        std::cerr << "->\n";
         last = this->eval_one(in);
+        skipSpaces(in);
     }
     return last;
 }
 
 Cell Main::eval_one(std::istream& in) {
-    auto ch = char{};
-    in.get(ch);
-    if (ch != '(') {
-        throw Error() << "Wrong first character: '" << int(ch) << "'\n";
+    skipSpaces(in);
+    if (!in.good()) {
+        throw Error() << "Unexpected end of file at the begining";
     }
+    char ch = in.get();
+    if (ch != '(') {
+        throw Error() << "Wrong first character: '" << ch << "'\n";
+    }
+
     skipSpaces(in);
     auto fname = NameParser::read(in);
-    /*dbg*/ std::cerr << "fun: " << fname << '\n';
 
+    auto ans = Cell{};
     // TODO: create map here
     if (fname == "defun") {
-        std::cerr << "defun\n";
-        return this->defun(in);
+        ans = this->defun(in);
+    } else {
+        auto&& fun = globalEnv.findFunction(fname);
+        auto args = this->readFunctionArguments(in);
+        ans = fun->call(args);
     }
-    // else {
-    auto&& fun = globalEnv.findFunction(fname);
-    auto args = this->readFunctionArguments(in);
-    //*dbg*/ for (const auto& arg : args) {
-    //*dbg*/     std::cerr << arg.toString() << '\n';
-    //*dbg*/ }
-    return fun->call(args);
+
+    skipSpaces(in);
+    // drop last brace
+    if (!in.good()) {
+        throw Error() << "Unexpected end of file at the end";
+    }
+    ch = in.get();
+    if (ch != ')') {
+        throw Error() << "Wrong last character: '" << ch << "'\n";
+    }
+    return ans;
 }
 
 Function::Args Main::readFunctionArguments(std::istream& in) {
     auto args = Function::Args{};
     skipSpaces(in);
     auto ch = in.peek();
-    while (in && ch != ')') {
+    while (in.good() && ch != ')') {
         if (ch == '(') {
-            args.push_back(this->eval(in));
+            args.push_back(this->eval_one(in));
 
         } else if (RealNumberParser::checkPrefix(ch)) {
             args.push_back(RealNumberParser::read(in));
@@ -131,8 +139,6 @@ Function::Args Main::readFunctionArguments(std::istream& in) {
         skipSpaces(in);
         ch = in.peek();
     }
-    // drop last brace
-    in.ignore();
     return args;
 }
 
@@ -152,14 +158,13 @@ Cell Main::let(std::istream& in) {
 Cell Main::defun(std::istream& in) {
     skipSpaces(in);
     auto fname = NameParser::read(in);
-    std::cerr << "defun: " << fname << "\n";
     skipSpaces(in);
     // read argument list
     auto argNames = EvalInterpret::ArgNames{};
     auto ch = char{};
-    if (in && in.get(ch) && ch == '(') {
+    if (in.good() && in.get(ch) && ch == '(') {
         skipSpaces(in);
-        while (in && in.peek() != ')') {
+        while (in.good() && in.peek() != ')') {
             auto argName = NameParser::read(in);
             argNames.push_back(argName);
             skipSpaces(in);
@@ -169,29 +174,24 @@ Cell Main::defun(std::istream& in) {
         throw Error() << "defun: argument list should to starts with '('";
     }
     skipSpaces(in);
-    if (in && StringValueParser::checkPrefix(in.peek())) {
+    if (in.good() && StringValueParser::checkPrefix(in.peek())) {
         // read doc string
         auto doc = StringValueParser::read(in);
     }
     skipSpaces(in);
     auto counter = int{0};
     auto fbody = std::string{};
-    if (in && in.get(ch) && ch != '(') {
+    if (in.good() && in.get(ch) && ch != '(') {
         throw Error() << "defun: function body should starts with '" << '(' << "'";
     }
     fbody.push_back(ch);
     ++counter;
-    while (in && counter != 0) {
+    while (in.good() && counter != 0) {
         auto ch = char{};
         in.get(ch);
         counter += ch == '(' ? 1 : 0;
         counter -= ch == ')' ? 1 : 0;
         fbody.push_back(ch);
-    }
-    skipSpaces(in);
-    in.get(ch);
-    if (ch != ')') {
-        throw Error() << "defun: last " << ')' << " was missed";
     }
     return globalEnv.addFunction(
         fname,
