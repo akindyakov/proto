@@ -38,13 +38,6 @@ using String = std::string;
 using Symbol = String::value_type;
 // using Table = std::unordered_map<String, Cell>;
 
-class Function
-{
-public:
-    using Args = std::vector<Cell>;
-    virtual Cell call(Args args) const = 0;
-};
-
 //using FunctionPtr = std::shared_ptr<Function>;
 using FunctionPtr = const Function*;
 
@@ -357,6 +350,59 @@ const auto True = Cell{Integer{1}};
 //         return out.str();
 //     }
 // };
+
+class Future
+{
+public:
+    class Error
+        : public ::Exception
+    {
+        explicit Error()
+            : Exception("Future error.")
+        {
+        }
+    };
+
+public:
+    explicit Future(std::string expr, Context*);
+    explicit Future(Cell value);
+
+    template<typename T>
+    const T& get() {
+        compute();
+        return value.get<T>();
+    }
+
+    const std::string& str() const {
+        return exrp;
+    }
+
+private:
+    inline void compute() {
+        if (cnt == nullptr) {
+            value = cnt->eval(expr);
+        }
+        cnt = nullptr;
+    }
+
+private:
+    Context* cnt = nullptr;
+    const std::string expr;
+    Cell value;
+};
+
+template<>
+const Cell& Future::get<Cell>() {
+    compute();
+    return value;
+}
+
+class Function
+{
+public:
+    using Args = std::vector<Future>;
+    virtual Future call(Context& context, Args args) const = 0;
+};
 
 
 }  // namespace Lisp

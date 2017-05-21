@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cell.h"
+#include "context.h"
 
 #include <functional>
 
@@ -19,15 +20,15 @@ public:
     Operation op;
 
 public:
-    Cell call(Function::Args args) const override {
+    Cell call(Context& context, Function::Args args) const override {
         if (args.empty()) {
             throw TError() << "given too few arguments";
         }
         auto it = args.cbegin();
-        Cell value = *it;
+        Cell value = context.eval(*it);
         ++it;
         while (it != args.cend()) {
-            value = op(value, *it);
+            value = op(value, context.eval(*it));
             ++it;
         }
         return value;
