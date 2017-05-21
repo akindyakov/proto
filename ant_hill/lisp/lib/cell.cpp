@@ -1,4 +1,5 @@
 #include "cell.h"
+#include "context.h"
 
 namespace Lisp {
 
@@ -42,5 +43,32 @@ bool operator != (
 ) {
     return !(first == second);
 }
+
+Future::Future(std::string expr, Context* cnt)
+    : cnt_(cnt)
+    , expr_(expr)
+    , value_(Cell{})
+{
+}
+
+Future::Future(Cell value)
+    : cnt_(nullptr)
+    , value_(std::move(value))
+{
+}
+
+const std::string& Future::expr() const {
+    return this->expr_;
+}
+
+void Future::compute() {
+    if (cnt_ == nullptr) {
+        this->value_ = this->cnt_->eval(
+            this->expr_
+        );
+    }
+    this->cnt_ = nullptr;
+}
+
 
 }  // namespace Lisp

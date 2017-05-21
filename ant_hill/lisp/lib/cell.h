@@ -38,7 +38,7 @@ using String = std::string;
 using Symbol = String::value_type;
 // using Table = std::unordered_map<String, Cell>;
 
-//using FunctionPtr = std::shared_ptr<Function>;
+class Function;
 using FunctionPtr = const Function*;
 
 template<typename T>
@@ -365,36 +365,29 @@ public:
 
 public:
     explicit Future(std::string expr, Context*);
-    explicit Future(Cell value);
+    /*explicit*/ Future(Cell value);
 
     template<typename T>
     const T& get() {
-        compute();
-        return value.get<T>();
+        this->compute();
+        return this->value_.get<T>();
     }
 
-    const std::string& str() const {
-        return exrp;
-    }
+    const std::string& expr() const;
 
 private:
-    inline void compute() {
-        if (cnt == nullptr) {
-            value = cnt->eval(expr);
-        }
-        cnt = nullptr;
-    }
+    void compute();
 
 private:
-    Context* cnt = nullptr;
-    const std::string expr;
-    Cell value;
+    Context* cnt_ = nullptr;
+    const std::string expr_;
+    Cell value_;
 };
 
 template<>
 const Cell& Future::get<Cell>() {
     compute();
-    return value;
+    return value_;
 }
 
 class Function
@@ -403,6 +396,5 @@ public:
     using Args = std::vector<Future>;
     virtual Future call(Context& context, Args args) const = 0;
 };
-
 
 }  // namespace Lisp
