@@ -109,4 +109,17 @@ std::string NameParser::read(std::istream& is) {
     return name;
 }
 
+std::string ExprParser::read(std::istream& is) {
+    auto counter = int{0};
+    auto fbody = std::string{};
+    auto ch = char{};
+    do {
+        is.get(ch);
+        counter += ch == PARENT_OPEN ? 1 : 0;
+        counter -= ch == PARENT_CLOSE ? 1 : 0;
+        fbody.push_back(ch);
+    } while (is.good() && counter != 0);
+    return fbody;
+}
+
 }  // namespace Lisp

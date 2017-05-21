@@ -50,6 +50,7 @@ public:
     }
 
     Cell call(Function::Args args) const override {
+        std::cerr << args.size() << ") " << args.begin()->toString() << '\n';
         auto localEnv = LocalEnv{};
         ValidateEqual(args.size(), argNames.size());
         auto nameIt = argNames.cbegin();
@@ -60,6 +61,7 @@ public:
         glob.pushStackFrame(std::move(localEnv));
         auto ret = glob.eval(body);
         glob.popStackFrame();
+        std::cerr << "ret: " << ret.toString() << '\n';
         return ret;
     }
 };
@@ -87,6 +89,7 @@ Cell Main::eval_one(std::istream& in) {
     if (fname == "defun") {
         ans = this->defun(in);
     } else {
+        std::cerr << "funcal: " << fname << '\n';
         auto&& fun = globalEnv.findFunction(fname);
         auto args = this->readFunctionArguments(in);
         ans = fun->call(std::move(args));
@@ -124,6 +127,7 @@ Function::Args Main::readFunctionArguments(std::istream& in) {
     auto ch = in.peek();
     while (in.good() && ch != PARENT_CLOSE) {
         if (ch == PARENT_OPEN) {
+            std::cerr << "eval smth inside\n";
             args.push_back(this->eval_one(in));
 
         } else if (RealNumberParser::checkPrefix(ch)) {
@@ -181,15 +185,7 @@ Cell Main::defun(std::istream& in) {
         auto doc = StringValueParser::read(in);
     }
     skipSpaces(in);
-    auto counter = int{0};
-    auto fbody = std::string{};
-    do {
-        auto ch = char{};
-        in.get(ch);
-        counter += ch == PARENT_OPEN ? 1 : 0;
-        counter -= ch == PARENT_CLOSE ? 1 : 0;
-        fbody.push_back(ch);
-    } while (in.good() && counter != 0);
+    auto fbody = ExprParser::read(in);
 
     return globalEnv.addFunction(
         fname,

@@ -64,4 +64,9 @@ public:
     static std::string read(std::istream& is);
 };
 
+class ExprParser {
+public:
+    static std::string read(std::istream& is);
+};
+
 }  // namespace Lisp
