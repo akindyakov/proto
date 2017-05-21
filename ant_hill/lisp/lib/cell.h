@@ -351,7 +351,7 @@ const auto True = Cell{Integer{1}};
 //     }
 // };
 
-class Future
+class ArgFuture
 {
 public:
     class Error
@@ -364,10 +364,10 @@ public:
     };
 
 public:
-    explicit Future(std::string expr, Context*);
-    /*explicit*/ Future(Cell value);
+    explicit ArgFuture(std::string expr, Context* cnt);
+    /*explicit*/ ArgFuture(Cell value);
 
-    template<typename T>
+    template<typename T = Cell>
     const T& get() {
         this->compute();
         return this->value_.get<T>();
@@ -379,22 +379,22 @@ private:
     void compute();
 
 private:
-    Context* cnt_ = nullptr;
+    Context* cnt_;
     const std::string expr_;
     Cell value_;
 };
 
 template<>
-const Cell& Future::get<Cell>() {
-    compute();
-    return value_;
+const Cell& ArgFuture::get<Cell>() {
+    this->compute();
+    return this->value_;
 }
 
 class Function
 {
 public:
-    using Args = std::vector<Future>;
-    virtual Future call(Context& context, Args args) const = 0;
+    using Args = std::vector<ArgFuture>;
+    virtual Cell call(Args args) const = 0;
 };
 
 }  // namespace Lisp

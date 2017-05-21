@@ -7,69 +7,94 @@
 
 namespace Lisp {
 
-Namespace::Namespace()
+FunctionStorage FunctionStorage::globalStorage() {
 {
-    addFunction("+", std::make_unique<Func::Sum>());
-    addFunction("*",  std::make_unique<Func::Product>());
-    addFunction("-", std::make_unique<Func::Subtract>());
-    addFunction("/", std::make_unique<Func::Division>());
-    addFunction("rem", std::make_unique<Func::Remainder>());
-    addFunction("abs", std::make_unique<Func::Abs>());
-    addFunction("max", std::make_unique<Func::Max>());
-    addFunction("min", std::make_unique<Func::Min>());
-    addFunction("if", std::make_unique<Func::If>());
-    addFunction("<", std::make_unique<Func::Less>());
+    auto st = FunctionStorage{};
+    st.add("+", std::make_unique<Func::Sum>());
+    st.add("*",  std::make_unique<Func::Product>());
+    st.add("-", std::make_unique<Func::Subtract>());
+    st.add("/", std::make_unique<Func::Division>());
+    st.add("rem", std::make_unique<Func::Remainder>());
+    st.add("abs", std::make_unique<Func::Abs>());
+    st.add("max", std::make_unique<Func::Max>());
+    st.add("min", std::make_unique<Func::Min>());
+    st.add("if", std::make_unique<Func::If>());
+    st.add("<", std::make_unique<Func::Less>());
+    return st;
+}
+
+FunctionPtr FunctionStorage::get(const std::string& name) const {
+    auto it = funcs.find(name);
+    if (it == funcs.end()) {
+        return nullptr;
+    }
+    return it->second.get();
+}
+
+FunctionPtr FunctionStorage::add(
+    const std::string& name
+    , std::unique_ptr<Function> fun
+) {
+    // if (funcs.count(name)) {
+    //     // throw ??
+    // }
+    funcs.emplace(name, std::move(fun));
+    return fun.get();
 }
 
 FunctionPtr Namespace::findFunction(const std::string& name) const {
-    auto it = funcs.find(name);
-    if (it == funcs.end()) {
-        throw Error() << "There is no function with name '" << name << "'";
-    }
-    return it->second.get();
+    reuturn this->funcs->get(name);
 }
 
 Cell Namespace::addFunction(
     const std::string& name
     , std::unique_ptr<Function> fun
 ) {
-    if (funcs.count(name)) {
-        funcs.erase(name);
-        names.erase(name);
-    }
-    funcs.emplace(name, std::move(fun));
-    names.emplace(name, Cell(funcs[name].get()));
-    return findName(name);
+    return Cell(this->funcs->addFunction(name));
 }
 
-const Cell& Namespace::findName(const std::string& name) const {
+const Cell& Namespace::find(const std::string& name) const {
     auto it = names.find(name);
     if (it == names.end()) {
-        throw Error() << "There is no such a name '" << name << "'";
+        auto fptr = funcs->find(name);
+        if (fptr == nullptr) {
+            throw Error() << "There is no such a name '" << name << "'";
+        }
+        return Cell(fptr);
     }
     return it->second;
 }
 
-Cell& Namespace::findName(const std::string& name) {
+bool Namespace::find(const std::string& name, Cell& dst) const {
     auto it = names.find(name);
     if (it == names.end()) {
-        throw Error() << "There is no such a name";
+        auto fptr = funcs->find(name);
+        if (fptr == nullptr) {
+            return false;
+        }
+        dst = Cell(fptr);
+    } else {
+        dst = it->second;
     }
-    return it->second;
+    return true;
 }
 
-Cell& Namespace::addName(const std::string& name, Cell value) {
+Cell& Namespace::add(const std::string& name, Cell value) {
     return names[name] = std::move(value);
 }
 
-Cell Namespace::popName(const std::string& name) {
-    auto it = names.find(name);
-    if (it == names.end()) {
-        throw Error() << "There is no such a name";
-    }
-    auto v = std::move(it->second);
+void Namespace::pop(const std::string& name) {
     names.erase(name);
-    return v;
+}
+
+namespace {
+
+static globalStorage = FunctionStorage::globalStorage();
+
+}
+
+Namespace::Namespace() {
+    return Namespace(&globalStorage);
 }
 
 }  // namespace Lisp

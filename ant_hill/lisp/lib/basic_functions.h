@@ -1,12 +1,41 @@
 #pragma once
 
 #include "cell.h"
+#include "namespace.h"
 
 #include <functional>
 
 
 namespace Lisp {
 namespace Func {
+
+class Define
+    : public Function
+{
+public:
+    class Error
+        : public Exception
+    {
+    public:
+        explicit Error()
+            : Exception("define: ")
+        {
+        }
+    };
+
+public:
+    explicit Define(
+        Namespace& nm
+    )
+        : nm_(nm)
+    {
+    }
+
+    Cell call(Function::Args args) const override;
+
+private:
+    Namespace& nm_;
+};
 
 class If
     : public Function

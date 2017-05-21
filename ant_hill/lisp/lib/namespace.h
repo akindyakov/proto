@@ -6,8 +6,35 @@
 
 namespace Lisp {
 
+class FunctionStorage
+{
+public:
+    FunctionPtr get(const std::string& name) const;
+
+    FunctionPtr add(
+        const std::string& name
+        , std::unique_ptr<Function> fun
+    );
+
+    static FunctionStorage globalStorage();
+
+private:
+    std::unordered_map<
+        std::string,
+        std::unique_ptr<Function>
+    > funcs;
+};
+
 class Namespace
 {
+private:
+    explicit Namespace(
+        FunctionStorage* funcs_
+    )
+        : funcs(funcs_)
+    {
+    }
+
 public:
     explicit Namespace();
 
@@ -17,10 +44,10 @@ public:
         , std::unique_ptr<Function> fun
     );
 
-    const Cell& findName(const std::string& name) const;
-    Cell& findName(const std::string& name);
-    Cell& addName(const std::string& name, Cell value);
-    Cell popName(const std::string& name);
+    bool find(const std::string& name, Cell&) const;
+    const Cell& find(const std::string& name) const;
+    Cell& add(const std::string& name, Cell value);
+    void pop(const std::string& name);
 
 public:
     class Error
@@ -34,17 +61,13 @@ public:
     };
 
 private:
-    std::unordered_map<
-        std::string,
-        std::unique_ptr<Function>
-    > funcs;
-
+    std::shared_ptr<FunctionStorage> funcs;
     std::unordered_map<
         std::string,
         Cell
     > names;
 };
 
-using LocalEnv = std::unordered_map<std::string, Cell>;
+Namespace createGlobalNamespace();
 
 }  // namespace Lisp

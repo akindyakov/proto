@@ -3,6 +3,12 @@
 
 namespace Lisp {
 
+void skipSpaces(std::istream& in) {
+    while (in.good() && std::isspace(in.peek())) {
+        in.ignore();
+    }
+}
+
 bool RealNumberParser::checkPrefix(char ch) {
     return std::isdigit(ch) || ch == minusMark;
 }
@@ -120,6 +126,32 @@ std::string ExprParser::read(std::istream& is) {
         fbody.push_back(ch);
     } while (is.good() && counter != 0);
     return fbody;
+}
+
+void ExprParser::readBegin(std::istream& in) {
+    skipSpaces(in);
+    if (!in.good()) {
+        throw Exception() << "Unexpected end of file at the expression begining (parentheses group)";
+    }
+    char ch = in.get();
+    if (ch != PARENT_OPEN) {
+        throw Exception() << "Wrong parentheses group first character: '" << ch << "'\n";
+    }
+}
+void ExprParser::readEnd(std::istream& in) {
+    skipSpaces(in);
+    if (!in.good()) {
+        throw Error() << "Unexpected end of file at the end of parentheses group";
+    }
+    char ch = in.get();
+    if (ch != PARENT_CLOSE) {
+        throw Error()
+            << "Wrong parentheses group last character: '" << ch << "'\n";
+    }
+}
+
+bool ExprParser::checkPrefix(char ch) {
+    return ch == PARENT_OPEN;
 }
 
 }  // namespace Lisp

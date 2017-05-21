@@ -8,79 +8,8 @@
 
 namespace Lisp {
 
-namespace {
-
-static inline void skipSpaces(std::istream& in) {
-    while (in.good() && std::isspace(in.peek())) {
-        in.ignore();
-    }
-}
-
-class EvalInterpret
-    : public Function
-{
-public:
-    class Error
-        : public Exception
-    {
-    public:
-        explicit Error()
-            : Exception("Eval: ")
-        {
-        }
-    };
-
-    using ArgNames = std::vector<std::string>;
-
-private:
-    Context& glob;
-    ArgNames argNames;
-    std::string body;
-
-public:
-    explicit EvalInterpret(
-        Context& glob_
-        , ArgNames argNames_
-        , std::string body_
-    )
-        : glob(glob_)
-        , argNames(argNames_)
-        , body(body_)
-    {
-    }
-
-    Cell call(Function::Args args) const override {
-        std::cerr << args.size() << ") " << args.begin()->toString() << '\n';
-        auto localEnv = LocalEnv{};
-        ValidateEqual(args.size(), argNames.size());
-        auto nameIt = argNames.cbegin();
-        for (const auto& val : args) {
-            localEnv.emplace(*nameIt, std::move(val));
-            ++nameIt;
-        }
-        glob.pushStackFrame(std::move(localEnv));
-        auto ret = glob.eval(body);
-        glob.popStackFrame();
-        std::cerr << "ret: " << ret.toString() << '\n';
-        return ret;
-    }
-};
-
-}
-
-
 Cell Context::eval(std::istream& in) {
-    auto last = Cell{};
-    skipSpaces(in);
-    while (in.good()) {
-        last = this->eval_one(in);
-        skipSpaces(in);
-    }
-    return last;
-}
-
-Cell Context::eval_one(std::istream& in) {
-    readParenthesesBegin(in);
+    ExprParser::readBegin(in);
     skipSpaces(in);
     auto fname = NameParser::read(in);
 
@@ -94,31 +23,8 @@ Cell Context::eval_one(std::istream& in) {
         auto args = this->readFunctionArguments(in);
         ans = fun->call(std::move(args));
     }
-    readParenthesesEnd(in);
+    ExprParser::readEnd(in);
     return ans;
-}
-
-void Context::readParenthesesBegin(std::istream& in) {
-    skipSpaces(in);
-    if (!in.good()) {
-        throw Error() << "Unexpected end of file at the begining of parentheses group";
-    }
-    char ch = in.get();
-    if (ch != PARENT_OPEN) {
-        throw Error() << "Wrong parentheses group first character: '" << ch << "'\n";
-    }
-}
-
-void Context::readParenthesesEnd(std::istream& in) {
-    skipSpaces(in);
-    if (!in.good()) {
-        throw Error() << "Unexpected end of file at the end of parentheses group";
-    }
-    char ch = in.get();
-    if (ch != PARENT_CLOSE) {
-        throw Error()
-            << "Wrong parentheses group last character: '" << ch << "'\n";
-    }
 }
 
 Function::Args Context::readFunctionArguments(std::istream& in) {
@@ -127,8 +33,10 @@ Function::Args Context::readFunctionArguments(std::istream& in) {
     auto ch = in.peek();
     while (in.good() && ch != PARENT_CLOSE) {
         if (ch == PARENT_OPEN) {
-            std::cerr << "eval smth inside\n";
-            args.push_back(this->eval_one(in));
+            auto expr = ExprParser::read(in);
+            args.push_back(
+                Feature(expr, this);
+            );
 
         } else if (RealNumberParser::checkPrefix(ch)) {
             args.push_back(RealNumberParser::read(in));
@@ -142,7 +50,7 @@ Function::Args Context::readFunctionArguments(std::istream& in) {
         } else {
             auto varName = NameParser::read(in);
             args.push_back(
-                this->findName(varName)
+                Feature(varName, this);
             );
 
         }
@@ -150,6 +58,21 @@ Function::Args Context::readFunctionArguments(std::istream& in) {
         ch = in.peek();
     }
     return args;
+}
+
+Cell Context::eval_all(const std::string& expr) {
+    auto in = std::istringstream(expr);
+    return this->eval(in);
+}
+
+Cell Context::eval_all(std::istream& in) {
+    auto last = Cell{};
+    skipSpaces(in);
+    while (in.good()) {
+        last = this->eval_one(in);
+        skipSpaces(in);
+    }
+    return last;
 }
 
 Cell Context::eval(const std::string& expr) {
@@ -170,14 +93,14 @@ Cell Context::defun(std::istream& in) {
     auto fname = NameParser::read(in);
     // read argument list declaration
     auto argNames = EvalInterpret::ArgNames{};
-    readParenthesesBegin(in);
+    ExprParser::readBegin(in);
     skipSpaces(in);
     while (in.good() && in.peek() != PARENT_CLOSE) {
         auto argName = NameParser::read(in);
         argNames.push_back(argName);
         skipSpaces(in);
     }
-    readParenthesesEnd(in);
+    ExprParser::readEnd(in);
 
     skipSpaces(in);
     if (in.good() && StringValueParser::checkPrefix(in.peek())) {
@@ -202,16 +125,25 @@ void Context::popStackFrame() {
 }
 
 Cell Context::findName(const std::string& name) const {
-    for (
-        auto envIt = this->localEnv.crbegin();
-        envIt != this->localEnv.crend(); ++envIt
-    ) {
-        auto cit = envIt->find(name);
-        if (cit != envIt->cend()) {
-            return cit->second;
-        }
+    auto dst = Cell{};
+    if (this->mn.findName(name, dst)) {
+        return dst;
     }
-    return this->globalEnv.findName(name);
+    return this->externalContext->findName(name);
+}
+
+Cell Context::addName(const std::string& name, Cell value) {
+    mn.addName(name, std::move(dst));
+}
+
+std::shared_ptr<Context> Context::newContext() const {
+    return std::make_shared<Context>();
+}
+
+std::shared_ptr<Context> Context::nextContext() const {
+    auto next = newContext();
+    next.externalContext = this->shared_from_this();
+    return next;
 }
 
 }  // namespace Lisp

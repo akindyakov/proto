@@ -11,16 +11,16 @@ Cell Abs::call(Function::Args args) const {
     if (args.size() > 1) {
         throw AbsError() << "given too many arguments";
     }
-    if (args.front().is<Float>()) {
+    if (args.front().get().is<Float>()) {
         auto v = args.front().get<Float>();
         v = v < 0 ? -v : v;
         return Cell(v);
-    } else if (args.front().is<Integer>()) {
+    } else if (args.front().get().is<Integer>()) {
         auto v = args.front().get<Integer>();
         v = v < 0 ? -v : v;
         return Cell(v);
     }
-    throw AbsError() << args.front().toString() << "is not a real number";
+    throw AbsError() << args.front().get().toString() << "is not a real number";
 }
 
 namespace {
@@ -37,16 +37,16 @@ Cell Max::call(Function::Args args) const {
     if (args.empty()) {
         throw MaxError() << "given too few arguments";
     }
-    auto it = args.cbegin();
+    auto it = args.begin();
     auto maxValue = it;
     ++it;
-    while (it != args.cend()) {
-        if (realNumberGreater(*it, *maxValue)) {
+    while (it != args.end()) {
+        if (realNumberGreater(it->get(), maxValue->get())) {
             maxValue = it;
         }
         ++it;
     }
-    return *maxValue;
+    return maxValue->get();
 }
 
 namespace {
@@ -64,16 +64,16 @@ Cell Min::call(Function::Args args) const {
     if (args.empty()) {
         throw MinError() << "given too few arguments";
     }
-    auto it = args.cbegin();
+    auto it = args.begin();
     auto minValue = it;
     ++it;
-    while (it != args.cend()) {
-        if (realNumberLess(*it, *minValue)) {
+    while (it != args.end()) {
+        if (realNumberLess(it->get(), minValue->get())) {
             minValue = it;
         }
         ++it;
     }
-    return *minValue;
+    return minValue->get();
 }
 
 }  // namespace Func

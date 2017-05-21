@@ -10,6 +10,8 @@
 
 namespace Lisp {
 
+void skipSpaces(std::istream& in);
+
 class ParserError
     : public Exception
 {
@@ -67,6 +69,10 @@ public:
 class ExprParser {
 public:
     static std::string read(std::istream& is);
+
+    static void readBegin(std::istream& is);
+    static void readEnd(std::istream& is);
+    static bool checkPrefix(char ch);
 };
 
 }  // namespace Lisp

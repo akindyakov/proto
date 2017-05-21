@@ -6,6 +6,7 @@
 #include <tools/exception.h>
 
 #include <istream>
+#include <memory>
 
 
 namespace Lisp {
@@ -32,16 +33,17 @@ public:
     Context& operator=(Context&&) = default;
     Context& operator=(const Context&) = delete;
 
+    Cell eval_all(std::istream& in);
+    Cell eval_all(const std::string& expr);
     Cell eval(std::istream& in);
     Cell eval(const std::string& expr);
 
-    void pushStackFrame(LocalEnv);
-    void popStackFrame();
-
     Cell findName(const std::string& name) const;
+    Cell addName(const std::string& name, Cell value);
+
+    Context localContext() const;
 
 private:
-    Cell eval_one(std::istream& in);
 
     Cell setq(std::istream& in);
     Cell let(std::istream& in);
@@ -49,15 +51,9 @@ private:
 
     Function::Args readFunctionArguments(std::istream& in);
 
-    static void readParenthesesBegin(std::istream& in);
-    static void readParenthesesEnd(std::istream& in);
-
 public:
-    Namespace env = Namespace{};
-    std::shared_ptr<Namespace> externalEnv;
-    //std::vector<LocalEnv> localEnv;
-    //std::vector<LocalEnv> localEnv;
-
+    Namespace nm;
+    std::unique_ptr<Namespace> externalNm;
 };
 
 }  // namespace Lisp

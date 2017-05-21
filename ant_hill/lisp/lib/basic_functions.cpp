@@ -1,8 +1,132 @@
 #include "basic_functions.h"
+#include "context.h"
+#include "parser.h"
+
+#include <tools/tests/ut.h>
 
 
 namespace Lisp {
 namespace Func {
+
+namespace {
+
+class RuntimeDefinedFunction
+    : public Function
+{
+public:
+    class Error
+        : public Exception
+    {
+    public:
+        explicit Error()
+            : Exception("Eval: ")
+        {
+        }
+    };
+
+    using ArgNames = std::vector<std::string>;
+
+private:
+    ArgNames argNames;
+    std::string body;
+    Context& cnt;
+
+public:
+    explicit RuntimeDefinedFunction(
+        ArgNames argNames_
+        , std::string body_
+        , Context& cnt_
+    )
+        : argNames(argNames_)
+        , body(body_)
+        , cnt(cnt_)
+    {
+    }
+
+    Cell call(Function::Args args) const override {
+        ValidateEqual(args.size(), argNames.size());
+        auto local = cnt.localContext();
+        auto nameIt = argNames.cbegin();
+        for (auto& arg : args) {
+            local.addName(*nameIt, arg.get());
+            ++nameIt;
+        }
+        return local.eval(body);
+    }
+
+    static ArgNames readArgumentNames(const std::string& alist) {
+        auto in = std::istringstream(alist);
+        auto argNames = ArgNames{};
+
+        ExprParser::readBegin(in);
+        skipSpaces(in);
+        auto ch = in.peek();
+        while (in.good() && ch != PARENT_CLOSE) {
+            argNames.push_back(NameParser::read(in));
+            skipSpaces(in);
+            ch = in.peek();
+        }
+        ExprParser::readEnd(in);
+        return argNames;
+    }
+};
+
+}
+
+Cell Define::call(Function::Args args) const {
+    /*
+        (define name value) <- define var
+        (define name (arg1 arg2) <body>) <- define function
+        (define name (arg1 arg2) "<docstring>" <body>) <- define function
+         ^       ^    ^            ^            ^
+         |       |    |            |            |
+         DEFINE  0    1            2            3
+    */
+    if (args.size() < 2) {
+        throw Error() << "given too few arguments: " << args.size();
+    }
+    if (args.size() == 2) {
+        // define local variable (global?)
+        constexpr auto varNameInd  = size_t{0};
+        constexpr auto varValueInd = size_t{1};
+        return nm_.add(
+            args[varNameInd].expr(),
+            args[varValueInd].get()
+        );
+    }
+    constexpr auto funNameInd = size_t{0};
+    constexpr auto argListInd = size_t{1};
+    if (
+        !ExprParser::checkPrefix(
+            args[argListInd].expr()[0]
+        )
+    ) {  // argumets list starts with '('
+        throw Error() << "argumets list starts with '('";
+    }
+    auto argNames = RuntimeDefinedFunction::readArgumentNames(
+        args[argListInd].expr()
+    );
+
+    auto bodyFirstSegmentInd = size_t{2};
+    // is here any docstring ?
+    if (StringValueParser::checkPrefix(args[bodyFirstSegmentInd].expr()[0])) {
+        auto docStrInd = bodyFirstSegmentInd;
+        ++bodyFirstSegmentInd;
+        auto in = std::istringstream(args[docStrInd].expr());
+        StringValueParser::read(in);
+    }
+    auto body = std::string{};
+    for (
+        auto it = args.begin() + bodyFirstSegmentInd;
+        it != args.end(); ++it
+    ) {
+        body += it->expr();
+    }
+    return nm_.addFunction(
+        args[funNameInd].expr(),
+        std::make_unique<RuntimeDefinedFunction>(argNames, body)
+    );
+}
 
 Cell If::call(Function::Args args) const {
     if (args.size() < 2) {
@@ -14,19 +138,19 @@ Cell If::call(Function::Args args) const {
     if (args.size() == 2) {
         args.push_back(Cell{});
     }
-    std::cerr << "if: " << args[0].is<Nil>() << '\n';
-    return args[0].is<Nil>() ? args[2] : args[1];
+    std::cerr << "if: " << args[0].get().is<Nil>() << '\n';
+    return args[0].get().is<Nil>() ? args[2].get() : args[1].get();
 }
 
 Cell Less::call(Function::Args args) const {
     if (args.empty()) {
         throw Error() << "given too few arguments: " << args.size();
     }
-    auto it = args.cbegin();
+    auto it = args.begin();
     auto prev = it;
     ++it;
-    while (it != args.cend()) {
-        if (!(prev->asRealNumber() < it->asRealNumber())) {
+    while (it != args.end()) {
+        if (!(prev->get().asRealNumber() < it->get().asRealNumber())) {
             return Cell{};
         }
         ++it;
