@@ -14,6 +14,7 @@ Cell If::call(Function::Args args) const {
     if (args.size() == 2) {
         args.push_back(Cell{});
     }
+    std::cerr << "if: " << args[0].is<Nil>() << '\n';
     return args[0].is<Nil>() ? args[2] : args[1];
 }
 

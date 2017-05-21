@@ -1,4 +1,4 @@
-#include "evaluate.h"
+#include "context.h"
 
 #include <tools/tests/ut.h>
 
@@ -7,7 +7,7 @@
 
 void singleFunctionsTest() {
     std::cerr << " - singleFunctionsTest\n";
-    auto loop = Lisp::Main{};
+    auto loop = Lisp::Context{};
     {
         auto v = loop.eval(" ( + 2 98 -1) ");
         ValidateEqual(
@@ -47,7 +47,7 @@ void singleFunctionsTest() {
 
 void nestedFunctionsTest() {
     std::cerr << " - nestedFunctionsTest\n";
-    auto loop = Lisp::Main{};
+    auto loop = Lisp::Context{};
     {
         auto v = loop.eval(" ( + 2 (* 2 3) (/ 3 2 ) ) ");
         ValidateEqual(
@@ -78,7 +78,7 @@ void nestedFunctionsTest() {
 
 void defunTest() {
     std::cerr << " - defunTest\n";
-    auto loop = Lisp::Main{};
+    auto loop = Lisp::Context{};
     std::string exp = R"FieldMap(
 (defun -dup (n)
   "doc string"
@@ -109,7 +109,7 @@ void defunTest() {
 
 void defunRecursiveTest() {
     std::cerr << " - defunRecursiveTest\n";
-    auto loop = Lisp::Main{};
+    auto loop = Lisp::Context{};
     std::string exp = R"FieldMap(
 (defun _fib (n)
     "Naive recursive computation of the nth element of the Fibonacci sequence"
@@ -134,7 +134,7 @@ void defunRecursiveTest() {
 
 int main() {
     try {
-        std::cerr << "evaluate_ut:\n";
+        std::cerr << "context_ut:\n";
         singleFunctionsTest();
         nestedFunctionsTest();
         defunTest();

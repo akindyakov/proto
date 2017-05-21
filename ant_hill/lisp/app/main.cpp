@@ -1,10 +1,10 @@
-#include <lisp/lib/evaluate.h>
+#include <lisp/lib/context.h>
 
 #include <iostream>
 
 
 int main() {
-    auto loop = Lisp::Main{};
+    auto loop = Lisp::Context{};
     auto counter = int{0};
     while (true) {
         std::cout << "[" << counter++ << "]> ";

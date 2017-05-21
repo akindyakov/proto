@@ -1,4 +1,4 @@
-#include "evaluate.h"
+#include "context.h"
 #include "parser.h"
 
 #include <tools/tests/ut.h>
@@ -33,13 +33,13 @@ public:
     using ArgNames = std::vector<std::string>;
 
 private:
-    Main& glob;
+    Context& glob;
     ArgNames argNames;
     std::string body;
 
 public:
     explicit EvalInterpret(
-        Main& glob_
+        Context& glob_
         , ArgNames argNames_
         , std::string body_
     )
@@ -69,7 +69,7 @@ public:
 }
 
 
-Cell Main::eval(std::istream& in) {
+Cell Context::eval(std::istream& in) {
     auto last = Cell{};
     skipSpaces(in);
     while (in.good()) {
@@ -79,7 +79,7 @@ Cell Main::eval(std::istream& in) {
     return last;
 }
 
-Cell Main::eval_one(std::istream& in) {
+Cell Context::eval_one(std::istream& in) {
     readParenthesesBegin(in);
     skipSpaces(in);
     auto fname = NameParser::read(in);
@@ -98,7 +98,7 @@ Cell Main::eval_one(std::istream& in) {
     return ans;
 }
 
-void Main::readParenthesesBegin(std::istream& in) {
+void Context::readParenthesesBegin(std::istream& in) {
     skipSpaces(in);
     if (!in.good()) {
         throw Error() << "Unexpected end of file at the begining of parentheses group";
@@ -109,7 +109,7 @@ void Main::readParenthesesBegin(std::istream& in) {
     }
 }
 
-void Main::readParenthesesEnd(std::istream& in) {
+void Context::readParenthesesEnd(std::istream& in) {
     skipSpaces(in);
     if (!in.good()) {
         throw Error() << "Unexpected end of file at the end of parentheses group";
@@ -121,7 +121,7 @@ void Main::readParenthesesEnd(std::istream& in) {
     }
 }
 
-Function::Args Main::readFunctionArguments(std::istream& in) {
+Function::Args Context::readFunctionArguments(std::istream& in) {
     auto args = Function::Args{};
     skipSpaces(in);
     auto ch = in.peek();
@@ -152,20 +152,20 @@ Function::Args Main::readFunctionArguments(std::istream& in) {
     return args;
 }
 
-Cell Main::eval(const std::string& expr) {
+Cell Context::eval(const std::string& expr) {
     auto in = std::istringstream(expr);
     return this->eval(in);
 }
 
-Cell Main::setq(std::istream& in) {
+Cell Context::setq(std::istream& in) {
     return Cell{};
 }
 
-Cell Main::let(std::istream& in) {
+Cell Context::let(std::istream& in) {
     return Cell{};
 }
 
-Cell Main::defun(std::istream& in) {
+Cell Context::defun(std::istream& in) {
     skipSpaces(in);
     auto fname = NameParser::read(in);
     // read argument list declaration
@@ -193,15 +193,15 @@ Cell Main::defun(std::istream& in) {
     );
 }
 
-void Main::pushStackFrame(LocalEnv lEnv) {
+void Context::pushStackFrame(LocalEnv lEnv) {
     localEnv.push_back(std::move(lEnv));
 }
 
-void Main::popStackFrame() {
+void Context::popStackFrame() {
     localEnv.pop_back();
 }
 
-Cell Main::findName(const std::string& name) const {
+Cell Context::findName(const std::string& name) const {
     for (
         auto envIt = this->localEnv.crbegin();
         envIt != this->localEnv.crend(); ++envIt

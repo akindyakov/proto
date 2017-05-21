@@ -10,6 +10,8 @@
 
 namespace Lisp {
 
+class Context;
+
 class Cell;
 
 class Nil

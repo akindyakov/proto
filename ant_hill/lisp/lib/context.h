@@ -10,7 +10,7 @@
 
 namespace Lisp {
 
-class Main
+class Context
 {
 public:
     class Error
@@ -24,13 +24,13 @@ public:
     };
 
 public:
-    explicit Main() = default;
+    explicit Context() = default;
 
-    Main(Main&&) = default;
-    Main(const Main&) = delete;
+    Context(Context&&) = default;
+    Context(const Context&) = delete;
 
-    Main& operator=(Main&&) = default;
-    Main& operator=(const Main&) = delete;
+    Context& operator=(Context&&) = default;
+    Context& operator=(const Context&) = delete;
 
     Cell eval(std::istream& in);
     Cell eval(const std::string& expr);
