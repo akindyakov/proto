@@ -4,11 +4,11 @@ PRODUCT = $(ABS_PRODUCT)/lisp/lib
 
 all: prepare $(PRODUCT)/liblisp.a ut
 
-$(PRODUCT)/liblisp.a: $(PRODUCT)/cell.o $(PRODUCT)/math_functions.o $(PRODUCT)/basic_functions.o $(PRODUCT)/parser.o $(PRODUCT)/context.o $(PRODUCT)/environment.o
+$(PRODUCT)/liblisp.a: $(PRODUCT)/cell.o $(PRODUCT)/math_functions.o $(PRODUCT)/basic_functions.o $(PRODUCT)/parser.o $(PRODUCT)/context.o $(PRODUCT)/namespace.o
 	ar rcs $@ $^
 
 # all ut
-ut: $(PRODUCT)/cell_ut $(PRODUCT)/math_functions_ut $(PRODUCT)/basic_functions_ut $(PRODUCT)/parser_ut $(PRODUCT)/environment_ut $(PRODUCT)/context_ut
+ut: $(PRODUCT)/cell_ut $(PRODUCT)/math_functions_ut $(PRODUCT)/basic_functions_ut $(PRODUCT)/parser_ut $(PRODUCT)/namespace_ut $(PRODUCT)/context_ut
 
 # cell
 $(PRODUCT)/cell.o: cell.cpp cell.h
@@ -52,14 +52,14 @@ $(PRODUCT)/parser_ut.o: parser_ut.cpp parser.h cell.h $(SRC_PATH)/tools/tests/ut
 $(PRODUCT)/parser_ut: $(PRODUCT)/parser_ut.o $(PRODUCT)/liblisp.a
 	$(CC) -o $@ $^
 
-# environment
-$(PRODUCT)/environment.o: environment.cpp environment.h cell.h
+# namespace
+$(PRODUCT)/namespace.o: namespace.cpp namespace.h cell.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/environment_ut.o: environment_ut.cpp environment.h cell.h $(SRC_PATH)/tools/tests/ut.h
+$(PRODUCT)/namespace_ut.o: namespace_ut.cpp namespace.h cell.h $(SRC_PATH)/tools/tests/ut.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/environment_ut: $(PRODUCT)/environment_ut.o $(PRODUCT)/liblisp.a
+$(PRODUCT)/namespace_ut: $(PRODUCT)/namespace_ut.o $(PRODUCT)/liblisp.a
 	$(CC) -o $@ $^
 
 # context

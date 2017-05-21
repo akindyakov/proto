@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cell.h"
-#include "environment.h"
+#include "namespace.h"
 
 #include <tools/exception.h>
 
@@ -53,8 +53,11 @@ private:
     static void readParenthesesEnd(std::istream& in);
 
 public:
-    Env globalEnv = Env{};
-    std::vector<LocalEnv> localEnv;
+    Namespace env = Namespace{};
+    std::shared_ptr<Namespace> externalEnv;
+    //std::vector<LocalEnv> localEnv;
+    //std::vector<LocalEnv> localEnv;
+
 };
 
 }  // namespace Lisp

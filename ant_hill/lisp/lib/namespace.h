@@ -6,10 +6,10 @@
 
 namespace Lisp {
 
-class Env
+class Namespace
 {
 public:
-    explicit Env();
+    explicit Namespace();
 
     FunctionPtr findFunction(const std::string& name) const;  // ?
     Cell addFunction(
