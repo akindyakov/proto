@@ -79,7 +79,7 @@ void nestedFunctionsTest() {
 void defineFuncTest() {
     std::cerr << " - defineFuncTest\n";
     auto loop = Lisp::Context{};
-    std::string exp = R"FieldMap(
+    std::string exp = R"raw(
 (define _dup (n)
   "doc string"
   (* 2 n)
@@ -88,9 +88,10 @@ void defineFuncTest() {
   "doc string"
   (+ f s)
 )
-)FieldMap";
+)raw";
+    loop.eval_all(exp);
+    std::cerr << " exec all\n";
     {
-        loop.eval_all(exp);
         auto v = loop.eval("(_dup 3)");
         ValidateEqual(
             v.get<Lisp::Integer>(),
@@ -98,7 +99,6 @@ void defineFuncTest() {
         );
     }
     {
-        loop.eval(exp);
         auto v = loop.eval("(+plus 197 804)");
         ValidateEqual(
             v.get<Lisp::Integer>(),
@@ -110,7 +110,7 @@ void defineFuncTest() {
 void defineRecursiveFuncTest() {
     std::cerr << " - defineRecursiveFuncTest\n";
     auto loop = Lisp::Context{};
-    std::string exp = R"FieldMap(
+    std::string exp = R"raw(
 (define _fib (n)
     "Naive recursive computation of the nth element of the Fibonacci sequence"
     (if (< n 2)
@@ -121,13 +121,29 @@ void defineRecursiveFuncTest() {
         )
     )
 )
-)FieldMap";
+)raw";
+    {
+        loop.eval(exp);
+        auto v = loop.eval("(_fib 2)");
+        ValidateEqual(
+            v.get<Lisp::Integer>(),
+            Lisp::Integer{1}
+        );
+    }
     {
         loop.eval(exp);
         auto v = loop.eval("(_fib 4)");
         ValidateEqual(
             v.get<Lisp::Integer>(),
-            Lisp::Integer{5}
+            Lisp::Integer{3}
+        );
+    }
+    {
+        loop.eval(exp);
+        auto v = loop.eval("(_fib 27)");
+        ValidateEqual(
+            v.get<Lisp::Integer>(),
+            Lisp::Integer{196418}
         );
     }
 }

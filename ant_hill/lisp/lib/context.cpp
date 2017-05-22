@@ -24,7 +24,6 @@ Cell Context::eval(std::istream& in) {
 
         skipSpaces(in);
         auto fname = NameParser::read(in);
-        std::cerr << "funcal: " << fname << '\n';
         auto funcPtr = ns.findFunction(fname);
         if (funcPtr == nullptr) {
             throw Error() << "Function not found";
@@ -35,7 +34,6 @@ Cell Context::eval(std::istream& in) {
         ExprParser::readEnd(in);
     } else {
         // just name
-        std::cerr << "just find the name\n";
         ans = ns.find(NameParser::read(in));
     }
     return ans;
@@ -46,27 +44,21 @@ Function::Args Context::readFunctionArguments(std::istream& in) {
     skipSpaces(in);
     auto ch = in.peek();
     while (in.good() && ch != PARENT_CLOSE) {
-        std::cerr << "read arg: '" << char(ch) << "'\n";
         if (ch == PARENT_OPEN) {
-            std::cerr << "expr\n";
             args.push_back(
                 ArgFuture(ExprParser::read(in), this)
             );
 
         } else if (RealNumberParser::checkPrefix(ch)) {
-            std::cerr << "number\n";
             args.push_back(RealNumberParser::read(in));
 
         } else if (StringValueParser::checkPrefix(ch)) {
-            std::cerr << "string\n";
             args.push_back(StringValueParser::read(in));
 
         } else if (SimpleCharacterParser::checkPrefix(ch)) {
-            std::cerr << "char\n";
             args.push_back(SimpleCharacterParser::read(in));
 
         } else {
-            std::cerr << "name\n";
             args.push_back(
                 ArgFuture(NameParser::read(in), this)
             );
@@ -80,7 +72,7 @@ Function::Args Context::readFunctionArguments(std::istream& in) {
 
 Cell Context::eval_all(const std::string& expr) {
     auto in = std::istringstream(expr);
-    return this->eval(in);
+    return this->eval_all(in);
 }
 
 Cell Context::eval_all(std::istream& in) {

@@ -9,6 +9,15 @@ void skipSpaces(std::istream& in) {
     }
 }
 
+static inline char readCh(std::istream& is) {
+    auto ch = char{0};
+    if (is.good()) {
+        ch = is.get();
+        is.peek();
+    }
+    return ch;
+}
+
 bool RealNumberParser::checkPrefix(char ch) {
     return std::isdigit(ch) || ch == minusMark;
 }
@@ -85,7 +94,6 @@ Cell StringValueParser::read(std::istream& is) {
         throw ParserError() << "String value should to starts with '" << quote << "'";
     }
     while (is.good() && is.get(ch) && ch != quote) {
-        std::cerr << "str ch: " << char(ch) << '\n';
         value.push_back(ch);
     }
     return Cell(std::move(value));
@@ -111,27 +119,25 @@ std::string NameParser::read(std::istream& is) {
     // TODO: check characters is valid here
     auto name = std::string{};
     auto ch = char{};
-    while (!charIsService(is.peek())) {
+    while (!charIsService(is.peek()) && is.good()) {
         ch = is.get();
-        if (!is.good()) {
-            break;
-        }
         name.push_back(ch);
     }
-    std::cerr << "reader name: " << int(name.back()) << '\n';
     return name;
 }
 
 std::string ExprParser::read(std::istream& is) {
     auto counter = int{0};
     auto fbody = std::string{};
-    auto ch = char{};
-    do {
-        is.get(ch);
+    while (auto ch = readCh(is)) {
         counter += ch == PARENT_OPEN ? 1 : 0;
         counter -= ch == PARENT_CLOSE ? 1 : 0;
         fbody.push_back(ch);
-    } while (is.good() && counter != 0);
+
+        if (counter == 0) {
+            break;
+        }
+    }
     return fbody;
 }
 

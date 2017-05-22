@@ -74,10 +74,6 @@ public:
 }
 
 Cell Define::call(Function::Args args) const {
-    std::cerr << "define call\n";
-    for (const auto& arg : args) {
-        std::cerr << "arg: " << arg.expr() << '\n';
-    }
     /*
         (define name value) <- define var
         (define name (arg1 arg2) <body>) <- define function
@@ -102,7 +98,6 @@ Cell Define::call(Function::Args args) const {
     constexpr auto funNameInd = size_t{0};
     constexpr auto argListInd = size_t{1};
     const auto& fname = args[funNameInd].expr();
-    std::cerr << "define function: " << fname << "\n";
     if (
         !ExprParser::checkPrefix(
             args[argListInd].expr()[0]
@@ -145,7 +140,6 @@ Cell If::call(Function::Args args) const {
     if (args.size() == 2) {
         args.push_back(Cell{});
     }
-    std::cerr << "if: " << args[0].get().is<Nil>() << '\n';
     return args[0].get().is<Nil>() ? args[2].get() : args[1].get();
 }
 
