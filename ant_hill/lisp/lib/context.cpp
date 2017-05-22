@@ -35,7 +35,7 @@ Cell Context::eval(std::istream& in) {
         ExprParser::readEnd(in);
     } else {
         // just name
-        std::cerr << "just fine the name";
+        std::cerr << "just find the name\n";
         ans = ns.find(NameParser::read(in));
     }
     return ans;

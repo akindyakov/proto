@@ -110,10 +110,15 @@ Cell SimpleCharacterParser::read(std::istream& is) {
 std::string NameParser::read(std::istream& is) {
     // TODO: check characters is valid here
     auto name = std::string{};
-    while (is.good() && !charIsService(is.peek())) {
-        name.push_back(is.get());
+    auto ch = char{};
+    while (!charIsService(is.peek())) {
+        ch = is.get();
+        if (!is.good()) {
+            break;
+        }
+        name.push_back(ch);
     }
-    std::cerr << "reader name: " << name << '\n';
+    std::cerr << "reader name: " << int(name.back()) << '\n';
     return name;
 }
 
