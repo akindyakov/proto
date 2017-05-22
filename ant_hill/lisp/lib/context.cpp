@@ -1,5 +1,7 @@
 #include "context.h"
+#include "namespace.h"
 #include "parser.h"
+#include "basic_functions.h"
 
 #include <tools/tests/ut.h>
 
@@ -8,22 +10,34 @@
 
 namespace Lisp {
 
-Cell Context::eval(std::istream& in) {
-    ExprParser::readBegin(in);
-    skipSpaces(in);
-    auto fname = NameParser::read(in);
+Context::Context()
+    : ns(Namespace::createGlobal())
+{
+    ns.addFunction("define", std::make_unique<Func::Define>(*this));
+}
 
+Cell Context::eval(std::istream& in) {
     auto ans = Cell{};
-    // TODO: create map here
-    if (fname == "defun") {
-        ans = this->defun(in);
-    } else {
+    skipSpaces(in);
+    if (in.good() && ExprParser::checkPrefix(in.peek())) {
+        ExprParser::readBegin(in);
+
+        skipSpaces(in);
+        auto fname = NameParser::read(in);
         std::cerr << "funcal: " << fname << '\n';
-        auto&& fun = globalEnv.findFunction(fname);
+        auto funcPtr = ns.findFunction(fname);
+        if (funcPtr == nullptr) {
+            throw Error() << "Function not found";
+        }
         auto args = this->readFunctionArguments(in);
-        ans = fun->call(std::move(args));
+        ans = funcPtr->call(std::move(args));
+
+        ExprParser::readEnd(in);
+    } else {
+        // just name
+        std::cerr << "just fine the name";
+        ans = ns.find(NameParser::read(in));
     }
-    ExprParser::readEnd(in);
     return ans;
 }
 
@@ -32,25 +46,29 @@ Function::Args Context::readFunctionArguments(std::istream& in) {
     skipSpaces(in);
     auto ch = in.peek();
     while (in.good() && ch != PARENT_CLOSE) {
+        std::cerr << "read arg: '" << char(ch) << "'\n";
         if (ch == PARENT_OPEN) {
-            auto expr = ExprParser::read(in);
+            std::cerr << "expr\n";
             args.push_back(
-                Feature(expr, this);
+                ArgFuture(ExprParser::read(in), this)
             );
 
         } else if (RealNumberParser::checkPrefix(ch)) {
+            std::cerr << "number\n";
             args.push_back(RealNumberParser::read(in));
 
         } else if (StringValueParser::checkPrefix(ch)) {
+            std::cerr << "string\n";
             args.push_back(StringValueParser::read(in));
 
         } else if (SimpleCharacterParser::checkPrefix(ch)) {
+            std::cerr << "char\n";
             args.push_back(SimpleCharacterParser::read(in));
 
         } else {
-            auto varName = NameParser::read(in);
+            std::cerr << "name\n";
             args.push_back(
-                Feature(varName, this);
+                ArgFuture(NameParser::read(in), this)
             );
 
         }
@@ -69,7 +87,7 @@ Cell Context::eval_all(std::istream& in) {
     auto last = Cell{};
     skipSpaces(in);
     while (in.good()) {
-        last = this->eval_one(in);
+        last = this->eval(in);
         skipSpaces(in);
     }
     return last;
@@ -80,70 +98,63 @@ Cell Context::eval(const std::string& expr) {
     return this->eval(in);
 }
 
-Cell Context::setq(std::istream& in) {
-    return Cell{};
-}
+// Cell Context::setq(std::istream& in) {
+//     return Cell{};
+// }
+//
+// Cell Context::let(std::istream& in) {
+//     return Cell{};
+// }
+//
+// Cell Context::defun(std::istream& in) {
+//     skipSpaces(in);
+//     auto fname = NameParser::read(in);
+//     // read argument list declaration
+//     auto argNames = EvalInterpret::ArgNames{};
+//     ExprParser::readBegin(in);
+//     skipSpaces(in);
+//     while (in.good() && in.peek() != PARENT_CLOSE) {
+//         auto argName = NameParser::read(in);
+//         argNames.push_back(argName);
+//         skipSpaces(in);
+//     }
+//     ExprParser::readEnd(in);
+//
+//     skipSpaces(in);
+//     if (in.good() && StringValueParser::checkPrefix(in.peek())) {
+//         // read doc string
+//         auto doc = StringValueParser::read(in);
+//     }
+//     skipSpaces(in);
+//     auto fbody = ExprParser::read(in);
+//
+//     return ns.addFunction(
+//         fname,
+//         std::make_unique<EvalInterpret>(*this, argNames, fbody)
+//     );
+// }
+//
+// void Context::pushStackFrame(LocalEnv lEnv) {
+//     localEnv.push_back(std::move(lEnv));
+// }
+//
+// void Context::popStackFrame() {
+//     localEnv.pop_back();
+// }
 
-Cell Context::let(std::istream& in) {
-    return Cell{};
-}
+// Cell Context::findName(const std::string& name) const {
+//     auto dst = Cell{};
+//     if (this->ns.find(name, dst)) {
+//         return dst;
+//     }
+//     if (this->externalContext == nullptr) {
+//         throw Error() << "There is no such a name in context '" << name << "'";
+//     }
+//     return this->externalContext->findName(name);
+// }
 
-Cell Context::defun(std::istream& in) {
-    skipSpaces(in);
-    auto fname = NameParser::read(in);
-    // read argument list declaration
-    auto argNames = EvalInterpret::ArgNames{};
-    ExprParser::readBegin(in);
-    skipSpaces(in);
-    while (in.good() && in.peek() != PARENT_CLOSE) {
-        auto argName = NameParser::read(in);
-        argNames.push_back(argName);
-        skipSpaces(in);
-    }
-    ExprParser::readEnd(in);
-
-    skipSpaces(in);
-    if (in.good() && StringValueParser::checkPrefix(in.peek())) {
-        // read doc string
-        auto doc = StringValueParser::read(in);
-    }
-    skipSpaces(in);
-    auto fbody = ExprParser::read(in);
-
-    return globalEnv.addFunction(
-        fname,
-        std::make_unique<EvalInterpret>(*this, argNames, fbody)
-    );
-}
-
-void Context::pushStackFrame(LocalEnv lEnv) {
-    localEnv.push_back(std::move(lEnv));
-}
-
-void Context::popStackFrame() {
-    localEnv.pop_back();
-}
-
-Cell Context::findName(const std::string& name) const {
-    auto dst = Cell{};
-    if (this->mn.findName(name, dst)) {
-        return dst;
-    }
-    return this->externalContext->findName(name);
-}
-
-Cell Context::addName(const std::string& name, Cell value) {
-    mn.addName(name, std::move(dst));
-}
-
-std::shared_ptr<Context> Context::newContext() const {
-    return std::make_shared<Context>();
-}
-
-std::shared_ptr<Context> Context::nextContext() const {
-    auto next = newContext();
-    next.externalContext = this->shared_from_this();
-    return next;
-}
+// Cell Context::addName(const std::string& name, Cell value) {
+//     return nm.add(name, std::move(value));
+// }
 
 }  // namespace Lisp

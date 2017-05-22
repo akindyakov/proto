@@ -54,7 +54,7 @@ Cell RealNumberParser::parseRational(const std::string& str, size_t slashPos) {
 
 Cell RealNumberParser::read(std::istream& is) {
     auto number = std::string{};
-    while (is && !charIsService(is.peek())) {
+    while (is.good() && !charIsService(is.peek())) {
         number.push_back(is.get());
     }
 
@@ -79,15 +79,16 @@ bool StringValueParser::checkPrefix(char ch) {
 Cell StringValueParser::read(std::istream& is) {
     auto value = String{};
     auto ch = String::value_type{};
-    if (is && is.peek() == quote) {
+    if (is.good() && is.peek() == quote) {
         is.ignore();
     } else {
         throw ParserError() << "String value should to starts with '" << quote << "'";
     }
-    while (is && is.get(ch) && ch != quote) {
+    while (is.good() && is.get(ch) && ch != quote) {
+        std::cerr << "str ch: " << char(ch) << '\n';
         value.push_back(ch);
     }
-    return Cell(value);
+    return Cell(std::move(value));
 }
 
 bool SimpleCharacterParser::checkPrefix(char ch) {
@@ -109,9 +110,10 @@ Cell SimpleCharacterParser::read(std::istream& is) {
 std::string NameParser::read(std::istream& is) {
     // TODO: check characters is valid here
     auto name = std::string{};
-    while (is && !charIsService(is.peek())) {
+    while (is.good() && !charIsService(is.peek())) {
         name.push_back(is.get());
     }
+    std::cerr << "reader name: " << name << '\n';
     return name;
 }
 
@@ -141,11 +143,11 @@ void ExprParser::readBegin(std::istream& in) {
 void ExprParser::readEnd(std::istream& in) {
     skipSpaces(in);
     if (!in.good()) {
-        throw Error() << "Unexpected end of file at the end of parentheses group";
+        throw Exception() << "Unexpected end of file at the end of parentheses group";
     }
     char ch = in.get();
     if (ch != PARENT_CLOSE) {
-        throw Error()
+        throw Exception()
             << "Wrong parentheses group last character: '" << ch << "'\n";
     }
 }

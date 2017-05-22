@@ -1,4 +1,4 @@
-#include "environment.h"
+#include "namespace.h"
 
 #include <tools/tests/ut.h>
 
@@ -6,25 +6,25 @@
 
 void addNameTest() {
     std::cerr << " - addNameTest\n";
-    auto env = Lisp::Env{};
-    auto& v = env.addName("first", Lisp::Cell(Lisp::Integer{243}));
-    v.get<Lisp::Integer>() += 23;
+    auto env = Lisp::Namespace::createGlobal();
+    auto& v = env.add("first", Lisp::Cell(Lisp::Integer{243}));
     ValidateEqual(
         v.get<Lisp::Integer>(),
-        Lisp::Integer{266}
+        Lisp::Integer{243}
+    );
+    auto& vv = env.add("first", Lisp::Cell(Lisp::Integer{9126}));
+    ValidateEqual(
+        vv.get<Lisp::Integer>(),
+        Lisp::Integer{9126}
     );
     ValidateEqual(
-        env.findName("first").get<Lisp::Integer>(),
-        Lisp::Integer{266}
+        env.find("first").get<Lisp::Integer>(),
+        Lisp::Integer{9126}
     );
-    auto popedV = env.popName("first");
-    ValidateEqual(
-        popedV.get<Lisp::Integer>(),
-        Lisp::Integer{266}
-    );
+    env.pop("first");
     try {
-        env.findName("first");
-    } catch (const Lisp::Env::Error& err) {
+        env.find("first");
+    } catch (const Lisp::Namespace::Error& err) {
         return;
     }
     throw Exception() << "Expected throwing exception";
@@ -32,7 +32,7 @@ void addNameTest() {
 
 int main() {
     try {
-        std::cerr << "environment_ut:\n";
+        std::cerr << "namespace_ut:\n";
         addNameTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {

@@ -16,8 +16,6 @@ public:
         , std::unique_ptr<Function> fun
     );
 
-    static FunctionStorage globalStorage();
-
 private:
     std::unordered_map<
         std::string,
@@ -27,27 +25,35 @@ private:
 
 class Namespace
 {
-private:
-    explicit Namespace(
-        FunctionStorage* funcs_
-    )
-        : funcs(funcs_)
-    {
-    }
-
 public:
-    explicit Namespace();
+    static Namespace createGlobal();
+    Namespace createLocal();
+    Namespace createIsolate();
 
-    FunctionPtr findFunction(const std::string& name) const;  // ?
+    const Cell& add(const std::string& name, Cell value);
+    const Cell& addGlobal(const std::string& name, Cell value);
+    void pop(const std::string& name);
+
+    bool find(const std::string& name, Cell&) const;
+    Cell find(const std::string& name) const;
+
+    FunctionPtr findFunction(const std::string& name) const;
     Cell addFunction(
         const std::string& name
         , std::unique_ptr<Function> fun
     );
 
-    bool find(const std::string& name, Cell&) const;
-    const Cell& find(const std::string& name) const;
-    Cell& add(const std::string& name, Cell value);
-    void pop(const std::string& name);
+private:
+    explicit Namespace(
+        Namespace* ext_
+        , std::unique_ptr<FunctionStorage> funcs_ = nullptr
+    )
+        : ext(ext_)
+        , funcs(std::move(funcs_))
+    {
+    }
+    Namespace* findGlobal();
+    const Namespace* findGlobal() const;
 
 public:
     class Error
@@ -61,13 +67,12 @@ public:
     };
 
 private:
-    std::shared_ptr<FunctionStorage> funcs;
+    Namespace* ext;
+    std::unique_ptr<FunctionStorage> funcs;
     std::unordered_map<
         std::string,
         Cell
     > names;
 };
-
-Namespace createGlobalNamespace();
 
 }  // namespace Lisp

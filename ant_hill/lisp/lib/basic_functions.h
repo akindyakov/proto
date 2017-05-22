@@ -25,16 +25,16 @@ public:
 
 public:
     explicit Define(
-        Namespace& nm
+        Context& cnt
     )
-        : nm_(nm)
+        : cnt_(cnt)
     {
     }
 
     Cell call(Function::Args args) const override;
 
 private:
-    Namespace& nm_;
+    Context& cnt_;
 };
 
 class If

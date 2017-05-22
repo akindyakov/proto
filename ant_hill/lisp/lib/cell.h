@@ -375,6 +375,10 @@ public:
 
     const std::string& expr() const;
 
+    inline bool isReady() const {
+        return true;
+    }
+
 private:
     void compute();
 
@@ -385,7 +389,7 @@ private:
 };
 
 template<>
-const Cell& ArgFuture::get<Cell>() {
+inline const Cell& ArgFuture::get<Cell>() {
     this->compute();
     return this->value_;
 }

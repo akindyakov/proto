@@ -126,7 +126,7 @@ public:
         if (args.size() > 2) {
             throw TError() << "given too many arguments: " << args.size();
         }
-        return op(args.front(), args.back());
+        return op(args.front().get(), args.back().get());
     }
 };
 

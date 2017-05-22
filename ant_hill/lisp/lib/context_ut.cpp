@@ -76,22 +76,22 @@ void nestedFunctionsTest() {
     }
 }
 
-void defunTest() {
-    std::cerr << " - defunTest\n";
+void defineFuncTest() {
+    std::cerr << " - defineFuncTest\n";
     auto loop = Lisp::Context{};
     std::string exp = R"FieldMap(
-(defun -dup (n)
+(define _dup (n)
   "doc string"
   (* 2 n)
 )
-(defun +plus (f s)
+(define +plus (f s)
   "doc string"
   (+ f s)
 )
 )FieldMap";
     {
-        loop.eval(exp);
-        auto v = loop.eval("(-dup 3)");
+        loop.eval_all(exp);
+        auto v = loop.eval("(_dup 3)");
         ValidateEqual(
             v.get<Lisp::Integer>(),
             Lisp::Integer{6}
@@ -107,11 +107,11 @@ void defunTest() {
     }
 }
 
-void defunRecursiveTest() {
-    std::cerr << " - defunRecursiveTest\n";
+void defineRecursiveFuncTest() {
+    std::cerr << " - defineRecursiveFuncTest\n";
     auto loop = Lisp::Context{};
     std::string exp = R"FieldMap(
-(defun _fib (n)
+(define _fib (n)
     "Naive recursive computation of the nth element of the Fibonacci sequence"
     (if (< n 2)
         n
@@ -137,8 +137,8 @@ int main() {
         std::cerr << "context_ut:\n";
         singleFunctionsTest();
         nestedFunctionsTest();
-        defunTest();
-        defunRecursiveTest();
+        defineFuncTest();
+        defineRecursiveFuncTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << "failed: " << except.what() << std::endl;

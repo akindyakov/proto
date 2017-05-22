@@ -45,10 +45,10 @@ public:
 
     Cell call(Function::Args args) const override {
         ValidateEqual(args.size(), argNames.size());
-        auto local = cnt.localContext();
+        auto local = cnt.isolateContext();
         auto nameIt = argNames.cbegin();
         for (auto& arg : args) {
-            local.addName(*nameIt, arg.get());
+            local.ns.add(*nameIt, arg.get());
             ++nameIt;
         }
         return local.eval(body);
@@ -74,6 +74,10 @@ public:
 }
 
 Cell Define::call(Function::Args args) const {
+    std::cerr << "define call\n";
+    for (const auto& arg : args) {
+        std::cerr << "arg: " << arg.expr() << '\n';
+    }
     /*
         (define name value) <- define var
         (define name (arg1 arg2) <body>) <- define function
@@ -89,13 +93,16 @@ Cell Define::call(Function::Args args) const {
         // define local variable (global?)
         constexpr auto varNameInd  = size_t{0};
         constexpr auto varValueInd = size_t{1};
-        return nm_.add(
+        return cnt_.ns.addGlobal(
             args[varNameInd].expr(),
             args[varValueInd].get()
         );
     }
+    // define function
     constexpr auto funNameInd = size_t{0};
     constexpr auto argListInd = size_t{1};
+    const auto& fname = args[funNameInd].expr();
+    std::cerr << "define function: " << fname << "\n";
     if (
         !ExprParser::checkPrefix(
             args[argListInd].expr()[0]
@@ -122,9 +129,9 @@ Cell Define::call(Function::Args args) const {
     ) {
         body += it->expr();
     }
-    return nm_.addFunction(
-        args[funNameInd].expr(),
-        std::make_unique<RuntimeDefinedFunction>(argNames, body)
+    return cnt_.ns.addFunction(
+        fname,
+        std::make_unique<RuntimeDefinedFunction>(argNames, body, cnt_)
     );
 }
 
