@@ -25,8 +25,8 @@ bool RealNumberParser::checkPrefix(char ch) {
 bool charIsService(char ch) {
     return (
         std::isspace(ch)
-        || ch == PARENT_OPEN
-        || ch == PARENT_CLOSE
+        || ch == ExprParser::CHAR_OPEN
+        || ch == ExprParser::CHAR_CLOSE
     );
 }
 
@@ -130,8 +130,8 @@ std::string ExprParser::read(std::istream& is) {
     auto counter = int{0};
     auto fbody = std::string{};
     while (auto ch = readCh(is)) {
-        counter += ch == PARENT_OPEN ? 1 : 0;
-        counter -= ch == PARENT_CLOSE ? 1 : 0;
+        counter += ch == ExprParser::CHAR_OPEN ? 1 : 0;
+        counter -= ch == ExprParser::CHAR_CLOSE ? 1 : 0;
         fbody.push_back(ch);
 
         if (counter == 0) {
@@ -147,7 +147,7 @@ void ExprParser::readBegin(std::istream& in) {
         throw Exception() << "Unexpected end of file at the expression begining (parentheses group)";
     }
     char ch = in.get();
-    if (ch != PARENT_OPEN) {
+    if (ch != ExprParser::CHAR_OPEN) {
         throw Exception() << "Wrong parentheses group first character: '" << ch << "'\n";
     }
 }
@@ -157,14 +157,14 @@ void ExprParser::readEnd(std::istream& in) {
         throw Exception() << "Unexpected end of file at the end of parentheses group";
     }
     char ch = in.get();
-    if (ch != PARENT_CLOSE) {
+    if (ch != ExprParser::CHAR_CLOSE) {
         throw Exception()
             << "Wrong parentheses group last character: '" << ch << "'\n";
     }
 }
 
 bool ExprParser::checkPrefix(char ch) {
-    return ch == PARENT_OPEN;
+    return ch == ExprParser::CHAR_OPEN;
 }
 
 }  // namespace Lisp

@@ -20,13 +20,6 @@ public:
     }
 };
 
-enum Parentheses
-    : char
-{
-    PARENT_OPEN = '(',
-    PARENT_CLOSE = ')',
-};
-
 void skipSpaces(std::istream& in);
 
 bool charIsService(char ch);
@@ -73,6 +66,13 @@ public:
     static void readBegin(std::istream& is);
     static void readEnd(std::istream& is);
     static bool checkPrefix(char ch);
+
+    enum Parentheses
+        : char
+    {
+        CHAR_OPEN = '(',
+        CHAR_CLOSE = ')',
+    };
 };
 
 }  // namespace Lisp

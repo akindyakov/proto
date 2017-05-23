@@ -43,8 +43,8 @@ Function::Args Context::readFunctionArguments(std::istream& in) {
     auto args = Function::Args{};
     skipSpaces(in);
     auto ch = in.peek();
-    while (in.good() && ch != PARENT_CLOSE) {
-        if (ch == PARENT_OPEN) {
+    while (in.good() && ch != ExprParser::CHAR_CLOSE) {
+        if (ch == ExprParser::CHAR_OPEN) {
             args.push_back(
                 ArgFuture(ExprParser::read(in), this)
             );
@@ -105,7 +105,7 @@ Cell Context::eval(const std::string& expr) {
 //     auto argNames = EvalInterpret::ArgNames{};
 //     ExprParser::readBegin(in);
 //     skipSpaces(in);
-//     while (in.good() && in.peek() != PARENT_CLOSE) {
+//     while (in.good() && in.peek() != ExprParser::CHAR_CLOSE) {
 //         auto argName = NameParser::read(in);
 //         argNames.push_back(argName);
 //         skipSpaces(in);

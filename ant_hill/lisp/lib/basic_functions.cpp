@@ -61,7 +61,7 @@ public:
         ExprParser::readBegin(in);
         skipSpaces(in);
         auto ch = in.peek();
-        while (in.good() && ch != PARENT_CLOSE) {
+        while (in.good() && ch != ExprParser::CHAR_CLOSE) {
             argNames.push_back(NameParser::read(in));
             skipSpaces(in);
             ch = in.peek();

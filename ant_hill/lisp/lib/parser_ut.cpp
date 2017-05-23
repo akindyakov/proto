@@ -19,8 +19,8 @@ void charIsServiceTest() {
     std::cerr << " - charIsServiceTest\n";
     ValidateEqual(Lisp::charIsService('('), true);
     ValidateEqual(Lisp::charIsService(')'), true);
-    ValidateEqual(Lisp::charIsService(Lisp::PARENT_OPEN), true);
-    ValidateEqual(Lisp::charIsService(Lisp::PARENT_CLOSE), true);
+    ValidateEqual(Lisp::charIsService(Lisp::ExprParser::CHAR_OPEN), true);
+    ValidateEqual(Lisp::charIsService(Lisp::ExprParser::CHAR_CLOSE), true);
     ValidateEqual(Lisp::charIsService(' '), true);
     ValidateEqual(Lisp::charIsService('\t'), true);
     ValidateEqual(Lisp::charIsService('\n'), true);
