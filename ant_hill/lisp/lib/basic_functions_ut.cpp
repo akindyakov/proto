@@ -63,11 +63,47 @@ void lessTest() {
     }
 }
 
+void notTest() {
+    std::cerr << " - notTest\n";
+    const auto less = Lisp::Func::Not{};
+    {
+        auto ans = less.call({
+            Lisp::Cell{Lisp::Nil{}},
+        });
+        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::True.get<Lisp::Integer>());
+    }
+    {
+        auto ans = less.call({
+            Lisp::Cell{Lisp::True},
+        });
+        ValidateEqual(ans.is<Lisp::Nil>(), true);
+    }
+    {
+        auto ans = less.call({
+            Lisp::Cell{Lisp::Integer{89}},
+        });
+        ValidateEqual(ans.is<Lisp::Nil>(), true);
+    }
+    {
+        auto ans = less.call({
+            Lisp::Cell{Lisp::Float{13.412}},
+        });
+        ValidateEqual(ans.is<Lisp::Nil>(), true);
+    }
+    {
+        auto ans = less.call({
+            Lisp::Cell{Lisp::String{"rose rain"}},
+        });
+        ValidateEqual(ans.is<Lisp::Nil>(), true);
+    }
+}
+
 int main() {
     try {
         std::cerr << "basic_functions_ut:\n";
         ifTest();
         lessTest();
+        notTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << "failed: " << except.what() << std::endl;

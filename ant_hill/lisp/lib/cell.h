@@ -159,7 +159,7 @@ public:
         : value(Nil{})
     {
     }
-    explicit Cell(Nil v)
+    Cell(Nil v)
         : value(v)
     {
     }

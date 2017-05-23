@@ -117,6 +117,17 @@ class Not
     : public Function
 {
 public:
+    class Error
+        : public Exception
+    {
+    public:
+        explicit Error()
+            : Exception("not: ")
+        {
+        }
+    };
+
+public:
     Cell call(Function::Args args) const override;
 
 };

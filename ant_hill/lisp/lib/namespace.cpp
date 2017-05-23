@@ -19,6 +19,7 @@ Namespace Namespace::createGlobal() {
     st->add("min", std::make_unique<Func::Min>());
     st->add("if", std::make_unique<Func::If>());
     st->add("<", std::make_unique<Func::Less>());
+    st->add("not", std::make_unique<Func::Not>());
     return Namespace(nullptr, std::move(st));
 }
 

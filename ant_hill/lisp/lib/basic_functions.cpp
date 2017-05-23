@@ -160,5 +160,12 @@ Cell Less::call(Function::Args args) const {
     return True;
 }
 
+Cell Not::call(Function::Args args) const {
+    if (args.size() > 1) {
+        throw Error() << "given too many arguments: " << args.size();
+    }
+    return args[0].get().is<Nil>() ? True : Nil{};
+}
+
 }  // namespace Func
 }  // namespace Lisp
