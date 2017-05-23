@@ -90,7 +90,6 @@ void defineFuncTest() {
 )
 )raw";
     loop.eval_all(exp);
-    std::cerr << " exec all\n";
     {
         auto v = loop.eval("(_dup 3)");
         ValidateEqual(
@@ -140,10 +139,10 @@ void defineRecursiveFuncTest() {
     }
     {
         loop.eval(exp);
-        auto v = loop.eval("(_fib 27)");
+        auto v = loop.eval("(_fib 19)");
         ValidateEqual(
             v.get<Lisp::Integer>(),
-            Lisp::Integer{196418}
+            Lisp::Integer{4181}
         );
     }
 }
