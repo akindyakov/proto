@@ -28,10 +28,10 @@ public:
     explicit Context();
 
     Context(Context&&) = default;
-    // Context(const Context&) = delete;
+    Context(const Context&) = delete;
 
     Context& operator=(Context&&) = default;
-    // Context& operator=(const Context&) = delete;
+    Context& operator=(const Context&) = delete;
 
     Cell eval_all(std::istream& in);
     Cell eval_all(const std::string& expr);
