@@ -10,8 +10,6 @@
 
 namespace Lisp {
 
-void skipSpaces(std::istream& in);
-
 class ParserError
     : public Exception
 {
@@ -28,6 +26,8 @@ enum Parentheses
     PARENT_OPEN = '(',
     PARENT_CLOSE = ')',
 };
+
+void skipSpaces(std::istream& in);
 
 bool charIsService(char ch);
 

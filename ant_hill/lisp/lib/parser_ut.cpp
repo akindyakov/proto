@@ -4,6 +4,38 @@
 
 #include <iostream>
 
+void skipSpacesTest() {
+    std::cerr << " - skipSpacesTest\n";
+    {
+        auto strIn = "   \t\t \t\nflow ";
+        auto in = std::istringstream{strIn};
+        Lisp::skipSpaces(in);
+        char ans = in.get();
+        ValidateEqual(ans, 'f');
+    }
+}
+
+void charIsServiceTest() {
+    std::cerr << " - charIsServiceTest\n";
+    ValidateEqual(Lisp::charIsService('('), true);
+    ValidateEqual(Lisp::charIsService(')'), true);
+    ValidateEqual(Lisp::charIsService(Lisp::PARENT_OPEN), true);
+    ValidateEqual(Lisp::charIsService(Lisp::PARENT_CLOSE), true);
+    ValidateEqual(Lisp::charIsService(' '), true);
+    ValidateEqual(Lisp::charIsService('\t'), true);
+    ValidateEqual(Lisp::charIsService('\n'), true);
+    ValidateEqual(Lisp::charIsService('\v'), true);
+
+    ValidateEqual(Lisp::charIsService(','), false);
+    ValidateEqual(Lisp::charIsService('.'), false);
+    ValidateEqual(Lisp::charIsService(':'), false);
+    ValidateEqual(Lisp::charIsService('{'), false);
+    ValidateEqual(Lisp::charIsService('['), false);
+    ValidateEqual(Lisp::charIsService('$'), false);
+    ValidateEqual(Lisp::charIsService('-'), false);
+    ValidateEqual(Lisp::charIsService('+'), false);
+}
+
 void parseIntegerTest() {
     std::cerr << " - parseIntegerTest\n";
     auto cell = Lisp::RealNumberParser::parseInteger("123  ");
@@ -137,6 +169,15 @@ void readStringValueTest() {
 void readNameTest() {
     std::cerr << " - readNameTest\n";
     {
+        auto text = std::string{"the-real"};
+        auto in = std::istringstream(text);
+        auto name = Lisp::NameParser::read(in);
+        ValidateEqual(
+            name,
+            std::string{"the-real"}
+        );
+    }
+    {
         auto text = std::string{"Welcome-to_the*Desert@of the real"};
         auto in = std::istringstream(text);
         auto name = Lisp::NameParser::read(in);
@@ -147,9 +188,56 @@ void readNameTest() {
     }
 }
 
+void exprParserTest() {
+    std::cerr << " - exprParserTest\n";
+    {
+        auto text = std::string{"()"};
+        ValidateEqual(
+            Lisp::ExprParser::checkPrefix(text[0]),
+            true
+        );
+        auto in = std::istringstream(text);
+        auto ans = Lisp::ExprParser::read(in);
+        ValidateEqual(ans, text);
+    }
+    {
+        auto text = std::string{"(a b c -12 d 0.22 f) (eq 1 2)"};
+        ValidateEqual(
+            Lisp::ExprParser::checkPrefix(text[0]),
+            true
+        );
+        auto in = std::istringstream(text);
+        auto ans = Lisp::ExprParser::read(in);
+        ValidateEqual(
+            ans,
+            std::string{"(a b c -12 d 0.22 f)"}
+        );
+    }
+}
+
+void exprParseBeginEndTest() {
+    std::cerr << " - exprParseBeginEndTest\n";
+    {
+        auto strIn = "   \t\t \t\n(Serious 123)";
+        auto in = std::istringstream{strIn};
+        Lisp::ExprParser::readBegin(in);
+        char ans = in.get();
+        ValidateEqual(ans, 'S');
+    }
+    {
+        auto strIn = "   \t \n\t\n \t)why?";
+        auto in = std::istringstream{strIn};
+        Lisp::ExprParser::readEnd(in);
+        char ans = in.get();
+        ValidateEqual(ans, 'w');
+    }
+}
+
 int main() {
     try {
         std::cerr << "parser_ut:\n";
+        skipSpacesTest();
+        charIsServiceTest();
         parseIntegerTest();
         parseFloatTest();
         parseRationalTest();
@@ -157,6 +245,8 @@ int main() {
         readSimpleCharacterTest();
         readStringValueTest();
         readNameTest();
+        exprParserTest();
+        exprParseBeginEndTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << "failed: " << except.what() << std::endl;
