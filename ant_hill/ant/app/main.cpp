@@ -24,15 +24,13 @@ int main(int argn, char** argv) {
     auto ant = Scout(client);
     try {
         ant.appear();
-        while (true) {
-            //std::this_thread::sleep_for(1s);
-
-            auto start = std::chrono::high_resolution_clock::now();
-            ant.step();
-            auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> elapsed = end - start;
-            std::cout << "Ping: " << elapsed.count() << "ms" << std::endl;
-        }
+        while (ant.run());
+        //while (ant.run()) {
+           //auto start = std::chrono::high_resolution_clock::now();
+           //auto end = std::chrono::high_resolution_clock::now();
+           //std::chrono::duration<double, std::milli> elapsed = end - start;
+           //std::cout << "Ping: " << elapsed.count() << "ms" << std::endl;
+        //}
     }
     catch (const jsonrpc::JsonRpcException& err)
     {

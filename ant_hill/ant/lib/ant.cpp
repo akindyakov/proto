@@ -7,6 +7,7 @@ Scout::Scout(
 )
     : client_(client)
     , id_(Map::ObjectId::Invalid())
+    , knownArea(Map::Vector{19, 19}, Map::Point{-9, -9})
 {
 }
 
@@ -21,7 +22,13 @@ void Scout::appear() {
     }
 }
 
-void Scout::step() {
+void Scout::findTheWall() {
+}
+
+void Scout::moveAlongTheWall() {
+}
+
+bool Scout::run() {
     try {
         for (const auto& dir : {
             Map::RelativeDirection::Forward(),
@@ -46,4 +53,5 @@ void Scout::step() {
     } catch (const jsonrpc::JsonRpcException& err) {
         std::cerr << err.what();
     }
+    return false;
 }
