@@ -65,6 +65,18 @@ Grain& Grain::operator=(const Grain& other) {
     return *this;
 }
 
+std::ostream& operator<<(std::ostream& out, const SimpleCell& cell) {
+    out << GetSymbolMap().GetSymbol(cell.grain);
+    return out;
+}
+
+std::istream& operator>>(std::istream& in, SimpleCell& cell) {
+    auto ch = char{0};
+    in.get(ch);
+    cell.grain = GetSymbolMap().GetMaterial(ch);
+    return in;
+}
+
 namespace {
     static constexpr auto DimensionsDelimiter = ',';
     static constexpr auto PointLeftBrace = '(';

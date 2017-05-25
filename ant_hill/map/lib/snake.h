@@ -2,7 +2,10 @@
 
 #include "transaction.h"
 
+#include <tools/http_error.h>
+
 #include <deque>
+#include <vector>
 
 
 namespace Map {
@@ -46,30 +49,14 @@ public:
     /**
     * Add one more point to the front
     */
-    void pushFrontGrain(
-        TField& field
-        , RelativeDirection frontDirection
+    PointType pushFrontGrain(
+        RelativeDirection frontDirection
     );
 
-    void popFrontGrain(
-        TField& field
-    );
+    PointType popFrontGrain();
 
-    /**
-    * Add one more point to the back
-    */
-    void pushBackGrain(
-        TField& field
-        , RelativeDirection backDirection
-    );
-
-    void popBackGrain(
-        TField& field
-    );
-
-    const CellType& lookTo(
-        const TField& field
-        , RelativeDirection to
+    PointType lookTo(
+        RelativeDirection to
         , size_t segment
     ) const;
 

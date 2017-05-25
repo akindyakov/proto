@@ -17,7 +17,7 @@ MapServer::MapServer(
     , std::istream& fieldStream
 )
     : ConnectionHolder(std::move(connector))
-    , Map::JsonRPC::Server(ConnectionHolder::GetConnector())
+    , Map::JsonRPCServer(ConnectionHolder::GetConnector())
     , world(fieldStream)
 {
 }

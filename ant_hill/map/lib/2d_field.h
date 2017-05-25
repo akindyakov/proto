@@ -114,7 +114,30 @@ private:
     EMaterial Material;
 };
 
-template<typename TCell>
+struct SimpleCell {
+    explicit SimpleCell() = default;
+
+    explicit SimpleCell(
+        EMaterial grain_
+    )
+        : grain(grain_)
+    {
+    }
+
+    bool isFree() const {
+        return grain == EMaterial::EmptySpace;
+    }
+
+    EMaterial grain = EMaterial::EmptySpace;
+};
+
+std::ostream& operator<<(std::ostream& out, const SimpleCell& cell);
+std::istream& operator>>(std::istream& in,        SimpleCell& cell);
+
+template<
+    typename TCell
+    , typename = decltype(TCell{}.isFree())
+>
 class Field {
 public:
     using CellType = TCell;

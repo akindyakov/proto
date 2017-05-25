@@ -93,7 +93,7 @@ void scanAndPrintField() {
     std::cerr << " - scanAndPrintField\n";
     std::string text = R"FieldMap(<10,10>
 (-1,1)
-1iiiiiiii2
+.iiiiiiii.
 is......wi
 i.s....w.i
 i..s..w..i
@@ -102,25 +102,18 @@ i...wa...i
 i..w.ms..i
 i.w.m..s.i
 iw...m..si
-4iiiiiiii5
+.iiiiiiii.
 )FieldMap";
     auto in = std::istringstream(text);
-    auto field = Map::ScanFromText<char>(in);
+    auto field = Map::ScanFromText<Map::SimpleCell>(in);
     auto element = field.at(Map::Point(4, 6));
-    if (element != 'a') {
-        throw Exception()
-            << "Expected: 'a'"
-            << "\nGot: '" << element << "'";
-    }
+    ValidateEqual(element.grain, Map::EMaterial::Water);
 
     auto out = std::ostringstream();
-    Map::PrintToText<char>(out, field);
+    Map::PrintToText(out, field);
     auto outText = out.str();
-    if (text != outText) {
-        throw Exception()
-            << "Expected: " << text
-            << "\nGot: " << outText;
-    }
+
+    ValidateEqual(text, outText);
 }
 
 int main(int argn, char** argv) {

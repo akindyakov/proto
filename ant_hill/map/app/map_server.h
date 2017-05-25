@@ -26,7 +26,7 @@ private:
 
 class MapServer
     : public ConnectionHolder
-    , public Map::JsonRPC::Server
+    , public Map::JsonRPCServer
 {
 public:
     MapServer(

@@ -6,95 +6,23 @@
 #include <sstream>
 #include <string>
 
-void appearTest() {
-    std::cerr << " - appearTest\n";
-    auto chain = std::vector<Map::EMaterial>{
-        Map::EMaterial::AntBody,
-        Map::EMaterial::AntHead,
-        Map::EMaterial::Water,
+void frontMoveTest() {
+    std::cerr << " - frontMoveTest\n";
+    auto tail = std::vector<Map::Direction>{
+        Map::Direction::North(),
     };
-    {
-        std::string text = R"FieldMap(<5,4>
-(0,0)
-.....
-.....
-.....
-.....
-.....
-)FieldMap";
-        auto in = std::istringstream(text);
-        auto field = Map::ScanFromText<Map::WorldCell>(in);
-        Map::SnakeObj::appear(
-            field,
-            chain,
-            Map::ObjectId(2)
-        );
-        std::string rightAnswer = R"FieldMap(<5,4>
+    auto head = Map::Point{0, 1};
+    std::string text = R"FieldMap(<5,4>
 (0,0)
 #....
 X....
-a....
-.....
-)FieldMap";
-        auto out = std::ostringstream();
-        Map::PrintToText(out, field);
-        ValidateEqual(rightAnswer, out.str());
-    }
-    {
-        std::string text = R"FieldMap(<5,4>
-(0,0)
-iiiii
-ii.ii
-ii.ii
-ii.ii
-)FieldMap";
-        auto in = std::istringstream(text);
-        auto field = Map::ScanFromText<Map::WorldCell>(in);
-        Map::SnakeObj::appear(
-            field,
-            chain,
-            Map::ObjectId(2)
-        );
-        std::string rightAnswer = R"FieldMap(<5,4>
-(0,0)
-iiiii
-ii#ii
-iiXii
-iiaii
-)FieldMap";
-        auto out = std::ostringstream();
-        Map::PrintToText(out, field);
-        ValidateEqual(rightAnswer, out.str());
-    }
-}
-
-void frontMoveTest() {
-    std::cerr << " - frontMoveTest\n";
-    auto chain = std::vector<Map::EMaterial>{
-        Map::EMaterial::AntBody,
-        Map::EMaterial::AntHead,
-    };
-    std::string text = R"FieldMap(<5,5>
-(0,0)
-.....
-.....
-.....
 .....
 .....
 )FieldMap";
     auto in = std::istringstream(text);
-    auto field = Map::ScanFromText<Map::WorldCell>(in);
-    auto ant = Map::SnakeObj::appear(
-        field,
-        chain,
-        Map::ObjectId(2)
-    );
-    //**/ Map::PrintToText(std::cerr, field);
-    ant.frontMove(field, Map::RelativeDirection::Forward());
-    //**/ Map::PrintToText(std::cerr, field);
-    ant.frontMove(field, Map::RelativeDirection::Forward());
-    //**/ Map::PrintToText(std::cerr, field);
-    ant.frontMove(field, Map::RelativeDirection::Forward());
+    auto field = Map::ScanFromText<Map::SimpleCell>(in);
+    auto ant = Map::SnakeObj<decltype(field)>(head, tail);
+
     //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Right());
     //**/ Map::PrintToText(std::cerr, field);
@@ -105,41 +33,45 @@ void frontMoveTest() {
     ant.frontMove(field, Map::RelativeDirection::Forward());
     //**/ Map::PrintToText(std::cerr, field);
     ant.frontMove(field, Map::RelativeDirection::Right());
+    //**/ Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Right());
+    //**/ Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Forward());
+    //**/ Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Forward());
+    //**/ Map::PrintToText(std::cerr, field);
+    ant.frontMove(field, Map::RelativeDirection::Forward());
     //**/ Map::PrintToText(std::cerr, field);
 
     auto out = std::ostringstream();
     Map::PrintToText(out, field);
-    std::string rightAnswer = R"FieldMap(<5,5>
+    std::string rightAnswer = R"FieldMap(<5,4>
 (0,0)
+X#...
 .....
 .....
 .....
-....X
-....#
 )FieldMap";
     ValidateEqual(rightAnswer, out.str());
 }
 
 void backMoveTest() {
     std::cerr << " - backMoveTest\n";
-    auto chain = std::vector<Map::EMaterial>{
-        Map::EMaterial::AntBody,
-        Map::EMaterial::AntHead,
+    auto tail = std::vector<Map::Direction>{
+        Map::Direction::North(),
     };
+    auto head = Map::Point{0, 1};
     std::string text = R"FieldMap(<5,4>
 (0,0)
-.....
-.....
+#....
+X....
 .....
 .....
 )FieldMap";
     auto in = std::istringstream(text);
-    auto field = Map::ScanFromText<Map::WorldCell>(in);
-    auto ant = Map::SnakeObj::appear(
-        field,
-        chain,
-        Map::ObjectId(2)
-    );
+    auto field = Map::ScanFromText<Map::SimpleCell>(in);
+    auto ant = Map::SnakeObj<decltype(field)>(head, tail);
+
     //**/ Map::PrintToText(std::cerr, field);
     ant.backMove(field, Map::RelativeDirection::Right());
     //**/ Map::PrintToText(std::cerr, field);
@@ -170,37 +102,24 @@ void backMoveTest() {
 
 void pickUpAndDropTest() {
     std::cerr << " - pickUpAndDropTest\n";
-    auto chain = std::vector<Map::EMaterial>{
-        Map::EMaterial::AntBody,
-        Map::EMaterial::AntHead,
+    auto tail = std::vector<Map::Direction>{
+        Map::Direction::North(),
     };
+    auto head = Map::Point{0, 1};
     std::string text = R"FieldMap(<5,4>
 (0,0)
-.....
-.w...
+#....
+Xw...
 .....
 .....
 )FieldMap";
     auto in = std::istringstream(text);
-    auto field = Map::ScanFromText<Map::WorldCell>(in);
-    auto antId = Map::ObjectId(2);
-    auto ant = Map::SnakeObj::appear(
-        field,
-        chain,
-        antId
-    );
-    ValidateEqual(
-        field.at({1, 1}).objectId,
-        Map::ObjectId::Invalid()
-    );
+    auto field = Map::ScanFromText<Map::SimpleCell>(in);
+    auto ant = Map::SnakeObj<decltype(field)>(head, tail);
     //**/ Map::PrintToText(std::cerr, field);
-    ant.pushFrontGrain(field, Map::RelativeDirection::Right());
+    auto pt = ant.pushFrontGrain(Map::RelativeDirection::Right());
     //**/ Map::PrintToText(std::cerr, field);
-
-    ValidateEqual(
-        field.at({1, 1}).objectId,
-        antId
-    );
+    ValidateEqual(pt, Map::Point{1, 1});
 
     ant.frontMove(field, Map::RelativeDirection::Forward());
     //**/ Map::PrintToText(std::cerr, field);
@@ -209,22 +128,8 @@ void pickUpAndDropTest() {
     ant.frontMove(field, Map::RelativeDirection::Forward());
     //**/ Map::PrintToText(std::cerr, field);
 
-    ValidateEqual(
-        field.at({1, 1}).objectId,
-        Map::ObjectId::Invalid()
-    );
-
-    ValidateEqual(
-        field.at({4, 1}).objectId,
-        antId
-    );
-
-    ant.popFrontGrain(field);
-
-    ValidateEqual(
-        field.at({4, 1}).objectId,
-        Map::ObjectId::Invalid()
-    );
+    pt = ant.popFrontGrain();
+    ValidateEqual(pt, Map::Point{4, 1});
 
     ant.frontMove(field, Map::RelativeDirection::Left());
     //**/ Map::PrintToText(std::cerr, field);
@@ -246,71 +151,57 @@ void pickUpAndDropTest() {
 
 void lookToTest() {
     std::cerr << " - lookToTest\n";
-    auto chain = std::vector<Map::EMaterial>{
-        Map::EMaterial::AntBody,
-        Map::EMaterial::AntHead,
+    auto tail = std::vector<Map::Direction>{
+        Map::Direction::North(),
     };
+    auto head = Map::Point{1, 2};
     std::string text = R"FieldMap(<3,4>
 (0,0)
 .w.
-m.a
-i.l
+m#a
+iXl
 ?.s
 )FieldMap";
     auto in = std::istringstream(text);
-    auto field = Map::ScanFromText<Map::WorldCell>(in);
-    auto antId = Map::ObjectId(131);
-    auto ant = Map::SnakeObj::appear(
-        field,
-        chain,
-        antId
-    );
+    auto field = Map::ScanFromText<Map::SimpleCell>(in);
+    auto ant = Map::SnakeObj<decltype(field)>(head, tail);
     {
-        auto cell = ant.lookTo(field, Map::RelativeDirection::Forward(), 0);
-        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
-        ValidateEqual(cell.grain, Map::EMaterial::EmptySpace);
+        auto pt = ant.lookTo(Map::RelativeDirection::Forward(), 0);
+        ValidateEqual(pt, Map::Point{1, 3});
     }
     {
-        auto cell = ant.lookTo(field, Map::RelativeDirection::Left(), 0);
-        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
-        ValidateEqual(cell.grain, Map::EMaterial::Iron);
+        auto pt = ant.lookTo(Map::RelativeDirection::Left(), 0);
+        ValidateEqual(pt, Map::Point{0, 2});
     }
     {
-        auto cell = ant.lookTo(field, Map::RelativeDirection::Right(), 0);
-        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
-        ValidateEqual(cell.grain, Map::EMaterial::Loam);
+        auto pt = ant.lookTo(Map::RelativeDirection::Right(), 0);
+        ValidateEqual(pt, Map::Point{2, 2});
     }
     {
-        auto cell = ant.lookTo(field, Map::RelativeDirection::Backward(), 0);
-        ValidateEqual(cell.objectId, antId);
-        ValidateEqual(cell.grain, Map::EMaterial::AntBody);
+        auto pt = ant.lookTo(Map::RelativeDirection::Backward(), 0);
+        ValidateEqual(pt, Map::Point{1, 1});
     }
     {
-        auto cell = ant.lookTo(field, Map::RelativeDirection::Forward(), 1);
-        ValidateEqual(cell.objectId, antId);
-        ValidateEqual(cell.grain, Map::EMaterial::AntHead);
+        auto pt = ant.lookTo(Map::RelativeDirection::Forward(), 1);
+        ValidateEqual(pt, Map::Point{1, 2});
     }
     {
-        auto cell = ant.lookTo(field, Map::RelativeDirection::Left(), 1);
-        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
-        ValidateEqual(cell.grain, Map::EMaterial::Marble);
+        auto pt = ant.lookTo(Map::RelativeDirection::Left(), 1);
+        ValidateEqual(pt, Map::Point{0, 1});
     }
     {
-        auto cell = ant.lookTo(field, Map::RelativeDirection::Right(), 1);
-        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
-        ValidateEqual(cell.grain, Map::EMaterial::Water);
+        auto pt = ant.lookTo(Map::RelativeDirection::Right(), 1);
+        ValidateEqual(pt, Map::Point{2, 1});
     }
     {
-        auto cell = ant.lookTo(field, Map::RelativeDirection::Backward(), 1);
-        ValidateEqual(cell.objectId, Map::ObjectId::Invalid());
-        ValidateEqual(cell.grain, Map::EMaterial::Wood);
+        auto pt = ant.lookTo(Map::RelativeDirection::Backward(), 1);
+        ValidateEqual(pt, Map::Point{1, 0});
     }
 }
 
 int main(int argn, char** argv) {
     try {
         std::cerr << "snake_ut:\n";
-        appearTest();
         frontMoveTest();
         backMoveTest();
         pickUpAndDropTest();

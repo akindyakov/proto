@@ -4,11 +4,14 @@ PRODUCT := $(ABS_PRODUCT)/map/rpc
 
 all: prepare $(PRODUCT)/server.h $(PRODUCT)/client.h
 
-$(PRODUCT)/server.h $(PRODUCT)/client.h: rpc_spec.json
-	jsonrpcstub $^ \
-    --cpp-server=Map::JsonRPC::Server \
-    --cpp-client=Map::JsonRPC::Client \
-    --cpp-server-file=$(PRODUCT)/server.h \
+$(PRODUCT)/server.h: rpc_spec.json
+	jsonrpcstub $< \
+    --cpp-server=Map::JsonRPCServer \
+    --cpp-server-file=$(PRODUCT)/server.h
+
+$(PRODUCT)/client.h: rpc_spec.json
+	jsonrpcstub $< \
+    --cpp-client=Map::JsonRPCClient \
     --cpp-client-file=$(PRODUCT)/client.h
 
 clear:

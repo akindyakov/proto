@@ -1,8 +1,4 @@
-#include <tools/http_error.h>
-
-//#include <algorithm>
-#include <vector>
-
+#pragma once
 
 template<typename TField>
 void SnakeObj<TField>::frontMove(
@@ -12,7 +8,6 @@ void SnakeObj<TField>::frontMove(
     // the last move vector is our direction now
     auto direction = frontDirection.Turn(tail_.front());
     auto pt = direction.MovePoint(head_);
-    // lock here
     if (!field.at(pt).isFree()) {
         throw Forbidden() << "There is no free space for that move.";
     }
@@ -51,7 +46,6 @@ void SnakeObj<TField>::backMove(
     [tail] <- pt
     [new place] <- prev
     */
-    // lock here
     if (!field.at(prev).isFree()) {
         throw Forbidden() << "There is no free space for that move.";
     }
@@ -86,54 +80,39 @@ void SnakeObj<TField>::backMove(
 }
 
 template<typename TField>
-void SnakeObj<TField>::pushFrontGrain(
-    TField& field
-    , RelativeDirection frontDirection
-) {
+typename SnakeObj<TField>::PointType
+    SnakeObj<TField>::pushFrontGrain(
+        RelativeDirection frontDirection
+    )
+{
     auto direction = frontDirection.Turn(tail_.front());
-    auto pt = direction.MovePoint(head_);
-    // lock here
-    auto& cell = field.at(pt);
-    if (cell.objectId.isValid()) {
-        throw Forbidden() << "This grain belongs to other ant. Theft is outlow!";
-    }
-    cell.objectId = id_;
-    std::swap(pt, head_);
+    auto pickedUpPt = direction.MovePoint(head_);
+    std::swap(pickedUpPt, head_);
     tail_.push_front(direction);
+    return head_;
 }
 
 template<typename TField>
-void SnakeObj<TField>::popFrontGrain(
-    TField& field
-) {
+typename SnakeObj<TField>::PointType
+    SnakeObj<TField>::popFrontGrain(
+    )
+{
     if (tail_.empty()) {
         throw BadRequest() << "There is nothing to drop.";
     }
-    // lock here
-    field.at(head_).objectId = ObjectId::Invalid();
+    auto droppedPt = head_;
     head_ = tail_.front().Inverse().MovePoint(head_);
     tail_.pop_front();
+    return droppedPt;
 }
 
 template<typename TField>
-void SnakeObj<TField>::pushBackGrain(
-    TField& field
-    , RelativeDirection backDirection
-) {
-}
-
-template<typename TField>
-void SnakeObj<TField>::popBackGrain(
-    TField& field
-) {
-}
-
-template<typename TField>
-const SnakeObj<TField>::CellType& SnakeObj<TField>::lookTo(
-    const TField& field
-    , RelativeDirection to
-    , size_t segment
-) const {
+typename SnakeObj<TField>::PointType
+    SnakeObj<TField>::lookTo(
+        RelativeDirection to
+        , size_t segment
+    ) const
+{
     if (segment >= this->size()) {
         throw BadRequest() << "There is no segment with number " << segment;
     }
@@ -152,8 +131,7 @@ const SnakeObj<TField>::CellType& SnakeObj<TField>::lookTo(
         absTo = *vecIt;
     }
     auto toPt = to.Turn(absTo).MovePoint(pt);
-    // lock here
-    return field.at(toPt);
+    return toPt;
 }
 
 template<typename TField>

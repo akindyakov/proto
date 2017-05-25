@@ -7,9 +7,7 @@
 
 namespace Map {
 
-namespace {
-
-World::SnakeType appearSnake(
+World::SnakeType createSnakeOnField(
     World::FieldType& where
     , const std::vector<EMaterial>& body
     , ObjectId id
@@ -19,7 +17,7 @@ World::SnakeType appearSnake(
     */
     auto chain = std::vector<RelativeDirection>(
         body.size() - 1,
-        Map::RelativeDirection::Forward()
+        RelativeDirection::Forward()
     );
     auto start = Point{0, 0};
     for (start.Y = where.min().Y; start.Y < where.max().Y; ++start.Y) {
@@ -45,7 +43,7 @@ World::SnakeType appearSnake(
                     cell.objectId = id;
                     cell.grain = *materialIt;
                     ++materialIt;
-                    auto tail = std::vector<Map::Direction>{};
+                    auto tail = std::vector<Direction>{};
                     auto pt = start;
                     for (auto& el : chain) {
                         auto from = el.Turn(startDir);
@@ -65,14 +63,12 @@ World::SnakeType appearSnake(
     throw InternalServerError() << "There is no vacant position";
 }
 
-}
-
 
 World::World(
     std::istream& fieldStream
 )
     : field_(
-        Map::ScanFromText<World::CellType>(
+        ScanFromText<World::CellType>(
             fieldStream
         )
     )
@@ -85,11 +81,11 @@ ObjectId World::appear() {
     auto newId = ObjectId(nextFreeId_.fetch_add(1));
     std::lock_guard<std::mutex> lock(globalMutex);
     auto obj = std::make_shared<SnakeType>(
-        appearSnake(
+        createSnakeOnField(
             this->field_,
             {
-                Map::EMaterial::AntBody,
-                Map::EMaterial::AntHead,
+                EMaterial::AntBody,
+                EMaterial::AntHead,
             },
             newId
         )
@@ -102,7 +98,7 @@ ObjectId World::appear() {
 
 void World::move(
     ObjectId id
-    , Map::RelativeDirection direction
+    , RelativeDirection direction
     , Side side
 ) {
     auto obj = World::findObject(id);
@@ -122,39 +118,28 @@ void World::move(
 
 void World::pickUpGrain(
     ObjectId id
-    , Map::RelativeDirection direction
-    , Side side
+    , RelativeDirection direction
 ) {
     auto obj = World::findObject(id);
     std::lock_guard<std::mutex> lock(globalMutex);
-    if (side == Side::Front) {
-        obj->pushFrontGrain(
-            this->field_,
-            direction
-        );
-    } else {
-        obj->pushBackGrain(
-            this->field_,
-            direction
-        );
+
+    auto pt = obj->pushFrontGrain(direction);
+    auto& cell = this->field_.at(pt);
+    if (cell.objectId.isValid()) {
+        obj->popFrontGrain();
+        throw Forbidden() << "This grain belongs to other ant. Theft is outlow!";
     }
+    cell.objectId = id;
 }
 
 void World::dropGrain(
     ObjectId id
-    , Side side
 ) {
     auto obj = World::findObject(id);
     std::lock_guard<std::mutex> lock(globalMutex);
-    if (side == Side::Front) {
-        obj->popFrontGrain(
-            this->field_
-        );
-    } else {
-        obj->popBackGrain(
-            this->field_
-        );
-    }
+
+    auto pt = obj->popFrontGrain();
+    this->field_.at(pt).objectId = ObjectId::Invalid();
 }
 
 const World::CellType& World::lookTo(
@@ -163,11 +148,8 @@ const World::CellType& World::lookTo(
     , size_t segment
 ) const {
     auto obj = World::findObject(id);
-    return obj->lookTo(
-        this->field_,
-        to,
-        segment
-    );
+    auto pt = obj->lookTo(to, segment);
+    return this->field_.at(pt);
 }
 
 std::vector<RelativeDirection> World::getPose(

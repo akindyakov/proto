@@ -109,19 +109,17 @@ public:
 
     void move(
         ObjectId id
-        , Map::RelativeDirection direction
+        , RelativeDirection direction
         , Side side
     );
 
     void pickUpGrain(
         ObjectId id
-        , Map::RelativeDirection direction
-        , Side side
+        , RelativeDirection direction
     );
 
     void dropGrain(
         ObjectId id
-        , Side side
     );
 
     const CellType& lookTo(
@@ -151,6 +149,12 @@ std::istream& operator>>(std::istream& is, ObjectId& vect);
 
 std::ostream& operator<<(std::ostream& os, const WorldCell& cell);
 std::istream& operator>>(std::istream& is, WorldCell& cell);
+
+World::SnakeType createSnakeOnField(
+    World::FieldType& where
+    , const std::vector<EMaterial>& body
+    , ObjectId id
+);
 
 }  // namespace Map
 
