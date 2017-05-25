@@ -10,7 +10,7 @@ class AntState
 {
 public:
     explicit KnownArea(
-        Map::JsonRPC::Client& client
+        Map::JsonRPCClient& client
     ) {
     }
 
@@ -47,7 +47,7 @@ class Scout
 {
 public:
     Scout(
-        Map::JsonRPC::Client& client
+        Map::JsonRPCClient& client
     );
 
     ~Scout() = default;
@@ -65,7 +65,7 @@ private:
     void moveAlongTheWall();
 
 private:
-    Map::JsonRPC::Client& client_;
+    Map::JsonRPCClient& client_;
     Map::ObjectId id_;
     Map::Chain<Map::RelativeDirection, Map::EMaterial> chain_;
 };

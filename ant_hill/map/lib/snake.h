@@ -73,6 +73,6 @@ private:
     std::deque<Direction> tail_;
 };
 
-#include "snake_impl.h"
-
 }  // namespace Map
+
+#include "snake_impl.h"

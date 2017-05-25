@@ -1,7 +1,7 @@
 #include "map_server.h"
 
 #include <map/lib/2d_field.h>
-#include <map/lib/transaction.h>
+#include <map/lib/direction.h>
 
 #include <map/rpc/server.h>
 
@@ -72,8 +72,7 @@ Json::Value MapServer::pick_ut_front(int direction, int id) {
     try {
         this->world.pickUpGrain(
             Map::ObjectId(id),
-            Map::RelativeDirection(direction),
-            Map::World::Side::Front
+            Map::RelativeDirection(direction)
         );
     } catch (const HTTPError& err) {
         throw jsonrpc::JsonRpcException(
@@ -87,8 +86,7 @@ Json::Value MapServer::drop_front(int id) {
     auto result = Json::Value(Json::objectValue);
     try {
         this->world.dropGrain(
-            Map::ObjectId(id),
-            Map::World::Side::Front
+            Map::ObjectId(id)
         );
     } catch (const HTTPError& err) {
         throw jsonrpc::JsonRpcException(

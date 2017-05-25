@@ -3,7 +3,7 @@
 #include <tools/exception.h>
 
 Scout::Scout(
-    Map::JsonRPC::Client& client
+    Map::JsonRPCClient& client
 )
     : client_(client)
     , id_(Map::ObjectId::Invalid())

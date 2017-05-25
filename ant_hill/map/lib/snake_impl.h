@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Map {
+
 template<typename TField>
 void SnakeObj<TField>::frontMove(
     TField& field
@@ -151,6 +153,4 @@ SnakeObj<TField>::size() const {
     return tail_.size() + 1;
 }
 
-namespace Map {
-}
-
+}  // namespace Map
