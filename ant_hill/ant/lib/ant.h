@@ -6,23 +6,28 @@
 #include <map/rpc/client.h>
 
 
-class KnownArea
+class AntState
 {
 public:
     explicit KnownArea(
         Map::JsonRPC::Client& client
     ) {
     }
-    bool frontMove(int direction
+
+    bool frontMove(
         Map::RelativeDirection direction
     );
+
     bool backMove(
         Map::RelativeDirection direction
     );
+
     bool pickUpFront(
         Map::RelativeDirection direction
     );
+
     bool dropFront();
+
     bool lookTo(
         Map::RelativeDirection direction
         , int segment
@@ -44,7 +49,9 @@ public:
     Scout(
         Map::JsonRPC::Client& client
     );
+
     ~Scout() = default;
+
     Scout(const Scout&) = delete;
     Scout(Scout&&) = default;
     Scout& operator=(const Scout&) = delete;

@@ -116,30 +116,6 @@ private:
 
 template<typename TCell>
 class Field {
-private:
-    Measure signedIndexByPoint(const Point& pt) const noexcept {
-        return (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
-    }
-
-    Measure signedInRange(const Point& pt) const noexcept {
-        auto index = signedIndexByPoint(pt);
-        return (
-            static_cast<size_t>(index) < field_.size()
-            && pt.X >= this->min_.X
-            && pt.Y >= this->min_.Y
-        ) ? index : -1;
-    }
-
-    size_t safeIndexByPoint(const Point& pt) const {
-        auto signedIndex = signedInRange(pt);
-        if (signedIndex < 0) {
-            throw Exception("Access by out range point: ")
-                << pt << " not in [" << this->min() << ", " << this->max() << "]"
-            ;
-        }
-        return static_cast<size_t>(signedIndex);
-    }
-
 public:
     using CellType = TCell;
     using FieldStorageType = std::vector<TCell>;
@@ -180,6 +156,30 @@ public:
 
     const Vector size() const noexcept {
         return size_;
+    }
+
+private:
+    Measure signedIndexByPoint(const Point& pt) const noexcept {
+        return (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
+    }
+
+    Measure signedInRange(const Point& pt) const noexcept {
+        auto index = signedIndexByPoint(pt);
+        return (
+            static_cast<size_t>(index) < field_.size()
+            && pt.X >= this->min_.X
+            && pt.Y >= this->min_.Y
+        ) ? index : -1;
+    }
+
+    size_t safeIndexByPoint(const Point& pt) const {
+        auto signedIndex = signedInRange(pt);
+        if (signedIndex < 0) {
+            throw Exception("Access by out range point: ")
+                << pt << " not in [" << this->min() << ", " << this->max() << "]"
+            ;
+        }
+        return static_cast<size_t>(signedIndex);
     }
 
 private:
