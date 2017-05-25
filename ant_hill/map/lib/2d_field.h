@@ -118,10 +118,12 @@ template<typename TCell>
 class Field {
 public:
     using CellType = TCell;
-    using FieldStorageType = std::vector<TCell>;
+    using PointType = Point;
+    using SizeType = Vector;
+    using FieldStorageType = std::vector<CellType>;
 
 public:
-    explicit Field(Vector size, Point min=Point{0, 0})
+    explicit Field(SizeType size, PointType min=PointType{0, 0})
         : size_(size)
         , min_(min)
         , field_(size_.cube())
@@ -134,36 +136,36 @@ public:
     Field& operator=(const Field&) = delete;
     Field& operator=(Field&&) = default;
 
-    bool inRange(const Point& pt) const noexcept {
+    bool inRange(const PointType& pt) const noexcept {
         return signedInRange(pt) >= 0;
     }
 
-    CellType& at(const Point& pt) {
+    CellType& at(const PointType& pt) {
         return field_[safeIndexByPoint(pt)];
     }
 
-    const CellType& at(const Point& pt) const {
+    const CellType& at(const PointType& pt) const {
         return field_[safeIndexByPoint(pt)];
     }
 
-    const Point min() const noexcept {
+    const PointType min() const noexcept {
         return min_;
     }
 
-    const Point max() const noexcept {
+    const PointType max() const noexcept {
         return min_ + size_;
     }
 
-    const Vector size() const noexcept {
+    const SizeType size() const noexcept {
         return size_;
     }
 
 private:
-    Measure signedIndexByPoint(const Point& pt) const noexcept {
+    Measure signedIndexByPoint(const PointType& pt) const noexcept {
         return (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
     }
 
-    Measure signedInRange(const Point& pt) const noexcept {
+    Measure signedInRange(const PointType& pt) const noexcept {
         auto index = signedIndexByPoint(pt);
         return (
             static_cast<size_t>(index) < field_.size()
@@ -172,7 +174,7 @@ private:
         ) ? index : -1;
     }
 
-    size_t safeIndexByPoint(const Point& pt) const {
+    size_t safeIndexByPoint(const PointType& pt) const {
         auto signedIndex = signedInRange(pt);
         if (signedIndex < 0) {
             throw Exception("Access by out range point: ")
@@ -183,8 +185,8 @@ private:
     }
 
 private:
-    Vector size_;
-    Point min_;
+    SizeType size_;
+    PointType min_;
     FieldStorageType field_;
 };
 

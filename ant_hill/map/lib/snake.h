@@ -1,85 +1,79 @@
 #pragma once
 
-#include "chain.h"
-#include "world.h"
+#include "transaction.h"
 
 #include <deque>
 
+
 namespace Map {
 
+template<
+    typename TField
+>
 class SnakeObj
-    : public IObject
 {
 public:
+    using PointType = typename TField::PointType;
+    using CellType = typename TField::CellType;
+
+public:
     explicit SnakeObj(
-        Point head
-        , std::vector<Map::Direction> tail
-        , ObjectId id
+        PointType head
+        , std::vector<Direction> tail
     )
-        : id_(id)
-        , head_(head)
+        : head_(head)
         , tail_(tail.begin(), tail.end())
     {
     }
 
-    ~SnakeObj() override = default;
+    ~SnakeObj() = default;
 
     size_t size() const;
 
     void frontMove(
-        World::Field& field
+        TField& field
         , RelativeDirection frontDirection
-    ) override;
+    );
 
     /**
     * Move back to specified direction
     */
     void backMove(
-        World::Field& field
+        TField& field
         , RelativeDirection backDirection
-    ) override;
+    );
 
     /**
     * Add one more point to the front
     */
     void pushFrontGrain(
-        World::Field& field
+        TField& field
         , RelativeDirection frontDirection
-    ) override;
+    );
 
     void popFrontGrain(
-        World::Field& field
-    ) override;
+        TField& field
+    );
 
     /**
     * Add one more point to the back
     */
     void pushBackGrain(
-        World::Field& field
+        TField& field
         , RelativeDirection backDirection
-    ) override;
-
-    void popBackGrain(
-        World::Field& field
-    ) override;
-
-    static SnakeObj appear(
-        World::Field& where
-        , const std::vector<EMaterial>& body
-        , ObjectId id
     );
 
-    const World::Cell& lookTo(
-        const World::Field& field
+    void popBackGrain(
+        TField& field
+    );
+
+    const CellType& lookTo(
+        const TField& field
         , RelativeDirection to
         , size_t segment
-    ) const override;
+    ) const;
 
-    std::vector<RelativeDirection> getPose() const override;
-
-    ObjectId id() const override {
-        return id_;
-    }
+    std::vector<RelativeDirection> getPose() const;
 
 private:
     /**
@@ -88,9 +82,10 @@ private:
     * |    <---------------*  <------------*  <-------------*   |
     * \______/            \____/          \____/           \____/
     */
-    ObjectId id_;
-    Map::Point head_;
-    std::deque<Map::Direction> tail_;
+    PointType head_;
+    std::deque<Direction> tail_;
 };
+
+#include "snake_impl.h"
 
 }  // namespace Map

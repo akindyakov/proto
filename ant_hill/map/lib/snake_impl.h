@@ -1,14 +1,12 @@
-#include "snake.h"
-
 #include <tools/http_error.h>
 
-#include <algorithm>
+//#include <algorithm>
+#include <vector>
 
-namespace Map {
 
-void
-SnakeObj::frontMove(
-    World::Field& field
+template<typename TField>
+void SnakeObj<TField>::frontMove(
+    TField& field
     , RelativeDirection frontDirection
 ) {
     // the last move vector is our direction now
@@ -18,7 +16,6 @@ SnakeObj::frontMove(
     if (!field.at(pt).isFree()) {
         throw Forbidden() << "There is no free space for that move.";
     }
-    using std::swap;
     std::swap(head_, pt);
     std::swap(
         field.at(head_),
@@ -36,8 +33,9 @@ SnakeObj::frontMove(
     tail_.pop_back();
 }
 
-void SnakeObj::backMove(
-    World::Field& field
+template<typename TField>
+void SnakeObj<TField>::backMove(
+    TField& field
     , RelativeDirection backDirection
 ) {
     auto direction = backDirection.Turn(tail_.back());
@@ -87,8 +85,9 @@ void SnakeObj::backMove(
     tail_.pop_front();
 }
 
-void SnakeObj::pushFrontGrain(
-    World::Field& field
+template<typename TField>
+void SnakeObj<TField>::pushFrontGrain(
+    TField& field
     , RelativeDirection frontDirection
 ) {
     auto direction = frontDirection.Turn(tail_.front());
@@ -103,8 +102,9 @@ void SnakeObj::pushFrontGrain(
     tail_.push_front(direction);
 }
 
-void SnakeObj::popFrontGrain(
-    World::Field& field
+template<typename TField>
+void SnakeObj<TField>::popFrontGrain(
+    TField& field
 ) {
     if (tail_.empty()) {
         throw BadRequest() << "There is nothing to drop.";
@@ -115,19 +115,22 @@ void SnakeObj::popFrontGrain(
     tail_.pop_front();
 }
 
-void SnakeObj::pushBackGrain(
-    World::Field& field
+template<typename TField>
+void SnakeObj<TField>::pushBackGrain(
+    TField& field
     , RelativeDirection backDirection
 ) {
 }
 
-void SnakeObj::popBackGrain(
-    World::Field& field
+template<typename TField>
+void SnakeObj<TField>::popBackGrain(
+    TField& field
 ) {
 }
 
-const World::Cell& SnakeObj::lookTo(
-    const World::Field& field
+template<typename TField>
+const SnakeObj<TField>::CellType& SnakeObj<TField>::lookTo(
+    const TField& field
     , RelativeDirection to
     , size_t segment
 ) const {
@@ -153,8 +156,9 @@ const World::Cell& SnakeObj::lookTo(
     return field.at(toPt);
 }
 
+template<typename TField>
 std::vector<RelativeDirection>
-SnakeObj::getPose() const {
+SnakeObj<TField>::getPose() const {
     auto pose_ = std::vector<RelativeDirection>{};
     auto prev = this->tail_.front();
     for (const auto& cur : tail_) {
@@ -163,65 +167,12 @@ SnakeObj::getPose() const {
     return pose_;
 }
 
-SnakeObj SnakeObj::appear(
-    World::Field& where
-    , const std::vector<EMaterial>& body
-    , ObjectId id
-) {
-    /**
-    // сделай тут тупой поиск свободных мест нужного размера без всяких цепочек
-    */
-    auto chain = std::vector<RelativeDirection>(
-        body.size() - 1,
-        Map::RelativeDirection::Forward()
-    );
-    auto start = Point{0, 0};
-    for (start.Y = where.min().Y; start.Y < where.max().Y; ++start.Y) {
-        for (start.X = where.min().X; start.X < where.max().X; ++start.X) {
-            auto startDir = Direction::North();
-            while (startDir.counter() == 0) {
-                bool vacant = true;
-                if (where.inRange(start) && where.at(start).isFree()) {
-                    auto pt = start;
-                    for (auto& el : chain) {
-                        pt = el.Turn(startDir).MovePoint(pt);
-                        if (!where.inRange(pt) || !where.at(pt).isFree()) {
-                            vacant = false;
-                            break;
-                        }
-                    }
-                } else {
-                    vacant = false;
-                }
-                if (vacant) {
-                    auto materialIt = body.begin();
-                    auto& cell = where.at(start);
-                    cell.objectId = id;
-                    cell.grain = *materialIt;
-                    ++materialIt;
-                    auto tail = std::vector<Map::Direction>{};
-                    auto pt = start;
-                    for (auto& el : chain) {
-                        auto from = el.Turn(startDir);
-                        tail.push_back(from);
-                        pt = from.MovePoint(pt);
-                        auto& cell = where.at(pt);
-                        cell.objectId = id;
-                        cell.grain = *materialIt;
-                        ++materialIt;
-                    }
-                    return SnakeObj(pt, tail, id);
-                }
-                ++startDir;
-            }
-        }
-    }
-    throw InternalServerError() << "There is no vacant position";
-}
-
+template<typename TField>
 size_t
-SnakeObj::size() const {
+SnakeObj<TField>::size() const {
     return tail_.size() + 1;
 }
 
+namespace Map {
 }
+

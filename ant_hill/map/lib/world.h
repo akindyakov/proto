@@ -2,6 +2,7 @@
 
 #include "2d_field.h"
 #include "map_symbols.h"
+#include "snake.h"
 #include "transaction.h"
 
 #include <atomic>
@@ -73,8 +74,6 @@ struct WorldCell {
     ObjectId objectId = ObjectId::Invalid();
 };
 
-class IObject;
-
 const auto ObjectHash = [](const ObjectId& id) {
     return std::hash<ObjectId::Type>{}(id.id);
 };
@@ -82,8 +81,9 @@ const auto ObjectHash = [](const ObjectId& id) {
 class World
 {
 public:
-    using Cell = WorldCell;
-    using Field = Field<WorldCell>;
+    using CellType = WorldCell;
+    using FieldType = Field<CellType>;
+    using SnakeType = SnakeObj<FieldType>;
 
     enum class Side {
         Front,
@@ -91,12 +91,11 @@ public:
     };
 
 private:
-    Field field_;
+    FieldType field_;
     std::mutex globalMutex;
-    //std::map<ObjectId, std::shared_ptr<IObject>> objects_;
     std::unordered_map<
         ObjectId,
-        std::shared_ptr<IObject>,
+        std::shared_ptr<SnakeType>,
         decltype(ObjectHash)
     > objects_;
     std::atomic<ObjectId::Type> nextFreeId_;
@@ -125,7 +124,7 @@ public:
         , Side side
     );
 
-    const World::Cell& lookTo(
+    const CellType& lookTo(
         ObjectId id
         , RelativeDirection to
         , size_t segment
@@ -142,73 +141,16 @@ public:
     void print(std::ostream&) const;
 
 private:
-    std::shared_ptr<IObject> findObject(
+    std::shared_ptr<SnakeType> findObject(
         ObjectId id
     ) const;
 };
 
-class IObject
-{
-public:
-    virtual ~IObject() = default;
-
-    /**
-    * Move head to specified direction
-    */
-    virtual void frontMove(
-        World::Field& field
-        , Map::RelativeDirection frontDirection
-    ) = 0;
-
-    /**
-    * Move back to specified direction
-    */
-    virtual void backMove(
-        World::Field& field
-        , Map::RelativeDirection backDirection
-    ) = 0;
-
-    /**
-    * Add one more point to the front
-    */
-    virtual void pushFrontGrain(
-        World::Field& field
-        , Map::RelativeDirection frontDirection
-    ) = 0;
-
-    virtual void popFrontGrain(
-        World::Field& field
-    ) = 0;
-
-    /**
-    * Add one more point to the back
-    */
-    virtual void pushBackGrain(
-        World::Field& field
-        , Map::RelativeDirection backDirection
-    ) = 0;
-
-    virtual void popBackGrain(
-        World::Field& field
-    ) = 0;
-
-    virtual const World::Cell& lookTo(
-        const World::Field& field
-        , RelativeDirection to
-        , size_t segment
-    ) const = 0;
-
-    virtual std::vector<RelativeDirection> getPose() const = 0;
-
-    virtual ObjectId id() const = 0;;
-};
-
-
 std::ostream& operator<<(std::ostream& os, const ObjectId& vect);
 std::istream& operator>>(std::istream& is, ObjectId& vect);
 
-std::ostream& operator<<(std::ostream& os, const Map::WorldCell& cell);
-std::istream& operator>>(std::istream& is, Map::WorldCell& cell);
+std::ostream& operator<<(std::ostream& os, const WorldCell& cell);
+std::istream& operator>>(std::istream& is, WorldCell& cell);
 
 }  // namespace Map
 

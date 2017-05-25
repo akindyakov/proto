@@ -7,10 +7,75 @@
 
 namespace Map {
 
+namespace {
+
+World::SnakeType appearSnake(
+    World::FieldType& where
+    , const std::vector<EMaterial>& body
+    , ObjectId id
+) {
+    /**
+    // сделай тут тупой поиск свободных мест нужного размера без всяких цепочек
+    */
+    auto chain = std::vector<RelativeDirection>(
+        body.size() - 1,
+        Map::RelativeDirection::Forward()
+    );
+    auto start = Point{0, 0};
+    for (start.Y = where.min().Y; start.Y < where.max().Y; ++start.Y) {
+        for (start.X = where.min().X; start.X < where.max().X; ++start.X) {
+            auto startDir = Direction::North();
+            while (startDir.counter() == 0) {
+                bool vacant = true;
+                if (where.inRange(start) && where.at(start).isFree()) {
+                    auto pt = start;
+                    for (auto& el : chain) {
+                        pt = el.Turn(startDir).MovePoint(pt);
+                        if (!where.inRange(pt) || !where.at(pt).isFree()) {
+                            vacant = false;
+                            break;
+                        }
+                    }
+                } else {
+                    vacant = false;
+                }
+                if (vacant) {
+                    auto materialIt = body.begin();
+                    auto& cell = where.at(start);
+                    cell.objectId = id;
+                    cell.grain = *materialIt;
+                    ++materialIt;
+                    auto tail = std::vector<Map::Direction>{};
+                    auto pt = start;
+                    for (auto& el : chain) {
+                        auto from = el.Turn(startDir);
+                        tail.push_back(from);
+                        pt = from.MovePoint(pt);
+                        auto& cell = where.at(pt);
+                        cell.objectId = id;
+                        cell.grain = *materialIt;
+                        ++materialIt;
+                    }
+                    return World::SnakeType(pt, tail);
+                }
+                ++startDir;
+            }
+        }
+    }
+    throw InternalServerError() << "There is no vacant position";
+}
+
+}
+
+
 World::World(
     std::istream& fieldStream
 )
-    : field_(Map::ScanFromText<World::Cell>(fieldStream))
+    : field_(
+        Map::ScanFromText<World::CellType>(
+            fieldStream
+        )
+    )
     , objects_(128, ObjectHash)
     , nextFreeId_(ObjectId::Invalid().id + 1)
 {
@@ -19,8 +84,8 @@ World::World(
 ObjectId World::appear() {
     auto newId = ObjectId(nextFreeId_.fetch_add(1));
     std::lock_guard<std::mutex> lock(globalMutex);
-    auto obj = std::make_shared<SnakeObj>(
-        SnakeObj::appear(
+    auto obj = std::make_shared<SnakeType>(
+        appearSnake(
             this->field_,
             {
                 Map::EMaterial::AntBody,
@@ -30,7 +95,7 @@ ObjectId World::appear() {
         )
     );
     objects_.insert(
-        std::make_pair(newId, obj)
+        std::make_pair(newId, std::move(obj))
     );
     return newId;
 }
@@ -92,7 +157,7 @@ void World::dropGrain(
     }
 }
 
-const World::Cell& World::lookTo(
+const World::CellType& World::lookTo(
     ObjectId id
     , RelativeDirection to
     , size_t segment
@@ -118,7 +183,7 @@ void World::ping(
     World::findObject(id);
 }
 
-std::shared_ptr<IObject> World::findObject(
+std::shared_ptr<World::SnakeType> World::findObject(
     ObjectId id
 ) const {
     auto objIt = objects_.find(id);
