@@ -4,7 +4,7 @@ PRODUCT = $(ABS_PRODUCT)/map/lib
 
 all: prepare $(PRODUCT)/libmap.a ut
 
-$(PRODUCT)/libmap.a: $(PRODUCT)/2d_field.o $(PRODUCT)/world.o $(PRODUCT)/map_symbols.o $(PRODUCT)/transaction.o $(PRODUCT)/snake.o
+$(PRODUCT)/libmap.a: $(PRODUCT)/2d_field.o $(PRODUCT)/world.o $(PRODUCT)/map_symbols.o $(PRODUCT)/direction.o $(PRODUCT)/snake.o
 	ar rcs $@ $^
 
 $(PRODUCT)/2d_field.o: 2d_field.h 2d_field.cpp
@@ -15,21 +15,21 @@ $(PRODUCT)/map_symbols.o: map_symbols.h map_symbols.cpp
 	$(CC) -c -o $(PRODUCT)/map_symbols.o \
     map_symbols.cpp
 
-$(PRODUCT)/transaction.o: transaction.cpp transaction.h $(PRODUCT)/2d_field.o 2d_field.h
+$(PRODUCT)/direction.o: direction.cpp direction.h $(PRODUCT)/2d_field.o 2d_field.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/world.o: world.cpp world.h transaction.h map_symbols.h 2d_field.h
+$(PRODUCT)/world.o: world.cpp world.h direction.h map_symbols.h 2d_field.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/snake.o: snake.cpp snake.h world.h chain.h
 	$(CC) -c -o $@ $<
 
-ut: $(PRODUCT)/2d_field_ut $(PRODUCT)/transaction_ut $(PRODUCT)/world_ut $(PRODUCT)/snake_ut
+ut: $(PRODUCT)/2d_field_ut $(PRODUCT)/direction_ut $(PRODUCT)/world_ut $(PRODUCT)/snake_ut
 
 $(PRODUCT)/2d_field_ut.o: 2d_field_ut.cpp
 	$(CC) -c -o $@ $^
 
-$(PRODUCT)/transaction_ut.o: transaction_ut.cpp
+$(PRODUCT)/direction_ut.o: direction_ut.cpp
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/world_ut.o: world_ut.cpp
@@ -41,7 +41,7 @@ $(PRODUCT)/snake_ut.o: snake_ut.cpp
 $(PRODUCT)/2d_field_ut: $(PRODUCT)/2d_field_ut.o $(PRODUCT)/libmap.a
 	$(CC) -o $@ $^
 
-$(PRODUCT)/transaction_ut: $(PRODUCT)/transaction_ut.o $(PRODUCT)/libmap.a
+$(PRODUCT)/direction_ut: $(PRODUCT)/direction_ut.o $(PRODUCT)/libmap.a
 	$(CC) -o $@ $^
 
 $(PRODUCT)/world_ut: $(PRODUCT)/world_ut.o $(PRODUCT)/libmap.a

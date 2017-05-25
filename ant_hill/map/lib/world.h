@@ -1,9 +1,9 @@
 #pragma once
 
 #include "2d_field.h"
+#include "direction.h"
 #include "map_symbols.h"
 #include "snake.h"
-#include "transaction.h"
 
 #include <atomic>
 #include <mutex>

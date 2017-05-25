@@ -1,6 +1,6 @@
 #pragma once
 
-#include "transaction.h"
+#include "direction.h"
 
 #include <tools/http_error.h>
 
