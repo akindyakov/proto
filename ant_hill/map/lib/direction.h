@@ -57,6 +57,10 @@ public:
         return Direction(all_);
     }
 
+    int toInt() const {
+        return static_cast<int>(this->compass_);
+    }
+
     static Direction FromInt(int value) {
         if (value >= all_) {
             throw Exception()
