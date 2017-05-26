@@ -20,6 +20,7 @@ public:
         Map::JsonRPCClient& client
     )
         : client_(client)
+        , id_(Map::ObjectId::Invalid())
     {
         auto ret = client_.appear();
         try {
@@ -37,57 +38,61 @@ public:
         Map::RelativeDirection direction
     ) {
         try {
-            Json::Value this->client_.front_move(
+            this->client_.front_move(
                 direction.toInt(),
                 this->id_.id
             );
         } catch (const jsonrpc::JsonRpcException) {
             return false;
         }
+        return true;
     }
 
     bool backMove(
         Map::RelativeDirection direction
     ) {
         try {
-            Json::Value this->client_.back_move(
+            this->client_.back_move(
                 direction.toInt(),
                 this->id_.id
             );
         } catch (const jsonrpc::JsonRpcException) {
             return false;
         }
+        return true;
     }
 
     bool pickUpFront(
         Map::RelativeDirection direction
     ) {
         try {
-            Json::Value this->client_.pick_ut_front(
+            this->client_.pick_up_front(
                 direction.toInt(),
                 this->id_.id
             );
         } catch (const jsonrpc::JsonRpcException) {
             return false;
         }
+        return true;
     }
 
     bool dropFront() {
         try {
-            Json::Value this->client_.drop_front(
+            this->client_.drop_front(
                 this->id_.id
             );
         } catch (const jsonrpc::JsonRpcException&) {
             return false;
         }
+        return true;
     }
 
     bool lookTo(
         Map::RelativeDirection direction
         , size_t segment
-    ) const {
+    ) {
         try {
-            Json::Value this->client_.look_to(
+            this->client_.look_to(
                 direction.toInt(),
                 this->id_.id,
                 segment
@@ -95,16 +100,18 @@ public:
         } catch (const jsonrpc::JsonRpcException) {
             return false;
         }
+        return true;
     }
 
-    bool getPose() const {
+    bool getPose() {
         try {
-            Json::Value this->client_.get_pose(
+            this->client_.get_pose(
                 this->id_.id
             );
         } catch (const jsonrpc::JsonRpcException) {
             return false;
         }
+        return true;
     }
 
 private:
@@ -143,7 +150,8 @@ public:
     class DiscoveredCell
     {
     public:
-        Map::EMaterial material = Unknown;
+        explicit DiscoveredCell() = default;
+        Map::EMaterial material = Map::EMaterial::Unknown;
     };
 
     using FieldType = Map::Field<DiscoveredCell>;

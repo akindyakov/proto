@@ -37,7 +37,7 @@ public:
     Json::Value appear() override;
     Json::Value front_move(int direction, int id) override;
     Json::Value back_move(int direction, int id) override;
-    Json::Value pick_ut_front(int direction, int id) override;
+    Json::Value pick_up_front(int direction, int id) override;
     Json::Value drop_front(int id) override;
     Json::Value look_to(int direction, int id, int segment) override;
     Json::Value get_pose(int id) override;

@@ -22,7 +22,7 @@
         "returns" : {}
     },
     {
-        "name": "pick_ut_front",
+        "name": "pick_up_front",
         "params": {
             "id": 1,
             "direction": 1

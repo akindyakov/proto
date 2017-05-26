@@ -67,7 +67,7 @@ Json::Value MapServer::back_move(int direction, int id) {
     return result;
 }
 
-Json::Value MapServer::pick_ut_front(int direction, int id) {
+Json::Value MapServer::pick_up_front(int direction, int id) {
     auto result = Json::Value(Json::objectValue);
     try {
         this->world.pickUpGrain(
