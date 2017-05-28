@@ -139,12 +139,7 @@ typename SnakeObj<TField>::PointType
 template<typename TField>
 std::vector<RelativeDirection>
 SnakeObj<TField>::getPose() const {
-    auto pose_ = std::vector<RelativeDirection>{};
-    auto prev = this->tail_.front();
-    for (const auto& cur : tail_) {
-        pose_.push_back(prev - cur);
-    }
-    return pose_;
+    return Map::CurveToRelative(this->tail_);
 }
 
 template<typename TField>

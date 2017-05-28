@@ -87,31 +87,52 @@ public:
         return true;
     }
 
-    bool lookTo(
+    struct LookInfo {
+        Map::EMaterial material = Map::EMaterial::Unknown;
+        Map::ObjectId ownerId = Map::ObjectId::Invalid();
+    };
+    LookInfo lookTo(
         Map::RelativeDirection direction
         , size_t segment
     ) {
+        auto ret = LookInfo{};
         try {
-            this->client_.look_to(
+            auto jRet = this->client_.look_to(
                 direction.toInt(),
                 this->id_.id,
                 segment
             );
-        } catch (const jsonrpc::JsonRpcException) {
-            return false;
+            ret.ownerId = Map::ObjectId(
+                jRet["owner_id"].asInt()
+            );
+            ret.material = static_cast<Map::EMaterial>(
+                jRet["material"].asInt()
+            );
+        } catch (const jsonrpc::JsonRpcException&) {
+            // TODO: log warnign here
+            std::cerr << "warning: empty [look_to] responce";
         }
-        return true;
+        return ret;
     }
 
-    bool getPose() {
+    Map::RelativeDirectionCurve getPose() {
+        auto pose = Map::RelativeDirectionCurve{};
         try {
-            this->client_.get_pose(
+            auto jPose = this->client_.get_pose(
                 this->id_.id
             );
+            for (const auto& p : jPose["pose"]) {
+                pose.push_back(
+                    Map::RelativeDirection::fromInt(
+                        p.asInt()
+                    )
+                );
+            }
         } catch (const jsonrpc::JsonRpcException) {
-            return false;
+            // TODO: log warnign here
+            std::cerr << "warning: empty [get_pose] responce";
         }
-        return true;
+        return pose;
     }
 
 private:
@@ -119,49 +140,79 @@ private:
     Map::ObjectId id_;
 };
 
+class DiscoveredCell
+{
+public:
+    DiscoveredCell() = default;
+
+    bool isFree() const {
+        return false;
+    }
+
+public:
+    Map::EMaterial material = Map::EMaterial::Unknown;
+};
+
 class Location
 {
 public:
+    static constexpr auto sectionSideSize = Map::Measure{27};
+
     explicit Location(
         LocationClient client
-    ) {
+    )
+        : client_(std::move(client))
+        , snake_(
+            Map::Point(0, 0),
+            Map::RelativeCurveToCurve(
+                client_.getPose()
+            )
+        )
+        , grid_(
+            Map::Vector(sectionSideSize, sectionSideSize),
+            Map::Point(sectionSideSize/-2, sectionSideSize/-2)
+        )
+    {
     }
 
     bool frontMove(
         Map::RelativeDirection direction
-    );
+    ) {
+        return false;
+    }
 
     bool backMove(
         Map::RelativeDirection direction
-    );
+    ) {
+        return false;
+    }
 
     bool pickUpFront(
         Map::RelativeDirection direction
-    );
+    ) {
+        return false;
+    }
 
-    bool dropFront();
+    bool dropFront() {
+        return false;
+    }
 
     bool lookTo(
         Map::RelativeDirection direction
         , size_t segment
-    ) const;
+    ) {
+        return false;
+    }
 
 public:
-    class DiscoveredCell
-    {
-    public:
-        explicit DiscoveredCell() = default;
-        Map::EMaterial material = Map::EMaterial::Unknown;
-    };
-
     using FieldType = Map::Field<DiscoveredCell>;
     using SnakeType = Map::SnakeObj<FieldType>;
 
 private:
+    LocationClient client_;
     SnakeType snake_;
     FieldType grid_;
     Map::Chain<Map::RelativeDirection, Map::EMaterial> chain_;
-    LocationClient client_;
 };
 
 class Scout
