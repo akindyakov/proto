@@ -321,6 +321,62 @@ void directionSub() {
     }
 }
 
+void curveToRelativeTest() {
+    std::cerr << " - curveToRelativeTest\n";
+    auto curve = Map::DirectionCurve{
+        Map::Direction::North(),
+        Map::Direction::East(),
+        Map::Direction::North(),
+        Map::Direction::West(),
+        Map::Direction::West(),
+        Map::Direction::South(),
+    };
+    auto rightAns = Map::RelativeDirectionCurve{
+        Map::RelativeDirection::Forward(),
+        Map::RelativeDirection::Right(),
+        Map::RelativeDirection::Left(),
+        Map::RelativeDirection::Left(),
+        Map::RelativeDirection::Forward(),
+        Map::RelativeDirection::Left(),
+    };
+    auto ans = Map::CurveToRelative(curve);
+    ValidateEqual(ans.size(), rightAns.size());
+    auto rit = rightAns.begin();
+    auto ait = ans.begin();
+    for (; ait != ans.end(); ++rit, ++ait) {
+        ValidateEqual(*ait, *rit);
+    }
+}
+
+void relativeCurveToCurveTest() {
+    std::cerr << " - relativeCurveToCurveTest\n";
+    auto relCurve = Map::RelativeDirectionCurve{
+        Map::RelativeDirection::Forward(),
+        Map::RelativeDirection::Left(),
+        Map::RelativeDirection::Left(),
+        Map::RelativeDirection::Right(),
+        Map::RelativeDirection::Right(),
+        Map::RelativeDirection::Forward(),
+        Map::RelativeDirection::Right(),
+    };
+    auto rightAns = Map::DirectionCurve{
+        Map::Direction::North(),
+        Map::Direction::West(),
+        Map::Direction::South(),
+        Map::Direction::West(),
+        Map::Direction::North(),
+        Map::Direction::North(),
+        Map::Direction::East(),
+    };
+    auto ans = Map::RelativeCurveToCurve(relCurve);
+    ValidateEqual(ans.size(), rightAns.size());
+    auto rit = rightAns.begin();
+    auto ait = ans.begin();
+    for (; ait != ans.end(); ++rit, ++ait) {
+        ValidateEqual(*ait, *rit);
+    }
+}
+
 int main(int argn, char** argv) {
     try {
         std::cerr << "transaction_ut:\n";
@@ -329,6 +385,8 @@ int main(int argn, char** argv) {
         directionMovePoint();
         relativeDirectionTurn();
         directionSub();
+        curveToRelativeTest();
+        relativeCurveToCurveTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;

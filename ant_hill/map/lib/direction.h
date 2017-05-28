@@ -61,7 +61,7 @@ public:
         return static_cast<int>(this->compass_);
     }
 
-    static Direction FromInt(int value) {
+    static Direction fromInt(int value) {
         if (value >= all_) {
             throw Exception()
                 << "Direction::FromInt() error. Wrong int value: ("
@@ -209,6 +209,10 @@ public:
     int toInt() const {
         return static_cast<int>(this->rdir_);
     }
+
+    static RelativeDirection fromInt(int value) {
+        return RelativeDirection(static_cast<Type>(value));
+    }
 };
 
 inline bool constexpr operator == (
@@ -238,6 +242,12 @@ inline RelativeDirection constexpr operator - (
     return dir;
 }
 
+using DirectionCurve = std::vector<Direction>;
+using RelativeDirectionCurve = std::vector<RelativeDirection>;
+
+RelativeDirectionCurve CurveToRelative(const DirectionCurve&);
+DirectionCurve RelativeCurveToCurve(const RelativeDirectionCurve&);
+
 struct Movement {
     Point To;
     Point From;
@@ -245,10 +255,10 @@ struct Movement {
     Movement(const Point& to, const Point& from);
 
     Movement(const Movement&) = delete;
-    Movement(Movement&&);
+    Movement(Movement&&) = default;
 
     Movement& operator=(const Movement&) = delete;
-    Movement& operator=(Movement&&);
+    Movement& operator=(Movement&&) = default;
 };
 
 class ShortMovement {
@@ -276,32 +286,5 @@ inline bool operator == (
         && first.point_ == second.point_
     );
 }
-
-
-// class MoveTransaction {
-// public:
-//     explicit MoveTransaction() = default;
-//     explicit MoveTransaction(const std::vector<ShortMovement>& movement);
-//
-//     MoveTransaction& Add(const Point& pt, Direction direction);
-//     bool Apply(Field& where) const;
-//
-// private:
-//     std::vector<Movement> Actions;
-// };
-//
-// class AppearanceTransaction {
-// public:
-//     AppearanceTransaction& Add(
-//         ChainNode<EMaterial>&& node
-//     ) {
-//         this->chain_.push_back(std::move(node));
-//         return *this;
-//     }
-//     Point Apply(Field& where);
-//
-// private:
-//     std::vector<ChainNode<EMaterial>> chain_;
-// };
 
 }  // namespace Map

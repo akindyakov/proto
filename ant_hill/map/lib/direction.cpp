@@ -25,16 +25,24 @@ Movement::Movement(const Point& to, const Point& from)
 {
 }
 
-Movement::Movement(Movement&& other)
-    : To(std::move(other.To))
-    , From(std::move(other.From))
-{
+RelativeDirectionCurve CurveToRelative(const DirectionCurve& dc) {
+    auto ret = RelativeDirectionCurve{};
+    auto prev = dc.front();
+    for (const auto& cur : dc) {
+        ret.push_back(cur - prev);
+        prev = cur;
+    }
+    return ret;
 }
 
-Movement& Movement::operator=(Movement&& other) {
-    To = std::move(other.To);
-    From = std::move(other.From);
-    return *this;
+DirectionCurve RelativeCurveToCurve(const RelativeDirectionCurve& rdc) {
+    auto ret = DirectionCurve{};
+    auto base = Map::Direction::North();
+    for (const auto& rd : rdc) {
+        base = rd.Turn(base);
+        ret.push_back(base);
+    }
+    return ret;
 }
 
 // MoveTransaction::MoveTransaction(
