@@ -23,7 +23,10 @@ int main(int argn, char** argv) {
     auto client = Map::JsonRPCClient{httpclient};
     auto ant = Ant::Scout(client);
     try {
-        while (ant.run());
+        while (ant.run()) {
+            ant.printMap(std::cout);
+            std::this_thread::sleep_for(std::chrono::milliseconds{500});
+        }
         //while (ant.run()) {
            //auto start = std::chrono::high_resolution_clock::now();
            //auto end = std::chrono::high_resolution_clock::now();

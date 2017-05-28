@@ -199,6 +199,33 @@ iXl
     }
 }
 
+void getBodyTest() {
+    std::cerr << " - getBodyTest\n";
+    auto tail = std::vector<Map::Direction>{
+        Map::Direction::North(),
+    };
+    auto head = Map::Point{1, 2};
+    std::string text = R"FieldMap(<3,4>
+(0,0)
+.w.
+m#a
+iXl
+?.s
+)FieldMap";
+    auto in = std::istringstream(text);
+    auto field = Map::ScanFromText<Map::SimpleCell>(in);
+    auto ant = Map::SnakeObj<decltype(field)>(head, tail);
+
+    auto pt = ant.pushFrontGrain(Map::RelativeDirection::Left());
+    ValidateEqual(pt, Map::Point{0, 2});
+
+    auto body = ant.getBody();
+    ValidateEqual(size_t{3}, body.size());
+    ValidateEqual(body[0], Map::Point{0, 2});
+    ValidateEqual(body[1], Map::Point{1, 2});
+    ValidateEqual(body[2], Map::Point{1, 1});
+}
+
 int main(int argn, char** argv) {
     try {
         std::cerr << "snake_ut:\n";
@@ -206,6 +233,7 @@ int main(int argn, char** argv) {
         backMoveTest();
         pickUpAndDropTest();
         lookToTest();
+        getBodyTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << "failed:\n";

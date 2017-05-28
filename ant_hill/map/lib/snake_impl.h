@@ -10,9 +10,6 @@ void SnakeObj<TField>::frontMove(
     // the last move vector is our direction now
     auto direction = frontDirection.Turn(tail_.front());
     auto pt = direction.MovePoint(head_);
-    if (!field.at(pt).isFree()) {
-        throw Forbidden() << "There is no free space for that move.";
-    }
     std::swap(head_, pt);
     std::swap(
         field.at(head_),
@@ -48,9 +45,6 @@ void SnakeObj<TField>::backMove(
     [tail] <- pt
     [new place] <- prev
     */
-    if (!field.at(prev).isFree()) {
-        throw Forbidden() << "There is no free space for that move.";
-    }
     std::swap(
         field.at(prev),
         field.at(pt)
@@ -137,9 +131,25 @@ typename SnakeObj<TField>::PointType
 }
 
 template<typename TField>
-std::vector<RelativeDirection>
+RelativeDirectionCurve
 SnakeObj<TField>::getPose() const {
-    return Map::CurveToRelative(this->tail_);
+    auto curve = DirectionCurve(this->tail_.begin(), this->tail_.end());
+    return Map::CurveToRelative(curve);
+}
+
+template<typename TField>
+std::vector<Point>
+    SnakeObj<TField>::getBody(
+    ) const
+{
+    auto ret = std::vector<Point>{};
+    auto pt = head_;
+    ret.push_back(pt);
+    for (const auto& t : this->tail_) {
+        pt = t.Inverse().MovePoint(pt);
+        ret.push_back(pt);
+    }
+    return ret;
 }
 
 template<typename TField>

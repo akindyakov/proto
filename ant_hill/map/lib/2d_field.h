@@ -136,7 +136,6 @@ std::istream& operator>>(std::istream& in,        SimpleCell& cell);
 
 template<
     typename TCell
-    , typename = decltype(TCell{}.isFree())
 >
 class Field {
 public:

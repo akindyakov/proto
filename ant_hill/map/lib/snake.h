@@ -60,7 +60,8 @@ public:
         , size_t segment
     ) const;
 
-    std::vector<RelativeDirection> getPose() const;
+    RelativeDirectionCurve getPose() const;
+    std::vector<Point> getBody() const;
 
 private:
     /**

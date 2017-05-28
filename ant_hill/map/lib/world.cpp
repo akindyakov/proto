@@ -104,11 +104,19 @@ void World::move(
     auto obj = World::findObject(id);
     std::lock_guard<std::mutex> lock(globalMutex);
     if (side == Side::Front) {
+        auto pt = obj->lookTo(direction, 0);
+        if (!this->field_.at(pt).isFree()) {
+            throw Forbidden() << "There is no free space for front move.";
+        }
         obj->frontMove(
             this->field_,
             direction
         );
     } else {
+        auto pt = obj->lookTo(direction, obj->size());
+        if (!this->field_.at(pt).isFree()) {
+            throw Forbidden() << "There is no free space for back move.";
+        }
         obj->backMove(
             this->field_,
             direction

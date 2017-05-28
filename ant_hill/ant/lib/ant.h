@@ -145,13 +145,11 @@ class DiscoveredCell
 public:
     DiscoveredCell() = default;
 
-    bool isFree() const {
-        return false;
-    }
-
 public:
     Map::EMaterial material = Map::EMaterial::Unknown;
 };
+
+std::ostream& operator<<(std::ostream& out, const DiscoveredCell& cell);
 
 class Location
 {
@@ -173,6 +171,9 @@ public:
             Map::Point(sectionSideSize/-2, sectionSideSize/-2)
         )
     {
+        auto body = snake_.getBody();
+        this->grid_.at(body[0]).material = Map::EMaterial::AntHead;
+        this->grid_.at(body[1]).material = Map::EMaterial::AntBody;
     }
 
     bool frontMove(
@@ -226,6 +227,10 @@ public:
         return resp.material;
     }
 
+    void printMap(std::ostream& out) {
+        Map::PrintToText(out, grid_);
+    }
+
 public:
     using FieldType = Map::Field<DiscoveredCell>;
     using SnakeType = Map::SnakeObj<FieldType>;
@@ -252,6 +257,10 @@ public:
     Scout& operator=(Scout&&) = default;
 
     bool run();
+
+    void printMap(std::ostream& out) {
+        location.printMap(out);
+    }
 
 private:
     void findTheWall();
