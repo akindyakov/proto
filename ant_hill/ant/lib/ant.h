@@ -178,13 +178,25 @@ public:
     bool frontMove(
         Map::RelativeDirection direction
     ) {
-        return false;
+        auto success = this->client_.frontMove(direction);
+        if (success) {
+            this->snake_.frontMove(grid_, direction);
+        } else {
+            this->lookTo(direction, 0);
+        }
+        return success;
     }
 
     bool backMove(
         Map::RelativeDirection direction
     ) {
-        return false;
+        auto success = this->client_.backMove(direction);
+        if (success) {
+            this->snake_.backMove(grid_, direction);
+        } else {
+            this->lookTo(direction, this->snake_.size());
+        }
+        return success;
     }
 
     bool pickUpFront(
@@ -197,11 +209,21 @@ public:
         return false;
     }
 
-    bool lookTo(
+    Map::EMaterial lookTo(
         Map::RelativeDirection direction
         , size_t segment
     ) {
-        return false;
+        auto resp = this->client_.lookTo(direction, segment);
+        if (resp.material != Map::EMaterial::Unknown) {
+            if (resp.ownerId.isValid()) {
+                // this is someone else
+                resp.material = Map::EMaterial::Unknown;
+            } else {
+                auto pt = this->snake_.lookTo(direction, segment);
+                grid_.at(pt).material = resp.material;
+            }
+        }
+        return resp.material;
     }
 
 public:
