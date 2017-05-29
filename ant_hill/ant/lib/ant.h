@@ -84,7 +84,7 @@ public:
 
     bool dropFront();
 
-    Map::EMaterial lookTo(
+    const DiscoveredCell& lookTo(
         Map::RelativeDirection direction
         , size_t segment = 0
     );

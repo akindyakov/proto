@@ -181,21 +181,22 @@ bool Location::dropFront() {
     return false;
 }
 
-Map::EMaterial Location::lookTo(
+const DiscoveredCell& Location::lookTo(
     Map::RelativeDirection direction
     , size_t segment
 ) {
+    auto pt = this->snake_.lookTo(direction, segment);
+    auto& cell = this->grid_.at(pt);
+
     auto resp = this->client_.lookTo(direction, segment);
     if (resp.material != Map::EMaterial::Unknown) {
         if (resp.ownerId.isValid()) {
             // this is someone else
-            resp.material = Map::EMaterial::Unknown;
-        } else {
-            auto pt = this->snake_.lookTo(direction, segment);
-            this->grid_.at(pt).material = resp.material;
+            // TODO: do smth to connect
         }
+        cell.material = resp.material;
     }
-    return resp.material;
+    return cell;
 }
 
 const DiscoveredCell& Location::mind(
@@ -234,7 +235,6 @@ bool Scout::run() {
             Map::RelativeDirection::Forward(),
             Map::RelativeDirection::Left(),
             Map::RelativeDirection::Right(),
-            Map::RelativeDirection::Backward(),
         }) {
             this->location.lookTo(dir);
         }

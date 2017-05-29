@@ -25,7 +25,7 @@ int main(int argn, char** argv) {
     try {
         while (ant.run()) {
             ant.printMap(std::cout);
-            std::this_thread::sleep_for(std::chrono::milliseconds{500});
+            std::this_thread::sleep_for(std::chrono::milliseconds{200});
         }
         //while (ant.run()) {
            //auto start = std::chrono::high_resolution_clock::now();
