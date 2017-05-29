@@ -229,6 +229,13 @@ void Scout::findTheWall() {
 void Scout::moveAlongTheWall() {
 }
 
+Map::Point
+Scout::findNearestMaterial(
+    Map::EMaterial what
+) {
+    return Map::Point(0, 0);
+}
+
 bool Scout::run() {
     try {
         for (const auto& dir : {
