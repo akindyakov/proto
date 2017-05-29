@@ -95,6 +95,13 @@ public:
 
     const Map::Point& whereAmI() const;
 
+    Map::Point
+    findMaterial(
+        Map::EMaterial what
+        , const Map::Point& where
+        , Map::Measure maxDist = 5
+    ) const;
+
     void printMap(std::ostream& out);
 
 public:
@@ -106,6 +113,9 @@ private:
     SnakeType snake_;
     FieldType grid_;
     Map::Chain<Map::RelativeDirection, Map::EMaterial> chain_;
+
+public:
+    static const DiscoveredCell UnknownCell;
 };
 
 class Scout

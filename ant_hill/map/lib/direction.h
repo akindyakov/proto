@@ -85,19 +85,22 @@ public:
 
     static Direction Diff(const Point& to, const Point& from);
 
-    constexpr const Point MovePoint(Point pt) const noexcept {
+    constexpr const Point MovePoint(
+        Point pt
+        , const Measure distance = 1
+    ) const noexcept {
         switch (compass_) {
             case north_:
-                pt.Y += 1;
+                pt.Y += distance;
                 break;
             case west_:
-                pt.X -= 1;
+                pt.X -= distance;
                 break;
             case south_:
-                pt.Y -= 1;
+                pt.Y -= distance;
                 break;
             case east_:
-                pt.X += 1;
+                pt.X += distance;
                 break;
         }
         return pt;

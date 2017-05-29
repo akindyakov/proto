@@ -4,8 +4,10 @@ PRODUCT = $(ABS_PRODUCT)/map/lib
 
 all: prepare $(PRODUCT)/libmap.a ut
 
-$(PRODUCT)/libmap.a: $(PRODUCT)/2d_field.o $(PRODUCT)/world.o $(PRODUCT)/map_symbols.o $(PRODUCT)/direction.o $(PRODUCT)/snake.o
+$(PRODUCT)/libmap.a: $(PRODUCT)/2d_field.o $(PRODUCT)/world.o $(PRODUCT)/map_symbols.o $(PRODUCT)/direction.o $(PRODUCT)/snake.o $(PRODUCT)/spiral.o
 	ar rcs $@ $^
+
+ut: $(PRODUCT)/2d_field_ut $(PRODUCT)/direction_ut $(PRODUCT)/world_ut $(PRODUCT)/snake_ut $(PRODUCT)/spiral_ut
 
 $(PRODUCT)/2d_field.o: 2d_field.h 2d_field.cpp
 	$(CC) -c -o $(PRODUCT)/2d_field.o \
@@ -23,8 +25,6 @@ $(PRODUCT)/world.o: world.cpp world.h direction.h map_symbols.h 2d_field.h
 
 $(PRODUCT)/snake.o: snake.cpp snake.h world.h chain.h
 	$(CC) -c -o $@ $<
-
-ut: $(PRODUCT)/2d_field_ut $(PRODUCT)/direction_ut $(PRODUCT)/world_ut $(PRODUCT)/snake_ut
 
 $(PRODUCT)/2d_field_ut.o: 2d_field_ut.cpp
 	$(CC) -c -o $@ $^
@@ -48,6 +48,16 @@ $(PRODUCT)/world_ut: $(PRODUCT)/world_ut.o $(PRODUCT)/libmap.a
 	$(CC) -o $@ $^
 
 $(PRODUCT)/snake_ut: $(PRODUCT)/snake_ut.o $(PRODUCT)/libmap.a
+	$(CC) -o $@ $^
+
+# spiral
+$(PRODUCT)/spiral.o: spiral.cpp spiral.h 2d_field.h
+	$(CC) -c -o $@ $<
+
+$(PRODUCT)/spiral_ut.o: spiral_ut.cpp spiral.h $(SRC_PATH)/tools/tests/ut.h
+	$(CC) -c -o $@ $<
+
+$(PRODUCT)/spiral_ut: $(PRODUCT)/spiral_ut.o $(PRODUCT)/libmap.a
 	$(CC) -o $@ $^
 
 clear:

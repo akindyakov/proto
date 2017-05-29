@@ -1,6 +1,7 @@
 #include "ant.h"
 
 #include <map/lib/map_symbols.h>
+#include <map/lib/spiral.h>
 
 #include <tools/exception.h>
 
@@ -199,10 +200,15 @@ const DiscoveredCell& Location::lookTo(
     return cell;
 }
 
+const DiscoveredCell Location::UnknownCell = DiscoveredCell{};
+
 const DiscoveredCell& Location::mind(
     const Map::Point& pt
 ) const {
-    return this->grid_.at(pt);
+    if (this->grid_.inRange(pt)) {
+        return this->grid_.at(pt);
+    }
+    return UnknownCell;
 }
 
 const Map::Point& Location::whereAmI() const {
@@ -230,10 +236,22 @@ void Scout::moveAlongTheWall() {
 }
 
 Map::Point
-Scout::findNearestMaterial(
+Location::findMaterial(
     Map::EMaterial what
-) {
-    return Map::Point(0, 0);
+    , const Map::Point& where
+    , Map::Measure maxDist
+) const {
+    auto spiral = Map::Spiral(where);
+    while (spiral.radius() != maxDist) {
+        auto pt = spiral.next();
+        if (
+            this->grid_.inRange(pt)
+            && what == this->grid_.at(pt).material
+        ) {
+            return pt;
+        }
+    }
+    return where;
 }
 
 bool Scout::run() {
