@@ -62,6 +62,7 @@ public:
 
     RelativeDirectionCurve getPose() const;
     std::vector<Point> getBody() const;
+    const Point& head() const;
 
 private:
     /**

@@ -153,6 +153,13 @@ std::vector<Point>
 }
 
 template<typename TField>
+const Point&
+    SnakeObj<TField>::head() const
+{
+    return this->head_;
+}
+
+template<typename TField>
 size_t
 SnakeObj<TField>::size() const {
     return tail_.size() + 1;
