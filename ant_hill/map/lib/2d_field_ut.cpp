@@ -89,6 +89,30 @@ void vectorStreamIO() {
     }
 }
 
+void inRangeFieldTest() {
+    std::cerr << " - inRangeFieldTest\n";
+    std::string text = R"FieldMap(<8,8>
+(0,0)
+........
+........
+........
+........
+........
+........
+........
+........
+)FieldMap";
+    auto in = std::istringstream(text);
+    auto field = Map::ScanFromText<Map::SimpleCell>(in);
+    ValidateEqual(field.inRange(Map::Point( 0, 0)), true);
+    ValidateEqual(field.inRange(Map::Point( 0, 1)), true);
+    ValidateEqual(field.inRange(Map::Point( 0, 3)), true);
+    ValidateEqual(field.inRange(Map::Point( 1, 0)), true);
+    ValidateEqual(field.inRange(Map::Point( 1, 1)), true);
+
+    ValidateEqual(field.inRange(Map::Point( 8, 5)), false);
+}
+
 void scanAndPrintField() {
     std::cerr << " - scanAndPrintField\n";
     std::string text = R"FieldMap(<10,10>
@@ -121,6 +145,7 @@ int main(int argn, char** argv) {
         std::cerr << "2d_field_ut:\n";
         pointStreamIO();
         vectorStreamIO();
+        inRangeFieldTest();
         scanAndPrintField();
         compareTest();
         std::cerr << std::endl;
