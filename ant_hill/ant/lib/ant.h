@@ -57,6 +57,7 @@ public:
 
 public:
     Map::EMaterial material = Map::EMaterial::Unknown;
+    bool locked;
 };
 
 std::ostream& operator<<(std::ostream& out, const DiscoveredCell& cell);
@@ -100,6 +101,12 @@ public:
         Map::EMaterial what
     ) const;
 
+    Map::Point
+    findFreeSpace(
+        const Map::Point& where
+        , Map::Measure maxDist
+    ) const;
+
     void printMap(std::ostream& out);
 
 public:
@@ -141,6 +148,13 @@ private:
     void moveAlongTheWall();
     bool followTheWay(
         const Map::RelativeDirectionCurve& way
+    );
+    bool discoverSomeSpace();
+
+    Map::RelativeDirectionCurve
+    findFreeSpace(
+        const Map::Point& where
+        , Map::Measure maxDist
     );
 
 private:

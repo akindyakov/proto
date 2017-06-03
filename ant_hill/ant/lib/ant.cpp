@@ -181,11 +181,19 @@ bool Location::backMove(
 bool Location::pickUpFront(
     Map::RelativeDirection direction
 ) {
-    return false;
+    auto success = this->client_.pickUpFront(direction);
+    if (success) {
+        this->snake_.pushFrontGrain(direction);
+    }
+    return success;
 }
 
 bool Location::dropFront() {
-    return false;
+    auto success = this->client_.dropFront();
+    if (success) {
+        this->snake_.popFrontGrain();
+    }
+    return success;
 }
 
 const DiscoveredCell& Location::lookTo(
@@ -241,39 +249,39 @@ void Scout::findTheWall() {
 void Scout::moveAlongTheWall() {
 }
 
-//Map::RelativeDirectionCurve
-//Location::findMaterial(
-//    Map::EMaterial what
-//    , const Map::Point& where
-//    , Map::Measure maxDist
-//) const {
-//    auto spiral = Map::Spiral(where);
-//    while (spiral.radius() != maxDist) {
-//        auto pt = spiral.next();
-//        if (
-//            this->grid_.inRange(pt)
-//            && what == this->grid_.at(pt).material
-//        ) {
-//            return pt;
-//        }
-//    }
-//    return where;
-//}
+Map::Point
+Location::findFreeSpace(
+    const Map::Point& where
+    , Map::Measure maxDist
+) const {
+    auto spiral = Map::Spiral(where);
+    while (spiral.radius() != maxDist) {
+        auto pt = spiral.next();
+        if (
+            this->grid_.inRange(pt)
+            && this->grid_.at(pt).material == Map::EMaterial::EmptySpace
+        ) {
+            return pt;
+        }
+    }
+    return where;
+}
 
 Map::RelativeDirectionCurve
 Location::findMaterial(
     Map::EMaterial what
 ) const {
+    // FIXME
     auto cost = [what=what, &field=this->grid_](const Map::Point& pt) {
         return (
             field.at(pt).material == Map::EMaterial::EmptySpace
-            || field.at(pt).material == what
+            || (field.at(pt).material == what && !field.at(pt).locked)
             ? 1
             : -1
         );
     };
     auto check = [what, &field=this->grid_](const Map::Point& pt) {
-        return field.at(pt).material == what;
+        return field.at(pt).material == what && !field.at(pt).locked;
     };
     auto way = Map::findSmthOnTheField(
         this->whereAmI(),
@@ -306,7 +314,7 @@ bool Scout::followTheWay(
     return true;
 }
 
-bool Scout::run() {
+bool Scout::discoverSomeSpace() {
     while (true) {
         auto way = this->location.findMaterial(
             Map::EMaterial::Unknown
@@ -315,6 +323,22 @@ bool Scout::run() {
             followTheWay(way);
         } else {
             std::cerr << "There is nothing to discover\n";
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Scout::run() {
+    discoverSomeSpace();
+    while (true) {
+        auto way = this->location.findMaterial(
+            Map::EMaterial::Wood
+        );
+        if (!way.empty()) {
+            //pass
+        } else {
+            std::cerr << "There is nothing to find\n";
             return false;
         }
     }
