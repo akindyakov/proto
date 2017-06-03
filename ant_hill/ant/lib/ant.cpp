@@ -1,5 +1,6 @@
 #include "ant.h"
 
+#include <map/lib/find_a_way.h>
 #include <map/lib/map_symbols.h>
 #include <map/lib/spiral.h>
 
@@ -157,6 +158,7 @@ bool Location::frontMove(
     } else {
         this->lookTo(direction);
     }
+    printMap(std::cerr);
     return success;
 }
 
@@ -254,6 +256,48 @@ Location::findMaterial(
     return where;
 }
 
+Map::RelativeDirectionCurve
+Location::findAWay(
+    const Map::Point& to
+) const {
+    auto cost = [&field=this->grid_](const Map::Point& pt) {
+        return (
+            field.at(pt).material == Map::EMaterial::EmptySpace
+            ? 1
+            : field.size().cube()
+        );
+    };
+    auto curve = Map::findFreeWay(
+        this->whereAmI(),
+        to,
+        this->grid_.size(),
+        this->grid_.min(),
+        cost
+    );
+    return CurveToRelative(
+        curve,
+        this->snake_.forward()
+    );
+}
+
+bool Scout::followTheWay(
+    const Map::RelativeDirectionCurve& way
+) {
+    for (const auto& to : way) {
+        for (const auto& dir : {
+            Map::RelativeDirection::Forward(),
+            Map::RelativeDirection::Left(),
+            Map::RelativeDirection::Right(),
+        }) {
+            this->location.lookTo(dir);
+        }
+        if (!this->location.frontMove(to)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool Scout::run() {
     try {
         for (const auto& dir : {
@@ -263,14 +307,26 @@ bool Scout::run() {
         }) {
             this->location.lookTo(dir);
         }
-        for (const auto& dir : {
-            Map::RelativeDirection::Forward(),
-            Map::RelativeDirection::Left(),
-            Map::RelativeDirection::Right(),
-            Map::RelativeDirection::Backward(),
-        }) {
-            if (this->location.frontMove(dir)) {
-                return true;
+        while (true) {
+            auto iAmHere = this->location.whereAmI();
+            std::cerr << "I am here: " << iAmHere << std::endl;
+            auto pt = this->location.findMaterial(
+                Map::EMaterial::Unknown,
+                iAmHere,
+                10
+            );
+            if (pt != iAmHere) {
+                std::cerr << "Find a way to: " << pt << std::endl;
+                auto way = this->location.findAWay(pt);
+                std::cerr << "Go to: " << pt << std::endl;
+                if (!way.empty()) {
+                    followTheWay(way);
+                } else {
+                    std::cerr << "There is no way for that\n";
+                }
+            } else {
+                std::cerr << "All ways is known\n";
+                break;
             }
         }
     } catch (const jsonrpc::JsonRpcException& err) {

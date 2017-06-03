@@ -102,6 +102,11 @@ public:
         , Map::Measure maxDist = 5
     ) const;
 
+    Map::RelativeDirectionCurve
+    findAWay(
+        const Map::Point& to
+    ) const;
+
     void printMap(std::ostream& out);
 
 public:
@@ -141,6 +146,9 @@ public:
 private:
     void findTheWall();
     void moveAlongTheWall();
+    bool followTheWay(
+        const Map::RelativeDirectionCurve& way
+    );
 
 private:
     Location location;
