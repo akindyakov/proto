@@ -248,8 +248,15 @@ inline RelativeDirection constexpr operator - (
 using DirectionCurve = std::vector<Direction>;
 using RelativeDirectionCurve = std::vector<RelativeDirection>;
 
-RelativeDirectionCurve CurveToRelative(const DirectionCurve&);
-DirectionCurve RelativeCurveToCurve(const RelativeDirectionCurve&);
+RelativeDirectionCurve CurveToRelative(
+    const DirectionCurve& curve
+    , Direction start=Direction::North()
+);
+
+DirectionCurve RelativeCurveToCurve(
+    const RelativeDirectionCurve& curve
+    , Direction base=Direction::North()
+);
 
 struct Movement {
     Point To;

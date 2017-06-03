@@ -25,9 +25,12 @@ Movement::Movement(const Point& to, const Point& from)
 {
 }
 
-RelativeDirectionCurve CurveToRelative(const DirectionCurve& dc) {
+RelativeDirectionCurve CurveToRelative(
+    const DirectionCurve& dc
+    , Direction start
+) {
     auto ret = RelativeDirectionCurve{};
-    auto prev = dc.front();
+    auto prev = start;
     for (const auto& cur : dc) {
         ret.push_back(cur - prev);
         prev = cur;
@@ -35,9 +38,11 @@ RelativeDirectionCurve CurveToRelative(const DirectionCurve& dc) {
     return ret;
 }
 
-DirectionCurve RelativeCurveToCurve(const RelativeDirectionCurve& rdc) {
+DirectionCurve RelativeCurveToCurve(
+    const RelativeDirectionCurve& rdc
+    , Direction base
+) {
     auto ret = DirectionCurve{};
-    auto base = Map::Direction::North();
     for (const auto& rd : rdc) {
         base = rd.Turn(base);
         ret.push_back(base);
