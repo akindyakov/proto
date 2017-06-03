@@ -105,7 +105,7 @@ void World::move(
     std::lock_guard<std::mutex> lock(globalMutex);
     if (side == Side::Front) {
         auto pt = obj->lookTo(direction, 0);
-        if (!this->field_.at(pt).isFree()) {
+        if (!this->field_.inRange(pt) || !this->field_.at(pt).isFree()) {
             throw Forbidden() << "There is no free space for front move.";
         }
         obj->frontMove(
@@ -114,7 +114,7 @@ void World::move(
         );
     } else {
         auto pt = obj->lookTo(direction, obj->size());
-        if (!this->field_.at(pt).isFree()) {
+        if (!this->field_.inRange(pt) || !this->field_.at(pt).isFree()) {
             throw Forbidden() << "There is no free space for back move.";
         }
         obj->backMove(
@@ -157,6 +157,10 @@ const World::CellType& World::lookTo(
 ) const {
     auto obj = World::findObject(id);
     auto pt = obj->lookTo(to, segment);
+    static const auto forbidden = CellType{EMaterial::Forbidden};
+    if (!this->field_.inRange(pt)) {
+        return forbidden;
+    }
     return this->field_.at(pt);
 }
 

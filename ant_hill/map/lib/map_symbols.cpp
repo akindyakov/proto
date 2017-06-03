@@ -21,6 +21,7 @@ MapSymbols::MapSymbols()
         {EMaterial::AntHead,      'X'},
         {EMaterial::AntBody,      '#'},
         {EMaterial::Unknown,      '?'},
+        {EMaterial::Forbidden,    'F'},
     }
 {
     for (const auto& p : MaterialToChar) {

@@ -201,7 +201,7 @@ private:
                 << pt << " not in [" << this->min() << ", " << this->max() << "]"
             ;
         }
-        return static_cast<size_t>(signedIndex);
+        return index;
     }
 
 private:

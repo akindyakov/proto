@@ -102,7 +102,7 @@ LocationClient::LookInfo LocationClient::lookTo(
         );
     } catch (const jsonrpc::JsonRpcException&) {
         // TODO: log warnign here
-        std::cerr << "warning: empty [look_to] responce";
+        std::cerr << "warning: empty [look_to] responce\n";
     }
     return ret;
 }
@@ -122,7 +122,7 @@ Map::RelativeDirectionCurve LocationClient::getPose() {
         }
     } catch (const jsonrpc::JsonRpcException) {
         // TODO: log warnign here
-        std::cerr << "warning: empty [get_pose] responce";
+        std::cerr << "warning: empty [get_pose] responce\n";
     }
     return pose;
 }
@@ -307,27 +307,16 @@ bool Scout::followTheWay(
 }
 
 bool Scout::run() {
-    try {
-        for (const auto& dir : {
-            Map::RelativeDirection::Forward(),
-            Map::RelativeDirection::Left(),
-            Map::RelativeDirection::Right(),
-        }) {
-            this->location.lookTo(dir);
+    while (true) {
+        auto way = this->location.findMaterial(
+            Map::EMaterial::Unknown
+        );
+        if (!way.empty()) {
+            followTheWay(way);
+        } else {
+            std::cerr << "There is nothing to discover\n";
+            return false;
         }
-        while (true) {
-            auto way = this->location.findMaterial(
-                Map::EMaterial::Unknown
-            );
-            if (!way.empty()) {
-                followTheWay(way);
-            } else {
-                std::cerr << "There is nothing to discover\n";
-                return false;
-            }
-        }
-    } catch (const jsonrpc::JsonRpcException& err) {
-        std::cerr << err.what();
     }
     return false;
 }

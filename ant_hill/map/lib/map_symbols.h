@@ -16,6 +16,7 @@ enum class EMaterial {
     Water,
     AntHead,
     AntBody,
+    Forbidden,
     Unknown
 };
 

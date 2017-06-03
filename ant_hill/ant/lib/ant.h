@@ -64,7 +64,7 @@ std::ostream& operator<<(std::ostream& out, const DiscoveredCell& cell);
 class Location
 {
 public:
-    static constexpr auto sectionSideSize = Map::Measure{27};
+    static constexpr auto sectionSideSize = Map::Measure{51};
 
     explicit Location(
         LocationClient client
