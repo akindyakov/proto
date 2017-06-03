@@ -20,6 +20,18 @@ DirectionCurve findFreeWay(
     , CostAccounter cost = CostAccounter{}
 );
 
+template<
+    typename CostAccounter
+    , typename IsItOne
+>
+DirectionCurve findSmthOnTheField(
+    const Point& start
+    , const Vector& areaSize
+    , const Point& areaMin
+    , CostAccounter cost = CostAccounter{}
+    , IsItOne check = IsItOne{}
+);
+
 }  // namespace Map
 
 #include "find_a_way_impl.h"

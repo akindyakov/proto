@@ -23,7 +23,7 @@ void findASimpleWayTest() {
         return (
             field.at(pt).grain == Map::EMaterial::EmptySpace
             ? 1
-            : field.size().cube()
+            : -1
         );
     };
     const auto start = Map::Point(3, 4);
@@ -35,7 +35,7 @@ void findASimpleWayTest() {
         field.min(),
         simpleCost
     );
-    //*dbg*/ std::cerr << curve.size() << std::endl;
+    /*dbg*/ std::cerr << curve.size() << std::endl;
     auto pt = start;
     field.at(pt).grain = Map::EMaterial::AntHead;
     for (const auto& to : curve) {
@@ -43,7 +43,7 @@ void findASimpleWayTest() {
         ValidateEqual(field.at(pt).grain, Map::EMaterial::EmptySpace);
         field.at(pt).grain = Map::EMaterial::AntHead;
     }
-    //*dbg*/ Map::PrintToText(std::cerr, field);
+    /*dbg*/ Map::PrintToText(std::cerr, field);
     ValidateEqual(pt, finish);
 }
 
@@ -66,7 +66,7 @@ void findAWayTest() {
         return (
             field.at(pt).grain == Map::EMaterial::EmptySpace
             ? 1
-            : field.size().cube()
+            : -1
         );
     };
     const auto start = Map::Point(7, 5);
@@ -90,11 +90,58 @@ void findAWayTest() {
     ValidateEqual(pt, finish);
 }
 
+void findSmthOnFieldTest() {
+    std::cerr << " - findSmthOnTheFieldTest\n";
+    std::string text = R"FieldMap(<8,8>
+(0,0)
+.......w
+.s....w.
+..s.....
+...sw...
+...wa...
+..w..s..
+.w....s.
+.......s
+)FieldMap";
+    auto in = std::istringstream(text);
+    auto field = Map::ScanFromText<Map::SimpleCell>(in);
+    auto simpleCost = [&field](const Map::Point& pt) {
+        return (
+            field.at(pt).grain == Map::EMaterial::EmptySpace
+            ? 1
+            : -1
+        );
+    };
+    const auto start = Map::Point(7, 5);
+    const auto finish = Map::Point(3, 5);
+    auto check = [&finish](const Map::Point& pt) {
+        return pt == finish;
+    };
+    auto curve = Map::findSmthOnTheField(
+        start,
+        field.size(),
+        field.min(),
+        simpleCost,
+        check
+    );
+    /*dbg*/ std::cerr << curve.size() << std::endl;
+    auto pt = start;
+    field.at(pt).grain = Map::EMaterial::AntHead;
+    for (const auto& to : curve) {
+        pt = to.MovePoint(pt);
+        ValidateEqual(field.at(pt).grain, Map::EMaterial::EmptySpace);
+        field.at(pt).grain = Map::EMaterial::AntHead;
+    }
+    /*dbg*/ Map::PrintToText(std::cerr, field);
+    ValidateEqual(pt, finish);
+}
+
 int main() {
     try {
         std::cerr << "find_a_way_ut:\n";
         findASimpleWayTest();
         findAWayTest();
+        findSmthOnFieldTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << "Failed: " << except.what() << std::endl;

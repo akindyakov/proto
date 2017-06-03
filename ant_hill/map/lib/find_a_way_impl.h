@@ -20,6 +20,11 @@ struct PathfinderCell {
     bool visited = false;
 };
 
+std::ostream& operator<<(std::ostream& os, const PathfinderCell& cell) {
+    os << "[" << cell.weight << "]";
+    return os;
+}
+
 using Weights = Field<PathfinderCell>;
 
 inline DirectionCurve findAWayByWeights(
@@ -28,7 +33,7 @@ inline DirectionCurve findAWayByWeights(
     , const Point& finish
 ) {
     auto way = DirectionCurve{};
-    if (weights.size().cube() < weights.at(finish).weight) {
+    if (std::numeric_limits<Measure>::max() == weights.at(finish).weight) {
         return way;
     }
     auto toPt = finish;
@@ -54,51 +59,75 @@ inline DirectionCurve findAWayByWeights(
     return way;
 }
 
+}
+
 template<
     typename CostAccounter
+    , typename IsItOne
 >
-inline void buildWeights(
-    Weights& weights
-    , const Point& start
-    , const Point& finish
+DirectionCurve findSmthOnTheField(
+    const Point& start
+    , const Vector& areaSize
+    , const Point& areaMin
     , CostAccounter cost
+    , IsItOne check
 ) {
+    auto weights = Weights(
+        areaSize,
+        areaMin
+    );
+    if (!weights.inRange(start)) {
+        throw Exception() << "Start position is out of area range";
+    }
+
     auto queue = std::deque<Point>{};
     queue.push_back(start);
     weights.at(start).weight = 0;
-    weights.at(finish).visited = true;
-    auto minWeight = weights.size().cube();
+
+    auto finish = start;
+
+    auto minWeight = std::numeric_limits<Measure>::max();
 
     while (!queue.empty()) {
         const auto pt = queue.front();
         queue.pop_front();
         auto& cell = weights.at(pt);
-
-        if (!cell.visited && minWeight > cell.weight) {  // new way is not too long as before found?
+        if (!cell.visited) {
+            cell.visited = true;
+            if (check(pt)) {
+                if (cell.weight < minWeight) {
+                    finish = pt;
+                    minWeight = cell.weight;
+                }
+            }
             auto dir = Direction::North();
             while (dir.counter() == 0) {
                 auto nPt = dir.MovePoint(pt);
                 if (weights.inRange(nPt)) {
-                    auto& neighbor = weights.at(nPt);
-                    neighbor.weight = std::min(
-                        neighbor.weight,
-                        cell.weight + cost(nPt)
-                    );
-                    if (nPt == finish) {
-                        minWeight = std::min(neighbor.weight, minWeight);
-                    }
-                    if (!neighbor.visited && minWeight > cell.weight) {
-                        queue.push_back(nPt);
+                    auto nCost = cost(nPt);
+                    if (nCost > 0) {
+                        auto& neighbor = weights.at(nPt);
+                        neighbor.weight = std::min(
+                            neighbor.weight,
+                            cell.weight + nCost
+                        );
+                        if (!neighbor.visited) {
+                            queue.push_back(nPt);
+                        }
                     }
                 }
                 ++dir;
             }
         }
-        cell.visited = true;
     }
+    /*dbg*/ Map::PrintToText(std::cerr, weights);
+    return findAWayByWeights(
+        weights,
+        start,
+        finish
+    );
 }
 
-}
 
 template<
     typename CostAccounter
@@ -110,26 +139,15 @@ DirectionCurve findFreeWay(
     , const Point& areaMin
     , CostAccounter cost
 ) {
-    auto weights = Weights(
+    auto check = [&finish](const Map::Point& pt) {
+        return pt == finish;
+    };
+    return findSmthOnTheField(
+        start,
         areaSize,
-        areaMin
-    );
-    if (!weights.inRange(start)) {
-        throw Exception() << "Start position is out of area range";
-    }
-    if (!weights.inRange(finish)) {
-        throw Exception() << "Finish position is out of area range";
-    }
-    buildWeights(
-        weights,
-        start,
-        finish,
-        std::move(cost)
-    );
-    return findAWayByWeights(
-        weights,
-        start,
-        finish
+        areaMin,
+        std::move(cost),
+        std::move(check)
     );
 }
 
