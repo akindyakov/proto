@@ -32,8 +32,8 @@ public:
 
 public:
     constexpr Point(
-        Measure x,
-        Measure y
+        Measure x
+        , Measure y
     ) noexcept
         : X(x)
         , Y(y)
@@ -159,7 +159,13 @@ public:
     Field& operator=(Field&&) = default;
 
     bool inRange(const PointType& pt) const noexcept {
-        return signedInRange(pt) >= 0;
+        auto m = this->max();
+        return (
+            pt.X < m.X
+            && pt.Y < m.Y
+            && pt.X >= this->min_.X
+            && pt.Y >= this->min_.Y
+        );
     }
 
     CellType& at(const PointType& pt) {
@@ -187,18 +193,10 @@ private:
         return (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
     }
 
-    Measure signedInRange(const PointType& pt) const noexcept {
-        auto index = signedIndexByPoint(pt);
-        return (
-            static_cast<size_t>(index) < field_.size()
-            && pt.X >= this->min_.X
-            && pt.Y >= this->min_.Y
-        ) ? index : -1;
-    }
-
     size_t safeIndexByPoint(const PointType& pt) const {
-        auto signedIndex = signedInRange(pt);
-        if (signedIndex < 0) {
+        auto signedIndex = signedIndexByPoint(pt);
+        auto index = static_cast<size_t>(signedIndex);
+        if (signedIndex < 0 || index >= this->field_.size()) {
             throw Exception("Access by out range point: ")
                 << pt << " not in [" << this->min() << ", " << this->max() << "]"
             ;
