@@ -160,6 +160,13 @@ const Point&
 }
 
 template<typename TField>
+Direction
+    SnakeObj<TField>::forward() const
+{
+    return tail_.front();
+}
+
+template<typename TField>
 size_t
 SnakeObj<TField>::size() const {
     return tail_.size() + 1;

@@ -63,6 +63,7 @@ public:
     RelativeDirectionCurve getPose() const;
     std::vector<Point> getBody() const;
     const Point& head() const;
+    Direction forward() const;
 
 private:
     /**
