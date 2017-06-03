@@ -6,6 +6,9 @@
 
 #include <tools/exception.h>
 
+#include <thread>
+#include <chrono>
+
 
 namespace Ant {
 
@@ -158,6 +161,7 @@ bool Location::frontMove(
     } else {
         this->lookTo(direction);
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
     printMap(std::cerr);
     return success;
 }
@@ -237,45 +241,49 @@ void Scout::findTheWall() {
 void Scout::moveAlongTheWall() {
 }
 
-Map::Point
-Location::findMaterial(
-    Map::EMaterial what
-    , const Map::Point& where
-    , Map::Measure maxDist
-) const {
-    auto spiral = Map::Spiral(where);
-    while (spiral.radius() != maxDist) {
-        auto pt = spiral.next();
-        if (
-            this->grid_.inRange(pt)
-            && what == this->grid_.at(pt).material
-        ) {
-            return pt;
-        }
-    }
-    return where;
-}
+//Map::RelativeDirectionCurve
+//Location::findMaterial(
+//    Map::EMaterial what
+//    , const Map::Point& where
+//    , Map::Measure maxDist
+//) const {
+//    auto spiral = Map::Spiral(where);
+//    while (spiral.radius() != maxDist) {
+//        auto pt = spiral.next();
+//        if (
+//            this->grid_.inRange(pt)
+//            && what == this->grid_.at(pt).material
+//        ) {
+//            return pt;
+//        }
+//    }
+//    return where;
+//}
 
 Map::RelativeDirectionCurve
-Location::findAWay(
-    const Map::Point& to
+Location::findMaterial(
+    Map::EMaterial what
 ) const {
-    auto cost = [&field=this->grid_](const Map::Point& pt) {
+    auto cost = [what=what, &field=this->grid_](const Map::Point& pt) {
         return (
             field.at(pt).material == Map::EMaterial::EmptySpace
+            || field.at(pt).material == what
             ? 1
-            : field.size().cube()
+            : -1
         );
     };
-    auto curve = Map::findFreeWay(
+    auto check = [what, &field=this->grid_](const Map::Point& pt) {
+        return field.at(pt).material == what;
+    };
+    auto way = Map::findSmthOnTheField(
         this->whereAmI(),
-        to,
         this->grid_.size(),
         this->grid_.min(),
-        cost
+        std::move(cost),
+        std::move(check)
     );
     return CurveToRelative(
-        curve,
+        way,
         this->snake_.forward()
     );
 }
@@ -308,25 +316,14 @@ bool Scout::run() {
             this->location.lookTo(dir);
         }
         while (true) {
-            auto iAmHere = this->location.whereAmI();
-            std::cerr << "I am here: " << iAmHere << std::endl;
-            auto pt = this->location.findMaterial(
-                Map::EMaterial::Unknown,
-                iAmHere,
-                10
+            auto way = this->location.findMaterial(
+                Map::EMaterial::Unknown
             );
-            if (pt != iAmHere) {
-                std::cerr << "Find a way to: " << pt << std::endl;
-                auto way = this->location.findAWay(pt);
-                std::cerr << "Go to: " << pt << std::endl;
-                if (!way.empty()) {
-                    followTheWay(way);
-                } else {
-                    std::cerr << "There is no way for that\n";
-                }
+            if (!way.empty()) {
+                followTheWay(way);
             } else {
-                std::cerr << "All ways is known\n";
-                break;
+                std::cerr << "There is nothing to discover\n";
+                return false;
             }
         }
     } catch (const jsonrpc::JsonRpcException& err) {

@@ -120,7 +120,7 @@ DirectionCurve findSmthOnTheField(
             }
         }
     }
-    /*dbg*/ Map::PrintToText(std::cerr, weights);
+    //*dbg*/ Map::PrintToText(std::cerr, weights);
     return findAWayByWeights(
         weights,
         start,

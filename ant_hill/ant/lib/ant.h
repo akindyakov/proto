@@ -95,16 +95,9 @@ public:
 
     const Map::Point& whereAmI() const;
 
-    Map::Point
+    Map::RelativeDirectionCurve
     findMaterial(
         Map::EMaterial what
-        , const Map::Point& where
-        , Map::Measure maxDist = 5
-    ) const;
-
-    Map::RelativeDirectionCurve
-    findAWay(
-        const Map::Point& to
     ) const;
 
     void printMap(std::ostream& out);
