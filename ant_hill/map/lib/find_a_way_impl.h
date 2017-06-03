@@ -5,9 +5,9 @@ namespace Map {
 
 namespace {
 
-struct Cell_ {
-    explicit Cell_() = default;
-    explicit Cell_(
+struct PathfinderCell {
+    explicit PathfinderCell() = default;
+    explicit PathfinderCell(
         Measure weight_
         , bool visited_
     )
@@ -20,68 +20,13 @@ struct Cell_ {
     bool visited = false;
 };
 
-}
+using Weights = Field<PathfinderCell>;
 
-template<
-    typename CostAccounter
->
-DirectionCurve findFreeWay(
-    const Point& start
+inline DirectionCurve findAWayByWeights(
+    const Weights& weights
+    , const Point& start
     , const Point& finish
-    , const Vector& areaSize
-    , const Point& areaMin
-    , CostAccounter cost
 ) {
-    using Weights = Field<Cell_>;
-    auto weights = Weights(
-        areaSize,
-        areaMin
-    );
-    if (!weights.inRange(start)) {
-        throw Exception() << "Start position is out of area range";
-    }
-    if (!weights.inRange(finish)) {
-        throw Exception() << "Finish position is out of area range";
-    }
-    auto queue = std::deque<Point>{};
-    queue.push_back(start);
-    weights.at(start).weight = 0;
-    weights.at(finish).visited = true;
-    auto minWeight = weights.size().cube();
-
-    //*dbg*/ auto count = size_t{0};
-    while (!queue.empty()) {
-        const auto pt = queue.front();
-        queue.pop_front();
-        auto& cell = weights.at(pt);
-        //*dbg*/ std::cerr << "Pt: " << pt << "; weight: " << cell.weight << std::endl;
-
-        if (!cell.visited && minWeight > cell.weight) {  // new way is not too long as before found?
-            auto dir = Direction::North();
-            while (dir.counter() == 0) {
-                auto nPt = dir.MovePoint(pt);
-                //*dbg*/ std::cerr << "dir: " << dir << "; pt: " << pt << "; nPt: " << nPt << '\n';
-                if (weights.inRange(nPt)) {
-                    auto& neighbor = weights.at(nPt);
-                    neighbor.weight = std::min(
-                        neighbor.weight,
-                        cell.weight + cost(nPt)
-                    );
-                    //*dbg*/ std::cerr << "new weight: " << neighbor.weight << '\n';
-                    if (nPt == finish) {
-                        minWeight = std::min(neighbor.weight, minWeight);
-                    }
-                    if (!neighbor.visited && minWeight > cell.weight) {
-                        queue.push_back(nPt);
-                    }
-                }
-                ++dir;
-            }
-        }
-        cell.visited = true;
-        //*dbg*/ std::cerr << "end\n";
-        //*dbg*/ std::cerr << ++count << std::endl;
-    }
     auto way = DirectionCurve{};
     if (weights.size().cube() < weights.at(finish).weight) {
         return way;
@@ -107,6 +52,85 @@ DirectionCurve findFreeWay(
     }
     std::reverse(way.begin(), way.end());
     return way;
+}
+
+template<
+    typename CostAccounter
+>
+inline void buildWeights(
+    Weights& weights
+    , const Point& start
+    , const Point& finish
+    , CostAccounter cost
+) {
+    auto queue = std::deque<Point>{};
+    queue.push_back(start);
+    weights.at(start).weight = 0;
+    weights.at(finish).visited = true;
+    auto minWeight = weights.size().cube();
+
+    while (!queue.empty()) {
+        const auto pt = queue.front();
+        queue.pop_front();
+        auto& cell = weights.at(pt);
+
+        if (!cell.visited && minWeight > cell.weight) {  // new way is not too long as before found?
+            auto dir = Direction::North();
+            while (dir.counter() == 0) {
+                auto nPt = dir.MovePoint(pt);
+                if (weights.inRange(nPt)) {
+                    auto& neighbor = weights.at(nPt);
+                    neighbor.weight = std::min(
+                        neighbor.weight,
+                        cell.weight + cost(nPt)
+                    );
+                    if (nPt == finish) {
+                        minWeight = std::min(neighbor.weight, minWeight);
+                    }
+                    if (!neighbor.visited && minWeight > cell.weight) {
+                        queue.push_back(nPt);
+                    }
+                }
+                ++dir;
+            }
+        }
+        cell.visited = true;
+    }
+}
+
+}
+
+template<
+    typename CostAccounter
+>
+DirectionCurve findFreeWay(
+    const Point& start
+    , const Point& finish
+    , const Vector& areaSize
+    , const Point& areaMin
+    , CostAccounter cost
+) {
+    auto weights = Weights(
+        areaSize,
+        areaMin
+    );
+    if (!weights.inRange(start)) {
+        throw Exception() << "Start position is out of area range";
+    }
+    if (!weights.inRange(finish)) {
+        throw Exception() << "Finish position is out of area range";
+    }
+    buildWeights(
+        weights,
+        start,
+        finish,
+        std::move(cost)
+    );
+    return findAWayByWeights(
+        weights,
+        start,
+        finish
+    );
 }
 
 }  // namespace Map
