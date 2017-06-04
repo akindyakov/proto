@@ -124,7 +124,7 @@ void findSmthOnFieldTest() {
         simpleCost,
         check
     );
-    /*dbg*/ std::cerr << curve.size() << std::endl;
+    //*dbg*/ std::cerr << curve.size() << std::endl;
     auto pt = start;
     field.at(pt).grain = Map::EMaterial::AntHead;
     for (const auto& to : curve) {
@@ -132,16 +132,50 @@ void findSmthOnFieldTest() {
         ValidateEqual(field.at(pt).grain, Map::EMaterial::EmptySpace);
         field.at(pt).grain = Map::EMaterial::AntHead;
     }
-    /*dbg*/ Map::PrintToText(std::cerr, field);
+    //*dbg*/ Map::PrintToText(std::cerr, field);
     ValidateEqual(pt, finish);
 }
 
+void squaresFinderTest() {
+    std::cerr << " - squaresFinderTest\n";
+    std::string text = R"FieldMap(<10,10>
+(0,0)
+s...ssssss
+s...ss...s
+s...ss...s
+s........s
+s........s
+ssssssssss
+...sssssss
+...sssssss
+s....s...s
+ssssss...s
+)FieldMap";
+    auto in = std::istringstream(text);
+    auto field = Map::ScanFromText<Map::SimpleCell>(in);
+    auto check = [&field](const Map::Point& pt) {
+        return field.at(pt).grain == Map::EMaterial::EmptySpace;
+    };
+    auto finder = Map::makeSquaresFinder(
+        field.min(),
+        field.max(),
+        check
+    );
+    auto answer = std::vector<Map::Square>{};
+    while (auto sq = finder.next()) {
+        answer.push_back(*sq);
+        //std::cerr << sq->min << ' ' << sq->size << '\n';
+    }
+    ValidateEqual(answer.size(), size_t{6});
+
+}
 int main() {
     try {
         std::cerr << "find_a_way_ut:\n";
         findASimpleWayTest();
         findAWayTest();
         findSmthOnFieldTest();
+        squaresFinderTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << "Failed: " << except.what() << std::endl;

@@ -92,27 +92,24 @@ Point& operator+=(Point& self, const Vector& shift);
 Vector operator-(const Point& left, const Point& right);
 Point operator+(const Point& base, const Vector& shift);
 
-class Grain {
+class Square {
 public:
-    Grain(EMaterial material);
-
-    Grain(Grain&& other);
-    Grain(const Grain& other);
-    Grain& operator=(Grain&& other);
-    Grain& operator=(const Grain& other);
-
-    EMaterial SeeMaterial() const noexcept {
-        return Material;
+    explicit Square(Vector size_, Point min_=Point{0, 0})
+        : min(std::move(min_))
+        , size(std::move(size_))
+    {
     }
 
-    bool IsNone() const {
-        return Material == EMaterial::EmptySpace;
+    const Point max() const noexcept {
+        return this->min + this->size;
     }
 
-private:
-
-    EMaterial Material;
+public:
+    Point min;
+    Vector size;
 };
+
+bool operator!=(const Square& first, const Square& second);
 
 struct SimpleCell {
     explicit SimpleCell() = default;

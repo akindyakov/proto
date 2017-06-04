@@ -40,31 +40,6 @@ Point operator+(const Point& base, const Vector& shift) {
     );
 }
 
-Grain::Grain(EMaterial material)
-    : Material(material)
-{
-}
-
-Grain::Grain(Grain&& other)
-    : Material(other.Material)
-{
-}
-
-Grain::Grain(const Grain& other)
-    : Material(other.Material)
-{
-}
-
-Grain& Grain::operator=(Grain&& other) {
-    Material = other.Material;
-    return *this;
-}
-
-Grain& Grain::operator=(const Grain& other) {
-    Material = other.Material;
-    return *this;
-}
-
 std::ostream& operator<<(std::ostream& out, const SimpleCell& cell) {
     out << GetSymbolMap().GetSymbol(cell.grain);
     return out;
