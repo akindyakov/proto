@@ -1,5 +1,5 @@
-product/
+**/product/**
 
-doc/*.html
-doc/*.pdf
-a.out
+doc/**.html
+doc/**.pdf
+**/a.out
