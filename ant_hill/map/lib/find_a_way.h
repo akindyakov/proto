@@ -71,7 +71,11 @@ SquaresFinder<Accepter> makeSquaresFinder(
     , Point areaMax
     , Accepter accepter = Accepter{}
 ) {
-    return SquaresFinder<Accepter>(std::move(areaMin), std::move(areaMax), std::move(accepter));
+    return SquaresFinder<Accepter>(
+        std::move(areaMin),
+        std::move(areaMax),
+        std::move(accepter)
+    );
 }
 
 }  // namespace Map
