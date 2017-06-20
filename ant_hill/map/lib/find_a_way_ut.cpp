@@ -1,6 +1,6 @@
 #include "find_a_way.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 #include <sstream>
@@ -35,16 +35,16 @@ void findASimpleWayTest() {
         field.min(),
         simpleCost
     );
-    /*dbg*/ std::cerr << curve.size() << std::endl;
+    //*dbg*/ std::cerr << curve.size() << std::endl;
     auto pt = start;
     field.at(pt).grain = Map::EMaterial::AntHead;
     for (const auto& to : curve) {
         pt = to.MovePoint(pt);
-        ValidateEqual(field.at(pt).grain, Map::EMaterial::EmptySpace);
+        UT_ASSERT_EQUAL(field.at(pt).grain, Map::EMaterial::EmptySpace);
         field.at(pt).grain = Map::EMaterial::AntHead;
     }
-    /*dbg*/ Map::PrintToText(std::cerr, field);
-    ValidateEqual(pt, finish);
+    //*dbg*/ Map::PrintToText(std::cerr, field);
+    UT_ASSERT_EQUAL(pt, finish);
 }
 
 void findAWayTest() {
@@ -83,11 +83,11 @@ void findAWayTest() {
     field.at(pt).grain = Map::EMaterial::AntHead;
     for (const auto& to : curve) {
         pt = to.MovePoint(pt);
-        ValidateEqual(field.at(pt).grain, Map::EMaterial::EmptySpace);
+        UT_ASSERT_EQUAL(field.at(pt).grain, Map::EMaterial::EmptySpace);
         field.at(pt).grain = Map::EMaterial::AntHead;
     }
     //*dbg*/ Map::PrintToText(std::cerr, field);
-    ValidateEqual(pt, finish);
+    UT_ASSERT_EQUAL(pt, finish);
 }
 
 void findSmthOnFieldTest() {
@@ -129,11 +129,11 @@ void findSmthOnFieldTest() {
     field.at(pt).grain = Map::EMaterial::AntHead;
     for (const auto& to : curve) {
         pt = to.MovePoint(pt);
-        ValidateEqual(field.at(pt).grain, Map::EMaterial::EmptySpace);
+        UT_ASSERT_EQUAL(field.at(pt).grain, Map::EMaterial::EmptySpace);
         field.at(pt).grain = Map::EMaterial::AntHead;
     }
     //*dbg*/ Map::PrintToText(std::cerr, field);
-    ValidateEqual(pt, finish);
+    UT_ASSERT_EQUAL(pt, finish);
 }
 
 void squaresFinderTest() {
@@ -162,11 +162,23 @@ ssssss...s
         check
     );
     auto answer = std::vector<Map::Square>{};
-    while (auto sq = finder.next()) {
+    auto rightAnswer = std::vector<Map::Square>{
+        Map::Square(Map::Vector(2,4), Map::Point(1,0)),
+        Map::Square(Map::Vector(1,1), Map::Point(4,3)),
+        Map::Square(Map::Vector(2,3), Map::Point(6,1)),
+        Map::Square(Map::Vector(2,1), Map::Point(0,6)),
+        Map::Square(Map::Vector(3,0), Map::Point(1,8)),
+        Map::Square(Map::Vector(2,1), Map::Point(6,8)),
+    };
+    for (const auto& rightSquare : rightAnswer) {
+    //while (auto sq = finder.next()) {
+        auto sq = finder.next();
+        UT_ASSERT_NOT_EQUAL(sq, nullptr);
+        UT_ASSERT_EQUAL(*sq, rightSquare);
         answer.push_back(*sq);
         //std::cerr << sq->min << ' ' << sq->size << '\n';
     }
-    ValidateEqual(answer.size(), size_t{6});
+    UT_ASSERT_EQUAL(answer.size(), size_t{6});
 
 }
 int main() {

@@ -26,3 +26,13 @@ public:
             __LINE__ \
         ) \
     ); \
+
+#define UT_ASSERT_NOT_EQUAL(value, gold) \
+    Tools::validateNotEqual( \
+        value, \
+        gold, \
+        UTFailure( \
+            __FILE__, \
+            __LINE__ \
+        ) \
+    ); \
