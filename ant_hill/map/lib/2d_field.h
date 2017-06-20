@@ -109,7 +109,8 @@ public:
     Vector size;
 };
 
-bool operator!=(const Square& first, const Square& second);
+bool operator==(const Square& first, const Square& second);
+std::ostream& operator<<(std::ostream& out, const Square& square);
 
 struct SimpleCell {
     explicit SimpleCell() = default;

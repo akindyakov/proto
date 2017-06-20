@@ -52,6 +52,22 @@ std::istream& operator>>(std::istream& in, SimpleCell& cell) {
     return in;
 }
 
+bool operator==(const Square& first, const Square& second) {
+    return (
+        first.min == second.min
+        && first.size == second.size
+    );
+}
+
+std::ostream& operator<<(std::ostream& out, const Square& square) {
+    out << "(map-square "
+        << square.min
+        << " "
+        << square.size
+        << ")";
+    return out;
+}
+
 namespace {
     static constexpr auto DimensionsDelimiter = ',';
     static constexpr auto PointLeftBrace = '(';
