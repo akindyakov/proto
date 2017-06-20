@@ -16,10 +16,13 @@ inline void Validate(
     }
 }
 
-template<typename T>
+template<
+    typename FirstT
+    , typename SecondT
+>
 inline void ValidateEqual(
-    const T& value
-    , const T& other
+    const FirstT& value
+    , const SecondT& other
 ) {
     if (!(value == other)) {
         throw Exception()
@@ -28,10 +31,13 @@ inline void ValidateEqual(
     }
 }
 
-template<typename T>
+template<
+    typename FirstT
+    , typename SecondT
+>
 inline void ValidateNotEqual(
-    const T& value
-    , const T& other
+    const FirstT& value
+    , const SecondT& other
 ) {
     if (!(value != other)) {
         throw Exception()
@@ -39,4 +45,3 @@ inline void ValidateNotEqual(
         ;
     }
 }
-
