@@ -1,6 +1,6 @@
 PRODUCT := "$(ABS_PRODUCT)/tools"
 
-TARGETS := traits
+TARGETS := traits str
 
 .PHONY: all prepare $(TARGETS)
 
