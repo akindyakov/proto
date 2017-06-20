@@ -30,7 +30,7 @@ void userNotPrintableTypeTest() {
     std::cerr << " - userNotPrintableTypeTest\n";
     auto ans = Tools::toString(UserTypeNotPrintable{});
     auto rightAns = std::string("<not printable>");
-    ValidateEqual(ans, rightAns);
+    UT_ASSERT_EQUAL(ans, rightAns);
 }
 
 void builtinTypesTest() {
@@ -38,17 +38,17 @@ void builtinTypesTest() {
     {
         auto ans = Tools::toString(16);
         auto rightAns = std::string("16");
-        ValidateEqual(ans, rightAns);
+        UT_ASSERT_EQUAL(ans, rightAns);
     }
     {
         auto ans = Tools::toString(-11);
         auto rightAns = std::string("-11");
-        ValidateEqual(ans, rightAns);
+        UT_ASSERT_EQUAL(ans, rightAns);
     }
     {
         auto ans = Tools::toString(-0.99);
         auto rightAns = std::string("-0.99");
-        ValidateEqual(ans, rightAns);
+        UT_ASSERT_EQUAL(ans, rightAns);
     }
 }
 
