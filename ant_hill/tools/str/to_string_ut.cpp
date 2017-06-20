@@ -1,6 +1,7 @@
 #include "to_string.h"
 
 #include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 #include <sstream>
@@ -22,7 +23,7 @@ void userPrintableTypeTest() {
     std::cerr << " - userPrintableTypeTest\n";
     auto ans = Tools::toString(UserTypePrintable{});
     auto rightAns = std::string("<printable user type>");
-    ValidateEqual(ans, rightAns);
+    UT_ASSERT_EQUAL(ans, rightAns);
 }
 
 void userNotPrintableTypeTest() {
