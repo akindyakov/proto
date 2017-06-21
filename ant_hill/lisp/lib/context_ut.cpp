@@ -1,6 +1,6 @@
 #include "context.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 
@@ -10,35 +10,35 @@ void singleFunctionsTest() {
     auto loop = Lisp::Context{};
     {
         auto v = loop.eval(" ( + 2 98 -1) ");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{99}
         );
     }
     {
         auto v = loop.eval(" ( + -2.0 8 1) ");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Float>(),
             Lisp::Float{7.0}
         );
     }
     {
         auto v = loop.eval(" ( / -2.0 2 ) ");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Float>(),
             Lisp::Float{-1.0}
         );
     }
     {
         auto v = loop.eval(" ( * 2 4 12 -1) ");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{-96}
         );
     }
     {
         auto v = loop.eval(" (abs -11) ");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{11}
         );
@@ -50,7 +50,7 @@ void nestedFunctionsTest() {
     auto loop = Lisp::Context{};
     {
         auto v = loop.eval(" ( + 2 (* 2 3) (/ 3 2 ) ) ");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{9}
         );
@@ -69,7 +69,7 @@ void nestedFunctionsTest() {
 )
 )FieldMap";
         auto v = loop.eval(exp);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{2}
         );
@@ -92,14 +92,14 @@ void defineFuncTest() {
     loop.eval_all(exp);
     {
         auto v = loop.eval("(_dup 3)");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{6}
         );
     }
     {
         auto v = loop.eval("(+plus 197 804)");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{1001}
         );
@@ -124,7 +124,7 @@ void defineRecursiveFuncTest() {
     {
         loop.eval(exp);
         auto v = loop.eval("(_fib 2)");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{1}
         );
@@ -132,7 +132,7 @@ void defineRecursiveFuncTest() {
     {
         loop.eval(exp);
         auto v = loop.eval("(_fib 4)");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{3}
         );
@@ -140,7 +140,7 @@ void defineRecursiveFuncTest() {
     {
         loop.eval(exp);
         auto v = loop.eval("(_fib 19)");
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             v.get<Lisp::Integer>(),
             Lisp::Integer{4181}
         );

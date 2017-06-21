@@ -1,6 +1,6 @@
 #include "is_printable.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 #include <sstream>

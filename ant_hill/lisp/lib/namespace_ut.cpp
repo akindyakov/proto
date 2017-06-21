@@ -1,6 +1,6 @@
 #include "namespace.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 
@@ -8,16 +8,16 @@ void addNameTest() {
     std::cerr << " - addNameTest\n";
     auto env = Lisp::Namespace::createGlobal();
     auto& v = env.add("first", Lisp::Cell(Lisp::Integer{243}));
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         v.get<Lisp::Integer>(),
         Lisp::Integer{243}
     );
     auto& vv = env.add("first", Lisp::Cell(Lisp::Integer{9126}));
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         vv.get<Lisp::Integer>(),
         Lisp::Integer{9126}
     );
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         env.find("first").get<Lisp::Integer>(),
         Lisp::Integer{9126}
     );

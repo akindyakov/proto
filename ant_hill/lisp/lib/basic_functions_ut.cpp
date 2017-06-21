@@ -1,6 +1,6 @@
 #include "basic_functions.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 
@@ -14,7 +14,7 @@ void ifTest() {
             Lisp::Cell{Lisp::Integer{397}},
             Lisp::Cell{Lisp::Integer{123}},
         });
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{397});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{397});
     }
     {
         auto ans = if_.call({
@@ -22,7 +22,7 @@ void ifTest() {
             Lisp::Cell{Lisp::Integer{927}},
             Lisp::Cell{Lisp::Integer{923}},
         });
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{927});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{927});
     }
 }
 
@@ -33,14 +33,14 @@ void lessTest() {
         auto ans = less.call({
             Lisp::Cell{Lisp::Integer{0}},
         });
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::True.get<Lisp::Integer>());
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::True.get<Lisp::Integer>());
     }
     {
         auto ans = less.call({
             Lisp::Cell{Lisp::Integer{1}},
             Lisp::Cell{Lisp::Integer{0}},
         });
-        ValidateEqual(ans.is<Lisp::Nil>(), true);
+        UT_ASSERT_EQUAL(ans.is<Lisp::Nil>(), true);
     }
     {
         auto ans = less.call({
@@ -50,7 +50,7 @@ void lessTest() {
             Lisp::Cell{Lisp::Integer{4}},
             Lisp::Cell{Lisp::Integer{5}},
         });
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::True.get<Lisp::Integer>());
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::True.get<Lisp::Integer>());
     }
     {
         auto ans = less.call({
@@ -59,7 +59,7 @@ void lessTest() {
             Lisp::Cell{Lisp::Float{1.99}},
             Lisp::Cell{Lisp::Integer{4}},
         });
-        ValidateEqual(ans.is<Lisp::Nil>(), true);
+        UT_ASSERT_EQUAL(ans.is<Lisp::Nil>(), true);
     }
 }
 
@@ -70,31 +70,31 @@ void notTest() {
         auto ans = less.call({
             Lisp::Cell{Lisp::Nil{}},
         });
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::True.get<Lisp::Integer>());
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::True.get<Lisp::Integer>());
     }
     {
         auto ans = less.call({
             Lisp::Cell{Lisp::True},
         });
-        ValidateEqual(ans.is<Lisp::Nil>(), true);
+        UT_ASSERT_EQUAL(ans.is<Lisp::Nil>(), true);
     }
     {
         auto ans = less.call({
             Lisp::Cell{Lisp::Integer{89}},
         });
-        ValidateEqual(ans.is<Lisp::Nil>(), true);
+        UT_ASSERT_EQUAL(ans.is<Lisp::Nil>(), true);
     }
     {
         auto ans = less.call({
             Lisp::Cell{Lisp::Float{13.412}},
         });
-        ValidateEqual(ans.is<Lisp::Nil>(), true);
+        UT_ASSERT_EQUAL(ans.is<Lisp::Nil>(), true);
     }
     {
         auto ans = less.call({
             Lisp::Cell{Lisp::String{"rose rain"}},
         });
-        ValidateEqual(ans.is<Lisp::Nil>(), true);
+        UT_ASSERT_EQUAL(ans.is<Lisp::Nil>(), true);
     }
 }
 

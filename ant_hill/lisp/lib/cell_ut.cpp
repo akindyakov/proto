@@ -1,12 +1,12 @@
 #include "cell.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 
 void nilTest() {
     std::cerr << " - nilTest\n";
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         Lisp::Nil{} == Lisp::Nil{},
         true
     );
@@ -15,7 +15,7 @@ void nilTest() {
 template<typename T>
 void checkTagTempl() {
     auto v = Lisp::Cell(T{});
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         static_cast<int>(v.tag()),
         static_cast<int>(Lisp::Cell::tagOf<T>())
     );
@@ -36,7 +36,7 @@ void cellCheckTypeTag() {
 template<typename T>
 void checkCellGet(const T& bv) {
     auto v = Lisp::Cell(bv);
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         v.get<T>(),
         bv
     );
@@ -52,19 +52,19 @@ void cellGet() {
 
 void cellToStringTest() {
     std::cerr << " - cellToStringTest\n";
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         Lisp::toString(Lisp::Integer{999223}),
         std::string("999223")
     );
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         Lisp::toString(Lisp::Float{342.341000}),
         std::string("342.341000")
     );
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         Lisp::toString(Lisp::Symbol{'@'}),
         std::string("#\\@")
     );
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         Lisp::toString(Lisp::String{"How do you define real?"}),
         std::string("\"How do you define real?\"")
     );

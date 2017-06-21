@@ -1,7 +1,9 @@
+#include "world.h"
+
+#include <tools/tests/assert.h>
+
 #include <iostream>
 #include <vector>
-
-#include "world.h"
 
 
 void appearTest() {
@@ -36,7 +38,7 @@ a....
 )FieldMap";
         auto out = std::ostringstream();
         Map::PrintToText(out, field);
-        ValidateEqual(rightAnswer, out.str());
+        UT_ASSERT_EQUAL(rightAnswer, out.str());
     }
     {
         std::string text = R"FieldMap(<5,4>
@@ -62,7 +64,7 @@ iiaii
 )FieldMap";
         auto out = std::ostringstream();
         Map::PrintToText(out, field);
-        ValidateEqual(rightAnswer, out.str());
+        UT_ASSERT_EQUAL(rightAnswer, out.str());
     }
 }
 

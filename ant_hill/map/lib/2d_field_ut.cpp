@@ -1,6 +1,6 @@
 #include "2d_field.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 #include <sstream>
@@ -8,38 +8,38 @@
 
 void compareTest() {
     std::cerr << " - compareTest\n";
-    ValidateEqual(
-        Map::Point{-12, 317},
-        Map::Point{-12, 317}
+    UT_ASSERT_EQUAL(
+        Map::Point(-12, 317),
+        Map::Point(-12, 317)
     );
-    ValidateNotEqual(
-        Map::Point{12, 317},
-        Map::Point{-12, 317}
+    UT_ASSERT_NOT_EQUAL(
+        Map::Point(12, 317),
+        Map::Point(-12, 317)
     );
-    ValidateNotEqual(
-        Map::Point{12, 17},
-        Map::Point{-12, 317}
+    UT_ASSERT_NOT_EQUAL(
+        Map::Point(12, 17),
+        Map::Point(-12, 317)
     );
-    ValidateNotEqual(
-        Map::Point{12, 17},
-        Map::Point{12, 7}
+    UT_ASSERT_NOT_EQUAL(
+        Map::Point(12, 17),
+        Map::Point(12, 7)
     );
 
-    ValidateEqual(
-        Map::Vector{-12, 317},
-        Map::Vector{-12, 317}
+    UT_ASSERT_EQUAL(
+        Map::Vector(-12, 317),
+        Map::Vector(-12, 317)
     );
-    ValidateNotEqual(
-        Map::Vector{12, 317},
-        Map::Vector{-12, 317}
+    UT_ASSERT_NOT_EQUAL(
+        Map::Vector(12, 317),
+        Map::Vector(-12, 317)
     );
-    ValidateNotEqual(
-        Map::Vector{12, 17},
-        Map::Vector{-12, 317}
+    UT_ASSERT_NOT_EQUAL(
+        Map::Vector(12, 17),
+        Map::Vector(-12, 317)
     );
-    ValidateNotEqual(
-        Map::Vector{12, 17},
-        Map::Vector{12, 7}
+    UT_ASSERT_NOT_EQUAL(
+        Map::Vector(12, 17),
+        Map::Vector(12, 7)
     );
 }
 
@@ -104,13 +104,13 @@ void inRangeFieldTest() {
 )FieldMap";
     auto in = std::istringstream(text);
     auto field = Map::ScanFromText<Map::SimpleCell>(in);
-    ValidateEqual(field.inRange(Map::Point( 0, 0)), true);
-    ValidateEqual(field.inRange(Map::Point( 0, 1)), true);
-    ValidateEqual(field.inRange(Map::Point( 0, 3)), true);
-    ValidateEqual(field.inRange(Map::Point( 1, 0)), true);
-    ValidateEqual(field.inRange(Map::Point( 1, 1)), true);
+    UT_ASSERT_EQUAL(field.inRange(Map::Point( 0, 0)), true);
+    UT_ASSERT_EQUAL(field.inRange(Map::Point( 0, 1)), true);
+    UT_ASSERT_EQUAL(field.inRange(Map::Point( 0, 3)), true);
+    UT_ASSERT_EQUAL(field.inRange(Map::Point( 1, 0)), true);
+    UT_ASSERT_EQUAL(field.inRange(Map::Point( 1, 1)), true);
 
-    ValidateEqual(field.inRange(Map::Point( 8, 5)), false);
+    UT_ASSERT_EQUAL(field.inRange(Map::Point( 8, 5)), false);
 }
 
 void scanAndPrintField() {
@@ -131,13 +131,13 @@ iw...m..si
     auto in = std::istringstream(text);
     auto field = Map::ScanFromText<Map::SimpleCell>(in);
     auto element = field.at(Map::Point(4, 6));
-    ValidateEqual(element.grain, Map::EMaterial::Water);
+    UT_ASSERT_EQUAL(element.grain, Map::EMaterial::Water);
 
     auto out = std::ostringstream();
     Map::PrintToText(out, field);
     auto outText = out.str();
 
-    ValidateEqual(text, outText);
+    UT_ASSERT_EQUAL(text, outText);
 }
 
 int main(int argn, char** argv) {

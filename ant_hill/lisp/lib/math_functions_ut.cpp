@@ -1,6 +1,6 @@
 #include "math_functions.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 
@@ -18,7 +18,7 @@ void sumTest() {
             Lisp::Cell(Lisp::Integer{-1}),
         };
         auto ans = sum.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{21});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{21});
     }
     {
         auto sum = Lisp::Func::Sum{};
@@ -28,7 +28,7 @@ void sumTest() {
             Lisp::Cell(Lisp::Integer{-1}),
         };
         auto ans = sum.call(args);
-        ValidateEqual(ans.get<Lisp::Float>(), Lisp::Float{2.0});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Float>(), Lisp::Float{2.0});
     }
 }
 
@@ -43,7 +43,7 @@ void productTest() {
             Lisp::Cell(Lisp::Integer{-1}),
         };
         auto ans = prod.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{-8});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{-8});
     }
     {
         auto prod = Lisp::Func::Product{};
@@ -53,7 +53,7 @@ void productTest() {
             Lisp::Cell(Lisp::Integer{-1}),
         };
         auto ans = prod.call(args);
-        ValidateEqual(ans.get<Lisp::Float>(), Lisp::Float{-2.0});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Float>(), Lisp::Float{-2.0});
     }
 }
 
@@ -66,7 +66,7 @@ void subtractTest() {
             Lisp::Cell(Lisp::Integer{-34}),
         };
         auto ans = sub.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{968});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{968});
     }
     {
         auto sub = Lisp::Func::Subtract{};
@@ -75,7 +75,7 @@ void subtractTest() {
             Lisp::Cell(Lisp::Integer{1}),
         };
         auto ans = sub.call(args);
-        ValidateEqual(ans.get<Lisp::Float>(), Lisp::Float{-124.0});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Float>(), Lisp::Float{-124.0});
     }
 }
 
@@ -88,7 +88,7 @@ void divideTest() {
             Lisp::Cell(Lisp::Integer{-64}),
         };
         auto ans = div.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{-2});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{-2});
     }
     {
         auto div = Lisp::Func::Division{};
@@ -97,7 +97,7 @@ void divideTest() {
             Lisp::Cell(Lisp::Integer{3}),
         };
         auto ans = div.call(args);
-        ValidateEqual(ans.get<Lisp::Float>(), Lisp::Float{-4.0});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Float>(), Lisp::Float{-4.0});
     }
 }
 
@@ -110,7 +110,7 @@ void remainderTest() {
             Lisp::Cell(Lisp::Integer{2}),
         };
         auto ans = rem.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{1});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{1});
     }
     {
         auto rem = Lisp::Func::Remainder{};
@@ -119,7 +119,7 @@ void remainderTest() {
             Lisp::Cell(Lisp::Integer{-3}),
         };
         auto ans = rem.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{3});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{3});
     }
 }
 
@@ -131,7 +131,7 @@ void absTest() {
             Lisp::Cell(Lisp::Integer{-5}),
         };
         auto ans = abs.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{5});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{5});
     }
     {
         auto abs = Lisp::Func::Abs{};
@@ -139,7 +139,7 @@ void absTest() {
             Lisp::Cell(Lisp::Integer{123}),
         };
         auto ans = abs.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{123});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{123});
     }
     {
         auto abs = Lisp::Func::Abs{};
@@ -147,7 +147,7 @@ void absTest() {
             Lisp::Cell(Lisp::Float{-123.9}),
         };
         auto ans = abs.call(args);
-        ValidateEqual(ans.get<Lisp::Float>(), Lisp::Float{123.9});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Float>(), Lisp::Float{123.9});
     }
 }
 
@@ -164,7 +164,7 @@ void maxTest() {
             Lisp::Cell(Lisp::Integer{-1}),
         };
         auto ans = max.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{9});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{9});
     }
     {
         auto max = Lisp::Func::Max{};
@@ -177,7 +177,7 @@ void maxTest() {
             Lisp::Cell(Lisp::Integer{-1}),
         };
         auto ans = max.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{389});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{389});
     }
     {
         auto max = Lisp::Func::Max{};
@@ -187,7 +187,7 @@ void maxTest() {
             Lisp::Cell(Lisp::Float{4.0}),
         };
         auto ans = max.call(args);
-        ValidateEqual(ans.get<Lisp::Float>(), Lisp::Float{4.0});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Float>(), Lisp::Float{4.0});
     }
 }
 
@@ -204,7 +204,7 @@ void minTest() {
             Lisp::Cell(Lisp::Integer{-1}),
         };
         auto ans = min.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{-6});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{-6});
     }
     {
         auto min = Lisp::Func::Min{};
@@ -217,7 +217,7 @@ void minTest() {
             Lisp::Cell(Lisp::Integer{-1}),
         };
         auto ans = min.call(args);
-        ValidateEqual(ans.get<Lisp::Integer>(), Lisp::Integer{-2876});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Integer>(), Lisp::Integer{-2876});
     }
     {
         auto min = Lisp::Func::Min{};
@@ -227,7 +227,7 @@ void minTest() {
             Lisp::Cell(Lisp::Float{1.0}),
         };
         auto ans = min.call(args);
-        ValidateEqual(ans.get<Lisp::Float>(), Lisp::Float{1.0});
+        UT_ASSERT_EQUAL(ans.get<Lisp::Float>(), Lisp::Float{1.0});
     }
 }
 

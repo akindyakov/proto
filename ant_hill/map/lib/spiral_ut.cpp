@@ -1,6 +1,6 @@
 #include "spiral.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 #include <sstream>
@@ -76,11 +76,11 @@ void spiralTest() {
         Map::Direction::North(),
         Map::Direction::North(),
     };
-    ValidateEqual(rightPoints.size(), points.size());
-    ValidateEqual(rightCurve.size(), curve.size());
+    UT_ASSERT_EQUAL(rightPoints.size(), points.size());
+    UT_ASSERT_EQUAL(rightCurve.size(), curve.size());
     for (size_t i = 0; i < rightPoints.size(); ++i) {
-        ValidateEqual(rightPoints[i], points[i]);
-        ValidateEqual(rightCurve[i], curve[i]);
+        UT_ASSERT_EQUAL(rightPoints[i], points[i]);
+        UT_ASSERT_EQUAL(rightCurve[i], curve[i]);
     }
 }
 

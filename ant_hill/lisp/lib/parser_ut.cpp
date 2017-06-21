@@ -1,6 +1,6 @@
 #include "parser.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 
@@ -11,35 +11,35 @@ void skipSpacesTest() {
         auto in = std::istringstream{strIn};
         Lisp::skipSpaces(in);
         char ans = in.get();
-        ValidateEqual(ans, 'f');
+        UT_ASSERT_EQUAL(ans, 'f');
     }
 }
 
 void charIsServiceTest() {
     std::cerr << " - charIsServiceTest\n";
-    ValidateEqual(Lisp::charIsService('('), true);
-    ValidateEqual(Lisp::charIsService(')'), true);
-    ValidateEqual(Lisp::charIsService(Lisp::ExprParser::CHAR_OPEN), true);
-    ValidateEqual(Lisp::charIsService(Lisp::ExprParser::CHAR_CLOSE), true);
-    ValidateEqual(Lisp::charIsService(' '), true);
-    ValidateEqual(Lisp::charIsService('\t'), true);
-    ValidateEqual(Lisp::charIsService('\n'), true);
-    ValidateEqual(Lisp::charIsService('\v'), true);
+    UT_ASSERT_EQUAL(Lisp::charIsService('('), true);
+    UT_ASSERT_EQUAL(Lisp::charIsService(')'), true);
+    UT_ASSERT_EQUAL(Lisp::charIsService(Lisp::ExprParser::CHAR_OPEN), true);
+    UT_ASSERT_EQUAL(Lisp::charIsService(Lisp::ExprParser::CHAR_CLOSE), true);
+    UT_ASSERT_EQUAL(Lisp::charIsService(' '), true);
+    UT_ASSERT_EQUAL(Lisp::charIsService('\t'), true);
+    UT_ASSERT_EQUAL(Lisp::charIsService('\n'), true);
+    UT_ASSERT_EQUAL(Lisp::charIsService('\v'), true);
 
-    ValidateEqual(Lisp::charIsService(','), false);
-    ValidateEqual(Lisp::charIsService('.'), false);
-    ValidateEqual(Lisp::charIsService(':'), false);
-    ValidateEqual(Lisp::charIsService('{'), false);
-    ValidateEqual(Lisp::charIsService('['), false);
-    ValidateEqual(Lisp::charIsService('$'), false);
-    ValidateEqual(Lisp::charIsService('-'), false);
-    ValidateEqual(Lisp::charIsService('+'), false);
+    UT_ASSERT_EQUAL(Lisp::charIsService(','), false);
+    UT_ASSERT_EQUAL(Lisp::charIsService('.'), false);
+    UT_ASSERT_EQUAL(Lisp::charIsService(':'), false);
+    UT_ASSERT_EQUAL(Lisp::charIsService('{'), false);
+    UT_ASSERT_EQUAL(Lisp::charIsService('['), false);
+    UT_ASSERT_EQUAL(Lisp::charIsService('$'), false);
+    UT_ASSERT_EQUAL(Lisp::charIsService('-'), false);
+    UT_ASSERT_EQUAL(Lisp::charIsService('+'), false);
 }
 
 void parseIntegerTest() {
     std::cerr << " - parseIntegerTest\n";
     auto cell = Lisp::RealNumberParser::parseInteger("123  ");
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         cell.get<Lisp::Integer>(),
         Lisp::Integer{123}
     );
@@ -48,7 +48,7 @@ void parseIntegerTest() {
 void parseFloatTest() {
     std::cerr << " - parseFloatTest\n";
     auto cell = Lisp::RealNumberParser::parseFloat("1.23  ");
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         cell.get<Lisp::Float>(),
         Lisp::Float{1.23}
     );
@@ -58,7 +58,7 @@ void parseRationalTest() {
     std::cerr << " - parseRationalTest\n";
     const auto str = std::string{"1/2  "};
     auto cell = Lisp::RealNumberParser::parseRational(str, str.find('/'));
-    ValidateEqual(
+    UT_ASSERT_EQUAL(
         cell.get<Lisp::Float>(),
         Lisp::Float{0.5}
     );
@@ -70,7 +70,7 @@ void readRealNumberTest() {
         auto text = std::string{"213180  \"\""};
         auto in = std::istringstream(text);
         auto cell = Lisp::RealNumberParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::Integer>(),
             Lisp::Integer{213180}
         );
@@ -79,7 +79,7 @@ void readRealNumberTest() {
         auto text = std::string{"-2928 5"};
         auto in = std::istringstream(text);
         auto cell = Lisp::RealNumberParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::Integer>(),
             Lisp::Integer{-2928}
         );
@@ -88,7 +88,7 @@ void readRealNumberTest() {
         auto text = std::string{"4.36  1"};
         auto in = std::istringstream(text);
         auto cell = Lisp::RealNumberParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::Float>(),
             Lisp::Float{4.36}
         );
@@ -97,7 +97,7 @@ void readRealNumberTest() {
         auto text = std::string{"-82.91  4"};
         auto in = std::istringstream(text);
         auto cell = Lisp::RealNumberParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::Float>(),
             Lisp::Float{-82.91}
         );
@@ -106,7 +106,7 @@ void readRealNumberTest() {
         auto text = std::string{"-1/2 1"};
         auto in = std::istringstream(text);
         auto cell = Lisp::RealNumberParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::Float>(),
             Lisp::Float{-0.5}
         );
@@ -115,7 +115,7 @@ void readRealNumberTest() {
         auto text = std::string{"1/8 3"};
         auto in = std::istringstream(text);
         auto cell = Lisp::RealNumberParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::Float>(),
             Lisp::Float{0.125}
         );
@@ -128,7 +128,7 @@ void readSimpleCharacterTest() {
         auto text = std::string{"#\\@ 3"};
         auto in = std::istringstream(text);
         auto cell = Lisp::SimpleCharacterParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::Symbol>(),
             Lisp::Symbol{'@'}
         );
@@ -137,7 +137,7 @@ void readSimpleCharacterTest() {
         auto text = std::string{"#\\\\  2"};
         auto in = std::istringstream(text);
         auto cell = Lisp::SimpleCharacterParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::Symbol>(),
             Lisp::Symbol{'\\'}
         );
@@ -146,7 +146,7 @@ void readSimpleCharacterTest() {
         auto text = std::string{"#\\$  1"};
         auto in = std::istringstream(text);
         auto cell = Lisp::SimpleCharacterParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::Symbol>(),
             Lisp::Symbol{'$'}
         );
@@ -159,7 +159,7 @@ void readStringValueTest() {
         auto text = std::string{"\"If you're talking about what you can feel, what you can smell, what you can taste and see, then real is simply electrical signals interpreted by your brain.\"  1 2 3"};
         auto in = std::istringstream(text);
         auto cell = Lisp::StringValueParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             cell.get<Lisp::String>(),
             Lisp::String{"If you're talking about what you can feel, what you can smell, what you can taste and see, then real is simply electrical signals interpreted by your brain."}
         );
@@ -172,7 +172,7 @@ void readNameTest() {
         auto text = std::string{"the-real"};
         auto in = std::istringstream(text);
         auto name = Lisp::NameParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             name,
             std::string{"the-real"}
         );
@@ -181,7 +181,7 @@ void readNameTest() {
         auto text = std::string{"Welcome-to_the*Desert@of the real"};
         auto in = std::istringstream(text);
         auto name = Lisp::NameParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             name,
             std::string{"Welcome-to_the*Desert@of"}
         );
@@ -192,23 +192,23 @@ void exprParserTest() {
     std::cerr << " - exprParserTest\n";
     {
         auto text = std::string{"()"};
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             Lisp::ExprParser::checkPrefix(text[0]),
             true
         );
         auto in = std::istringstream(text);
         auto ans = Lisp::ExprParser::read(in);
-        ValidateEqual(ans, text);
+        UT_ASSERT_EQUAL(ans, text);
     }
     {
         auto text = std::string{"(a b c -12 d 0.22 f) (eq 1 2)"};
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             Lisp::ExprParser::checkPrefix(text[0]),
             true
         );
         auto in = std::istringstream(text);
         auto ans = Lisp::ExprParser::read(in);
-        ValidateEqual(
+        UT_ASSERT_EQUAL(
             ans,
             std::string{"(a b c -12 d 0.22 f)"}
         );
@@ -222,14 +222,14 @@ void exprParseBeginEndTest() {
         auto in = std::istringstream{strIn};
         Lisp::ExprParser::readBegin(in);
         char ans = in.get();
-        ValidateEqual(ans, 'S');
+        UT_ASSERT_EQUAL(ans, 'S');
     }
     {
         auto strIn = "   \t \n\t\n \t)why?";
         auto in = std::istringstream{strIn};
         Lisp::ExprParser::readEnd(in);
         char ans = in.get();
-        ValidateEqual(ans, 'w');
+        UT_ASSERT_EQUAL(ans, 'w');
     }
 }
 

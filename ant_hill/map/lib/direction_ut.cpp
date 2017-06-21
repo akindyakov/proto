@@ -1,6 +1,6 @@
 #include "direction.h"
 
-#include <tools/tests/ut.h>
+#include <tools/tests/assert.h>
 
 #include <iostream>
 #include <sstream>
@@ -177,41 +177,41 @@ void directionInverse() {
     std::cerr << " - directionInverse\n";
     {
         auto dir = Map::Direction::North().Inverse();
-        Validate(dir, Map::Direction::South());
+        UT_ASSERT_EQUAL(dir, Map::Direction::South());
     }
     {
         auto dir = Map::Direction::West().Inverse();
-        Validate(dir, Map::Direction::East());
+        UT_ASSERT_EQUAL(dir, Map::Direction::East());
     }
     {
         auto dir = Map::Direction::South().Inverse();
-        Validate(dir, Map::Direction::North());
+        UT_ASSERT_EQUAL(dir, Map::Direction::North());
     }
     {
         auto dir = Map::Direction::East().Inverse();
-        Validate(dir, Map::Direction::West());
+        UT_ASSERT_EQUAL(dir, Map::Direction::West());
     }
 }
 
 void directionDiff() {
     std::cerr << " - directionDiff\n";
-    Validate(
+    UT_ASSERT_EQUAL(
         Map::Direction::Diff({0, 1}, {0, 0}),
         Map::Direction::North()
     );
-    Validate(
+    UT_ASSERT_EQUAL(
         Map::Direction::Diff({10, -99}, {10, -100}),
         Map::Direction::North()
     );
-    Validate(
+    UT_ASSERT_EQUAL(
         Map::Direction::Diff({0, 0}, {1, 0}),
         Map::Direction::West()
     );
-    Validate(
+    UT_ASSERT_EQUAL(
         Map::Direction::Diff({0, 0}, {0, 1}),
         Map::Direction::South()
     );
-    Validate(
+    UT_ASSERT_EQUAL(
         Map::Direction::Diff({2, 0}, {0, 0}),
         Map::Direction::East()
     );
@@ -219,21 +219,21 @@ void directionDiff() {
 
 void directionMovePoint() {
     std::cerr << " - directionMovePoint\n";
-    Validate(
+    UT_ASSERT_EQUAL(
         Map::Direction::East().MovePoint({1, 1}),
-        Map::Point{2, 1}
+        Map::Point(2, 1)
     );
-    Validate(
+    UT_ASSERT_EQUAL(
         Map::Direction::South().MovePoint({2, 2}),
-        Map::Point{2, 1}
+        Map::Point(2, 1)
     );
-    Validate(
+    UT_ASSERT_EQUAL(
         Map::Direction::West().MovePoint({3, 1}),
-        Map::Point{2, 1}
+        Map::Point(2, 1)
     );
-    Validate(
+    UT_ASSERT_EQUAL(
         Map::Direction::North().MovePoint({-4, -1}),
-        Map::Point{-4, 0}
+        Map::Point(-4, 0)
     );
 }
 
@@ -241,34 +241,34 @@ void relativeDirectionTurn() {
     std::cerr << " - relativeDirectionTurn\n";
     {
         auto dir = Map::Direction::North();
-        Validate(
+        UT_ASSERT_EQUAL(
             Map::RelativeDirection::Forward().Turn(dir),
             Map::Direction::North()
         );
-        Validate(
+        UT_ASSERT_EQUAL(
             Map::RelativeDirection::Backward().Turn(dir),
             Map::Direction::South()
         );
-        Validate(
+        UT_ASSERT_EQUAL(
             Map::RelativeDirection::Left().Turn(dir),
             Map::Direction::West()
         );
     }
     {
         auto dir = Map::Direction::East();
-        Validate(
+        UT_ASSERT_EQUAL(
             Map::RelativeDirection::Forward().Turn(dir),
             Map::Direction::East()
         );
-        Validate(
+        UT_ASSERT_EQUAL(
             Map::RelativeDirection::Backward().Turn(dir),
             Map::Direction::West()
         );
-        Validate(
+        UT_ASSERT_EQUAL(
             Map::RelativeDirection::Right().Turn(dir),
             Map::Direction::South()
         );
-        Validate(
+        UT_ASSERT_EQUAL(
             Map::RelativeDirection::Left().Turn(dir),
             Map::Direction::North()
         );
@@ -279,42 +279,42 @@ void directionSub() {
     std::cerr << " - directionSub\n";
     {
         auto rdir = Map::Direction::North() - Map::Direction::North();
-        Validate(
+        UT_ASSERT_EQUAL(
             rdir,
             Map::RelativeDirection::Forward()
         );
     }
     {
         auto rdir = Map::Direction::West() - Map::Direction::West();
-        Validate(
+        UT_ASSERT_EQUAL(
             rdir,
             Map::RelativeDirection::Forward()
         );
     }
     {
         auto rdir = Map::Direction::East() - Map::Direction::West();
-        Validate(
+        UT_ASSERT_EQUAL(
             rdir,
             Map::RelativeDirection::Backward()
         );
     }
     {
         auto rdir = Map::Direction::West() - Map::Direction::East();
-        Validate(
+        UT_ASSERT_EQUAL(
             rdir,
             Map::RelativeDirection::Backward()
         );
     }
     {
         auto rdir = Map::Direction::South() - Map::Direction::East();
-        Validate(
+        UT_ASSERT_EQUAL(
             rdir,
             Map::RelativeDirection::Right()
         );
     }
     {
         auto rdir = Map::Direction::South() - Map::Direction::West();
-        Validate(
+        UT_ASSERT_EQUAL(
             rdir,
             Map::RelativeDirection::Left()
         );
@@ -340,11 +340,11 @@ void curveToRelativeTest() {
         Map::RelativeDirection::Left(),
     };
     auto ans = Map::CurveToRelative(curve);
-    ValidateEqual(ans.size(), rightAns.size());
+    UT_ASSERT_EQUAL(ans.size(), rightAns.size());
     auto rit = rightAns.begin();
     auto ait = ans.begin();
     for (; ait != ans.end(); ++rit, ++ait) {
-        ValidateEqual(*ait, *rit);
+        UT_ASSERT_EQUAL(*ait, *rit);
     }
 }
 
@@ -369,11 +369,11 @@ void relativeCurveToCurveTest() {
         Map::Direction::East(),
     };
     auto ans = Map::RelativeCurveToCurve(relCurve);
-    ValidateEqual(ans.size(), rightAns.size());
+    UT_ASSERT_EQUAL(ans.size(), rightAns.size());
     auto rit = rightAns.begin();
     auto ait = ans.begin();
     for (; ait != ans.end(); ++rit, ++ait) {
-        ValidateEqual(*ait, *rit);
+        UT_ASSERT_EQUAL(*ait, *rit);
     }
 }
 
