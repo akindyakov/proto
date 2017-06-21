@@ -171,16 +171,15 @@ ssssss...s
         Map::Square(Map::Vector(2,1), Map::Point(6,8)),
     };
     for (const auto& rightSquare : rightAnswer) {
-    //while (auto sq = finder.next()) {
         auto sq = finder.next();
         UT_ASSERT_NOT_EQUAL(sq, nullptr);
         UT_ASSERT_EQUAL(*sq, rightSquare);
         answer.push_back(*sq);
-        //std::cerr << sq->min << ' ' << sq->size << '\n';
     }
-    UT_ASSERT_EQUAL(answer.size(), size_t{6});
+    UT_ASSERT_EQUAL(finder.next(), nullptr);
 
 }
+
 int main() {
     try {
         std::cerr << "find_a_way_ut:\n";
