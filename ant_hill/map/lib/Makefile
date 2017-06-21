@@ -54,7 +54,7 @@ $(PRODUCT)/snake_ut: $(PRODUCT)/snake_ut.o $(PRODUCT)/libmap.a
 $(PRODUCT)/spiral.o: spiral.cpp spiral.h 2d_field.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/spiral_ut.o: spiral_ut.cpp spiral.h $(SRC_PATH)/tools/tests/ut.h
+$(PRODUCT)/spiral_ut.o: spiral_ut.cpp spiral.h $(SRC_PATH)/tools/tests/assert.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/spiral_ut: $(PRODUCT)/spiral_ut.o $(PRODUCT)/libmap.a
@@ -64,7 +64,7 @@ $(PRODUCT)/spiral_ut: $(PRODUCT)/spiral_ut.o $(PRODUCT)/libmap.a
 $(PRODUCT)/find_a_way.o: find_a_way.cpp find_a_way.h find_a_way_impl.h 2d_field.h direction.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/find_a_way_ut.o: find_a_way_ut.cpp find_a_way.h find_a_way_impl.h $(SRC_PATH)/tools/tests/ut.h
+$(PRODUCT)/find_a_way_ut.o: find_a_way_ut.cpp find_a_way.h find_a_way_impl.h $(SRC_PATH)/tools/tests/assert.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/find_a_way_ut: $(PRODUCT)/find_a_way_ut.o $(PRODUCT)/libmap.a

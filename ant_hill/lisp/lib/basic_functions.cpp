@@ -2,7 +2,7 @@
 #include "context.h"
 #include "parser.h"
 
-#include <tools/tests/ut.h>
+#include <tools/validate.h>
 
 
 namespace Lisp {
@@ -44,7 +44,10 @@ public:
     }
 
     Cell call(Function::Args args) const override {
-        ValidateEqual(args.size(), argNames.size());
+        Tools::validateEqual(
+            args.size(), argNames.size(),
+            Error() << "Wrong arguments number. "
+        );
         auto local = cnt.isolateContext();
         auto nameIt = argNames.cbegin();
         for (auto& arg : args) {

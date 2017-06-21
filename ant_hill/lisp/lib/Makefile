@@ -16,7 +16,7 @@ $(PRODUCT)/cell.o: cell.cpp cell.h
 
 ut: $(PRODUCT)/cell_ut
 
-$(PRODUCT)/cell_ut.o: cell_ut.cpp cell.h $(SRC_PATH)/tools/tests/ut.h
+$(PRODUCT)/cell_ut.o: cell_ut.cpp cell.h $(SRC_PATH)/tools/tests/assert.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/cell_ut: $(PRODUCT)/cell_ut.o $(PRODUCT)/liblisp.a
@@ -26,7 +26,7 @@ $(PRODUCT)/cell_ut: $(PRODUCT)/cell_ut.o $(PRODUCT)/liblisp.a
 $(PRODUCT)/math_functions.o: math_functions.cpp math_functions.h cell.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/math_functions_ut.o: math_functions_ut.cpp math_functions.h cell.h $(SRC_PATH)/tools/tests/ut.h
+$(PRODUCT)/math_functions_ut.o: math_functions_ut.cpp math_functions.h cell.h $(SRC_PATH)/tools/tests/assert.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/math_functions_ut: $(PRODUCT)/math_functions_ut.o $(PRODUCT)/liblisp.a
@@ -36,7 +36,7 @@ $(PRODUCT)/math_functions_ut: $(PRODUCT)/math_functions_ut.o $(PRODUCT)/liblisp.
 $(PRODUCT)/basic_functions.o: basic_functions.cpp basic_functions.h cell.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/basic_functions_ut.o: basic_functions_ut.cpp basic_functions.h cell.h $(SRC_PATH)/tools/tests/ut.h
+$(PRODUCT)/basic_functions_ut.o: basic_functions_ut.cpp basic_functions.h cell.h $(SRC_PATH)/tools/tests/assert.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/basic_functions_ut: $(PRODUCT)/basic_functions_ut.o $(PRODUCT)/liblisp.a
@@ -46,7 +46,7 @@ $(PRODUCT)/basic_functions_ut: $(PRODUCT)/basic_functions_ut.o $(PRODUCT)/liblis
 $(PRODUCT)/parser.o: parser.cpp parser.h cell.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/parser_ut.o: parser_ut.cpp parser.h cell.h $(SRC_PATH)/tools/tests/ut.h
+$(PRODUCT)/parser_ut.o: parser_ut.cpp parser.h cell.h $(SRC_PATH)/tools/tests/assert.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/parser_ut: $(PRODUCT)/parser_ut.o $(PRODUCT)/liblisp.a
@@ -56,7 +56,7 @@ $(PRODUCT)/parser_ut: $(PRODUCT)/parser_ut.o $(PRODUCT)/liblisp.a
 $(PRODUCT)/namespace.o: namespace.cpp namespace.h cell.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/namespace_ut.o: namespace_ut.cpp namespace.h cell.h $(SRC_PATH)/tools/tests/ut.h
+$(PRODUCT)/namespace_ut.o: namespace_ut.cpp namespace.h cell.h $(SRC_PATH)/tools/tests/assert.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/namespace_ut: $(PRODUCT)/namespace_ut.o $(PRODUCT)/liblisp.a
@@ -66,7 +66,7 @@ $(PRODUCT)/namespace_ut: $(PRODUCT)/namespace_ut.o $(PRODUCT)/liblisp.a
 $(PRODUCT)/context.o: context.cpp context.h cell.h parser.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/context_ut.o: context_ut.cpp context.h $(SRC_PATH)/tools/tests/ut.h
+$(PRODUCT)/context_ut.o: context_ut.cpp context.h $(SRC_PATH)/tools/tests/assert.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/context_ut: $(PRODUCT)/context_ut.o $(PRODUCT)/liblisp.a

@@ -26,7 +26,11 @@ Field<TCell> ScanFromText(std::istream& is) {
                         std::numeric_limits<std::streamsize>::max(),
                         '\n'
                     );
-                    Validate(pt.X, field.min().X);
+                    Tools::validateEqual(
+                        pt.X,
+                        field.min().X,
+                        Exception() << "Unexpected end of line character"
+                    );
                 }
                 is >> field.at(pt);
             }

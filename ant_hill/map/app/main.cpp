@@ -1,8 +1,6 @@
 #include "args.h"
 #include "map_server.h"
 
-#include <tools/tests/ut.h>
-
 #include <fstream>
 #include <iostream>
 #include <sstream>

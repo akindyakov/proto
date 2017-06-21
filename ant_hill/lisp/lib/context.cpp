@@ -3,8 +3,6 @@
 #include "parser.h"
 #include "basic_functions.h"
 
-#include <tools/tests/ut.h>
-
 #include <cctype>
 
 

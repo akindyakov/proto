@@ -98,11 +98,20 @@ std::ostream& operator<<(std::ostream& os, const Vector& vect) {
 std::istream& operator>>(std::istream& is, Point& pt) {
     auto ch = Space;
     is >> std::skipws >> ch;
-    Validate(ch, PointLeftBrace);
+    Tools::validateEqual(
+        ch, PointLeftBrace,
+        Exception() << "Wrong begining character"
+    );
     is >> pt.X >> ch;
-    Validate(ch, DimensionsDelimiter);
+    Tools::validateEqual(
+        ch, DimensionsDelimiter,
+        Exception() << "Wrong separator"
+    );
     is >> pt.Y >> ch;
-    Validate(ch, PointRightBrace);
+    Tools::validateEqual(
+        ch, PointRightBrace,
+        Exception() << "Wrong ending character"
+    );
     is >> std::noskipws;
     return is;
 }
@@ -111,11 +120,20 @@ std::istream& operator>>(std::istream& is, Vector& vect) {
     is >> std::skipws;
     auto ch = Space;
     is >> std::skipws >> ch;
-    Validate(ch, VectorLeftBrace);
+    Tools::validateEqual(
+        ch, VectorLeftBrace,
+        Exception() << "Wrong begining character"
+    );
     is >> vect.X >> ch;
-    Validate(ch, DimensionsDelimiter);
+    Tools::validateEqual(
+        ch, DimensionsDelimiter,
+        Exception() << "Wrong separator"
+    );
     is >> vect.Y >> ch;
-    Validate(ch, VectorRightBrace);
+    Tools::validateEqual(
+        ch, VectorRightBrace,
+        Exception() << "Wrong ending character"
+    );
     is >> std::noskipws;
     return is;
 }
