@@ -77,7 +77,12 @@ DirectionCurve findSmthOnTheField(
         areaMin
     );
     if (!weights.inRange(start)) {
-        throw Exception() << "Start position is out of area range";
+        throw Exception()
+            << "Start position "
+            << start
+            << " is out of area range "
+            << areaMin << " " << areaSize
+        ;
     }
 
     auto queue = std::deque<Point>{};

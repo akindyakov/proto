@@ -158,11 +158,16 @@ bool Location::frontMove(
     auto success = this->client_.frontMove(direction);
     if (success) {
         this->snake_.frontMove(this->grid_, direction);
-    } else {
-        this->lookTo(direction);
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    printMap(std::cerr);
+    for (const auto& dir : {
+        Map::RelativeDirection::Forward(),
+        Map::RelativeDirection::Left(),
+        Map::RelativeDirection::Right(),
+    }) {
+        this->lookTo(dir);
+    }
+    /*dbg*/ std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    /*dbg*/ printMap(std::cerr);
     return success;
 }
 
@@ -172,9 +177,17 @@ bool Location::backMove(
     auto success = this->client_.backMove(direction);
     if (success) {
         this->snake_.backMove(this->grid_, direction);
-    } else {
-        this->lookTo(direction, this->snake_.size());
     }
+    auto lastSegment = this->snake_.size() - 1;
+    for (const auto& dir : {
+        Map::RelativeDirection::Backward(),
+        Map::RelativeDirection::Left(),
+        Map::RelativeDirection::Right(),
+    }) {
+        this->lookTo(dir, lastSegment);
+    }
+    /*dbg*/ std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    /*dbg*/ printMap(std::cerr);
     return success;
 }
 
@@ -229,6 +242,10 @@ const Map::Point& Location::whereAmI() const {
     return snake_.head();
 }
 
+Map::Point Location::whereIsMyTail() const {
+    return snake_.tail();
+}
+
 void Location::printMap(std::ostream& out) {
     Map::PrintToText(out, this->grid_);
 }
@@ -269,7 +286,8 @@ Location::findFreeSpace(
 
 Map::RelativeDirectionCurve
 Location::findMaterial(
-    Map::EMaterial what
+    const Map::Point& where
+    , Map::EMaterial what
 ) const {
     // FIXME
     auto cost = [what=what, &field=this->grid_](const Map::Point& pt) {
@@ -284,7 +302,7 @@ Location::findMaterial(
         return field.at(pt).material == what && !field.at(pt).locked;
     };
     auto way = Map::findSmthOnTheField(
-        this->whereAmI(),
+        where,
         this->grid_.size(),
         this->grid_.min(),
         std::move(cost),
@@ -300,14 +318,21 @@ bool Scout::followTheWay(
     const Map::RelativeDirectionCurve& way
 ) {
     for (const auto& to : way) {
-        for (const auto& dir : {
-            Map::RelativeDirection::Forward(),
-            Map::RelativeDirection::Left(),
-            Map::RelativeDirection::Right(),
-        }) {
-            this->location.lookTo(dir);
-        }
         if (!this->location.frontMove(to)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Scout::followTheWayBack(
+    const Map::RelativeDirectionCurve& way
+) {
+    for (auto to : way) {
+        if (to == Map::RelativeDirection::Forward()) {
+            to = to.Inverse();
+        }
+        if (!this->location.backMove(to)) {
             return false;
         }
     }
@@ -317,13 +342,21 @@ bool Scout::followTheWay(
 bool Scout::discoverSomeSpace() {
     while (true) {
         auto way = this->location.findMaterial(
+            this->location.whereAmI(),
             Map::EMaterial::Unknown
         );
         if (!way.empty()) {
             followTheWay(way);
         } else {
-            std::cerr << "There is nothing to discover\n";
-            return true;
+            way = this->location.findMaterial(
+                this->location.whereIsMyTail(),
+                Map::EMaterial::Unknown
+            );
+            if (!way.empty()) {
+                followTheWayBack(way);
+            } else {
+                return true;
+            }
         }
     }
     return false;
@@ -333,12 +366,12 @@ bool Scout::run() {
     discoverSomeSpace();
     while (true) {
         auto way = this->location.findMaterial(
+            this->location.whereAmI(),
             Map::EMaterial::Wood
         );
         if (!way.empty()) {
             //pass
         } else {
-            std::cerr << "There is nothing to find\n";
             return false;
         }
     }

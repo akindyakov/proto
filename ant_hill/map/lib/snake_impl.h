@@ -33,11 +33,7 @@ void SnakeObj<TField>::backMove(
     , RelativeDirection backDirection
 ) {
     auto direction = backDirection.Turn(tail_.back());
-    // get last point
-    auto pt = head_;
-    for (const auto& dir : tail_) {
-        pt = dir.Inverse().MovePoint(pt);
-    }
+    auto pt = this->tail();
     auto prev = direction.MovePoint(pt);
     /*
     [head]
@@ -157,6 +153,17 @@ const Point&
     SnakeObj<TField>::head() const
 {
     return this->head_;
+}
+
+template<typename TField>
+Point
+    SnakeObj<TField>::tail() const
+{
+    auto point = head_;
+    for (const auto& t : this->tail_) {
+        point = t.Inverse().MovePoint(point);
+    }
+    return point;
 }
 
 template<typename TField>

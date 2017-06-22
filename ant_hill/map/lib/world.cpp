@@ -113,7 +113,7 @@ void World::move(
             direction
         );
     } else {
-        auto pt = obj->lookTo(direction, obj->size());
+        auto pt = obj->lookTo(direction, obj->size() - 1);
         if (!this->field_.inRange(pt) || !this->field_.at(pt).isFree()) {
             throw Forbidden() << "There is no free space for back move.";
         }

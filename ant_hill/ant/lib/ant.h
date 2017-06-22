@@ -95,10 +95,12 @@ public:
     ) const;
 
     const Map::Point& whereAmI() const;
+    Map::Point whereIsMyTail() const;
 
     Map::RelativeDirectionCurve
     findMaterial(
-        Map::EMaterial what
+        const Map::Point& where
+        , Map::EMaterial what
     ) const;
 
     Map::Point
@@ -147,6 +149,13 @@ private:
     void findTheWall();
     void moveAlongTheWall();
     bool followTheWay(
+        const Map::RelativeDirectionCurve& way
+    );
+
+    /**
+    * @way - this is the normal way
+    */
+    bool followTheWayBack(
         const Map::RelativeDirectionCurve& way
     );
     bool discoverSomeSpace();
