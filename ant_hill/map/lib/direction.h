@@ -196,6 +196,12 @@ public:
         this->normalize();
     }
 
+    constexpr RelativeDirection Inverse() const noexcept {
+        auto to = RelativeDirection(this->rdir_ + all_ / 2);
+        to.normalize();
+        return to;
+    }
+
     constexpr void normalize() noexcept {
         rdir_ = rdir_ % all_;
         rdir_ = rdir_ < 0 ? all_ + rdir_ : rdir_;

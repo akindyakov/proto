@@ -193,6 +193,26 @@ void directionInverse() {
     }
 }
 
+void relativeDirectionInverse() {
+    std::cerr << " - relativeDirectionInverse\n";
+    {
+        auto rdir = Map::RelativeDirection::Forward().Inverse();
+        UT_ASSERT_EQUAL(rdir, Map::RelativeDirection::Backward());
+    }
+    {
+        auto rdir = Map::RelativeDirection::Left().Inverse();
+        UT_ASSERT_EQUAL(rdir, Map::RelativeDirection::Right());
+    }
+    {
+        auto rdir = Map::RelativeDirection::Right().Inverse();
+        UT_ASSERT_EQUAL(rdir, Map::RelativeDirection::Left());
+    }
+    {
+        auto rdir = Map::RelativeDirection::Backward().Inverse();
+        UT_ASSERT_EQUAL(rdir, Map::RelativeDirection::Forward());
+    }
+}
+
 void directionDiff() {
     std::cerr << " - directionDiff\n";
     UT_ASSERT_EQUAL(
@@ -384,6 +404,7 @@ int main(int argn, char** argv) {
         directionDiff();
         directionMovePoint();
         relativeDirectionTurn();
+        relativeDirectionInverse();
         directionSub();
         curveToRelativeTest();
         relativeCurveToCurveTest();
