@@ -8,9 +8,12 @@ LOCAL_PRODUCT = $(PRODUCT)
 
 TARGETS := tools lisp map ant doc
 
-.PHONY: all $(TARGETS)
+.PHONY: all test $(TARGETS)
 
 all: $(TARGETS)
+
+test:
+	./tools/run_all_tests.sh
 
 $(TARGETS):
 	$(MAKE) --directory=$@
