@@ -54,7 +54,6 @@ Json::Value MapServer::front_move(int direction, int id) {
 Json::Value MapServer::back_move(int direction, int id) {
     auto result = Json::Value(Json::objectValue);
     try {
-        std::cerr << "MapServer::back_move " << direction << "\n";
         this->world.move(
             Map::ObjectId(id),
             Map::RelativeDirection(direction),
