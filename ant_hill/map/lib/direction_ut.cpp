@@ -1,6 +1,6 @@
 #include "direction.h"
 
-#include <tools/tests/assert.h>
+#include <lib/tests/assert.h>
 
 #include <iostream>
 #include <sstream>

@@ -2,7 +2,7 @@
 
 #include "direction.h"
 
-#include <tools/http_error.h>
+#include <lib/http_error.h>
 
 #include <deque>
 #include <vector>

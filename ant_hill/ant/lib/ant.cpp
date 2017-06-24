@@ -4,7 +4,7 @@
 #include <map/lib/map_symbols.h>
 #include <map/lib/spiral.h>
 
-#include <tools/exception.h>
+#include <lib/exception.h>
 
 #include <thread>
 #include <chrono>

@@ -1,6 +1,6 @@
 #include "2d_field.h"
 
-#include <tools/tests/assert.h>
+#include <lib/tests/assert.h>
 
 #include <iostream>
 #include <sstream>

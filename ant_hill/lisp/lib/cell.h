@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tools/exception.h>
+#include <lib/exception.h>
 
 #include <boost/variant.hpp>
 #include <boost/variant/get.hpp>

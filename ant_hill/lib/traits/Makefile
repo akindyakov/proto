@@ -1,4 +1,4 @@
-PRODUCT = $(ABS_PRODUCT)/tools/traits
+PRODUCT = $(ABS_PRODUCT)/lib/traits
 
 .PHONY: all ut clear prepare
 

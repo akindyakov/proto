@@ -2,7 +2,7 @@
 
 #include "map_symbols.h"
 
-#include <tools/validate.h>
+#include <lib/validate.h>
 
 #include <array>
 #include <cstdint>

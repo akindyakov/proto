@@ -1,12 +1,12 @@
 #pragma once
 
-#include <tools/traits/is_printable.h>
+#include <lib/traits/is_printable.h>
 
 #include <sstream>
 #include <string>
 
 
-namespace Tools {
+namespace Lib {
 
 template<
     typename Type
@@ -31,4 +31,4 @@ inline std::string toString(const Type& /*value*/) {
     return "<not printable>";
 }
 
-}  // namespace Tools
+}  // namespace Lib

@@ -1,7 +1,7 @@
 #include "world.h"
 #include "snake.h"
 
-#include <tools/http_error.h>
+#include <lib/http_error.h>
 
 #include <mutex>
 

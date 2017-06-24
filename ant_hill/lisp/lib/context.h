@@ -3,7 +3,7 @@
 #include "cell.h"
 #include "namespace.h"
 
-#include <tools/exception.h>
+#include <lib/exception.h>
 
 #include <istream>
 #include <memory>

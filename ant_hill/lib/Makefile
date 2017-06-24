@@ -1,4 +1,4 @@
-PRODUCT := "$(ABS_PRODUCT)/tools"
+PRODUCT := "$(ABS_PRODUCT)/lib"
 
 TARGETS := traits str
 

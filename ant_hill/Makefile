@@ -6,7 +6,7 @@ export CC := clang++ $(CC_FLAGS)
 
 LOCAL_PRODUCT = $(PRODUCT)
 
-TARGETS := tools lisp map ant doc
+TARGETS := lib lisp map ant doc
 
 .PHONY: all test $(TARGETS)
 

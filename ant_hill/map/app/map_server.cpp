@@ -5,7 +5,7 @@
 
 #include <map/rpc/server.h>
 
-#include <tools/http_error.h>
+#include <lib/http_error.h>
 
 #include <jsonrpccpp/server/connectors/httpserver.h>
 

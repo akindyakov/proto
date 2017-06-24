@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tools/validate.h>
+#include <lib/validate.h>
 
 class UTFailure
     : public Exception
@@ -18,7 +18,7 @@ public:
 };
 
 #define UT_ASSERT_EQUAL(value, gold) \
-    Tools::validateEqual( \
+    Lib::validateEqual( \
         value, \
         gold, \
         UTFailure( \
@@ -28,7 +28,7 @@ public:
     ); \
 
 #define UT_ASSERT_NOT_EQUAL(value, gold) \
-    Tools::validateNotEqual( \
+    Lib::validateNotEqual( \
         value, \
         gold, \
         UTFailure( \

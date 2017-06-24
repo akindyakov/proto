@@ -1,6 +1,6 @@
 #include "direction.h"
 
-#include <tools/exception.h>
+#include <lib/exception.h>
 
 
 namespace Map {

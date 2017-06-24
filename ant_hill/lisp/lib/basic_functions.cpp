@@ -2,7 +2,7 @@
 #include "context.h"
 #include "parser.h"
 
-#include <tools/validate.h>
+#include <lib/validate.h>
 
 
 namespace Lisp {
@@ -44,7 +44,7 @@ public:
     }
 
     Cell call(Function::Args args) const override {
-        Tools::validateEqual(
+        Lib::validateEqual(
             args.size(), argNames.size(),
             Error() << "Wrong arguments number. "
         );

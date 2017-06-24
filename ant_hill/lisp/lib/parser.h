@@ -2,7 +2,7 @@
 
 #include "cell.h"
 
-#include <tools/exception.h>
+#include <lib/exception.h>
 
 #include <cstdlib>
 #include <istream>

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <tools/str/to_string.h>
+#include <lib/str/to_string.h>
 
-#include <tools/exception.h>
+#include <lib/exception.h>
 
 
-namespace Tools {
+namespace Lib {
 
 template<
     typename FirstT
@@ -19,9 +19,9 @@ inline void validateEqual(
 ) {
     if (!(value == other)) {
         throw error
-            << "[" << Tools::toString(value)
+            << "[" << Lib::toString(value)
             << "] is suppose to be equal to ["
-            << Tools::toString(other)
+            << Lib::toString(other)
             << "]."
         ;
     }
@@ -39,12 +39,12 @@ inline void validateNotEqual(
 ) {
     if (!(value != other)) {
         throw error
-            << "[" << Tools::toString(value)
+            << "[" << Lib::toString(value)
             << "] is suppose to be not equal to ["
-            << Tools::toString(other)
+            << Lib::toString(other)
             << "]."
         ;
     }
 }
 
-}
+}  // namespace Lib

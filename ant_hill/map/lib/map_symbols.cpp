@@ -1,6 +1,6 @@
 #include "map_symbols.h"
 
-#include <tools/exception.h>
+#include <lib/exception.h>
 
 namespace Map {
 
