@@ -244,10 +244,15 @@ public:
     using FieldStorageType = std::vector<CellType>;
 
 public:
-    explicit Field(SizeType size, PointType min=PointType{0, 0})
-        : size_(size)
-        , min_(min)
-        , field_(size_.cube())
+    explicit Field(
+        Vector size
+        , Point min=Point{0, 0}
+    )
+        : area_(
+            std::move(size),
+            std::move(min)
+        )
+        , field_(area_.size().cube())
     {
     }
 
@@ -257,43 +262,49 @@ public:
     Field& operator=(const Field&) = delete;
     Field& operator=(Field&&) = default;
 
-    bool inRange(const PointType& pt) const noexcept {
-        auto m = this->max();
-        return (
-            pt.X < m.X
-            && pt.Y < m.Y
-            && pt.X >= this->min_.X
-            && pt.Y >= this->min_.Y
-        );
+    bool inRange(const Point& pt) const noexcept {
+        return this->area_.inRange(pt);
     }
 
-    CellType& at(const PointType& pt) {
+    CellType& at(const Point& pt) {
         return field_[safeIndexByPoint(pt)];
     }
 
-    const CellType& at(const PointType& pt) const {
+    const CellType& at(const Point& pt) const {
         return field_[safeIndexByPoint(pt)];
     }
 
-    const PointType min() const noexcept {
-        return min_;
+    const Point min() const noexcept {
+        return this->area_.min();
     }
 
-    const PointType max() const noexcept {
-        return min_ + size_;
+    const Point max() const noexcept {
+        return this->area_.max();
     }
 
-    const SizeType size() const noexcept {
-        return size_;
+    const Vector size() const noexcept {
+        return this->area_.size();
+    }
+
+    const Square& area() const noexcept {
+        return this->area_;
+    }
+
+    SquareIterator areaIterator() const noexcept {
+        return SquareIterator(this->area_);
     }
 
 private:
-    Measure signedIndexByPoint(const PointType& pt) const noexcept {
-        return (pt.X - min_.X) + (pt.Y - min_.Y) * size_.X;
+    static constexpr inline Measure signedIndexByPoint(
+        const Point& pt
+        , const Point& min
+        , const Vector& size
+    ) noexcept {
+        return (pt.X - min.X) + (pt.Y - min.Y) * size.X;
     }
 
-    size_t safeIndexByPoint(const PointType& pt) const {
-        auto signedIndex = signedIndexByPoint(pt);
+    size_t safeIndexByPoint(const Point& pt) const {
+        auto signedIndex = signedIndexByPoint(pt, this->min(), this->size());
         auto index = static_cast<size_t>(signedIndex);
         if (signedIndex < 0 || index >= this->field_.size()) {
             throw Exception("Access by out range point: ")
@@ -304,8 +315,7 @@ private:
     }
 
 private:
-    SizeType size_;
-    PointType min_;
+    Square area_;
     FieldStorageType field_;
 };
 

@@ -19,45 +19,42 @@ World::SnakeType createSnakeOnField(
         body.size() - 1,
         RelativeDirection::Forward()
     );
-    auto start = Point{0, 0};
-    for (start.Y = where.min().Y; start.Y < where.max().Y; ++start.Y) {
-        for (start.X = where.min().X; start.X < where.max().X; ++start.X) {
-            auto startDir = Direction::North();
-            while (startDir.counter() == 0) {
-                bool vacant = true;
-                if (where.inRange(start) && where.at(start).isFree()) {
-                    auto pt = start;
-                    for (auto& el : chain) {
-                        pt = el.Turn(startDir).MovePoint(pt);
-                        if (!where.inRange(pt) || !where.at(pt).isFree()) {
-                            vacant = false;
-                            break;
-                        }
+    for (auto iter = where.areaIterator(); iter.isValid(); ++iter) {
+        auto startDir = Direction::North();
+        while (startDir.counter() == 0) {
+            bool vacant = true;
+            if (where.inRange(iter.point()) && where.at(iter.point()).isFree()) {
+                auto pt = iter.point();
+                for (auto& el : chain) {
+                    pt = el.Turn(startDir).MovePoint(pt);
+                    if (!where.inRange(pt) || !where.at(pt).isFree()) {
+                        vacant = false;
+                        break;
                     }
-                } else {
-                    vacant = false;
                 }
-                if (vacant) {
-                    auto materialIt = body.begin();
-                    auto& cell = where.at(start);
+            } else {
+                vacant = false;
+            }
+            if (vacant) {
+                auto materialIt = body.begin();
+                auto& cell = where.at(iter.point());
+                cell.objectId = id;
+                cell.grain = *materialIt;
+                ++materialIt;
+                auto tail = std::vector<Direction>{};
+                auto pt = iter.point();
+                for (auto& el : chain) {
+                    auto from = el.Turn(startDir);
+                    tail.push_back(from);
+                    pt = from.MovePoint(pt);
+                    auto& cell = where.at(pt);
                     cell.objectId = id;
                     cell.grain = *materialIt;
                     ++materialIt;
-                    auto tail = std::vector<Direction>{};
-                    auto pt = start;
-                    for (auto& el : chain) {
-                        auto from = el.Turn(startDir);
-                        tail.push_back(from);
-                        pt = from.MovePoint(pt);
-                        auto& cell = where.at(pt);
-                        cell.objectId = id;
-                        cell.grain = *materialIt;
-                        ++materialIt;
-                    }
-                    return World::SnakeType(pt, tail);
                 }
-                ++startDir;
+                return World::SnakeType(pt, tail);
             }
+            ++startDir;
         }
     }
     throw InternalServerError() << "There is no vacant position";

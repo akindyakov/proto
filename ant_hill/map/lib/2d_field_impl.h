@@ -2,10 +2,8 @@ namespace Map {
 
 template<typename TCell>
 Field<TCell> ScanFromText(std::istream& is) {
-    // std::cerr << "scan field" << std::endl;
     auto size = Vector{0, 0};
     is >> size;
-    //is >> size.Y;
     is.ignore(
         std::numeric_limits<std::streamsize>::max(),
         '\n'
@@ -16,24 +14,21 @@ Field<TCell> ScanFromText(std::istream& is) {
         std::numeric_limits<std::streamsize>::max(),
         '\n'
     );
-    //auto point = minPt;
     auto field = Field<TCell>(size, pt);
-    for (; pt.Y < field.max().Y; ++pt.Y) {
-        for (pt.X = field.min().X; pt.X < field.max().X; ++pt.X) {
-            if (!is.eof() && is.good()) {
-                if (is.peek() == '\n') {
-                    is.ignore(
-                        std::numeric_limits<std::streamsize>::max(),
-                        '\n'
-                    );
-                    Lib::validateEqual(
-                        pt.X,
-                        field.min().X,
-                        Exception() << "Unexpected end of line character"
-                    );
-                }
-                is >> field.at(pt);
+    for (auto iter = field.areaIterator(); iter.isValid(); ++iter) {
+        if (!is.eof() && is.good()) {
+            if (is.peek() == '\n') {
+                is.ignore(
+                    std::numeric_limits<std::streamsize>::max(),
+                    '\n'
+                );
+                Lib::validateEqual(
+                    iter.point().X,
+                    field.min().X,
+                    Exception() << "Unexpected end of line character"
+                );
             }
+            is >> field.at(iter.point());
         }
     }
     return field;
@@ -43,13 +38,15 @@ template<typename TCell>
 void PrintToText(std::ostream& os, const Field<TCell>& field) {
     os << field.size() << '\n';
     os << field.min() << '\n';
-    auto pt = field.min();
-    for (; pt.Y < field.max().Y; ++pt.Y) {
-        for (pt.X = field.min().X; pt.X < field.max().X; ++pt.X) {
-            os << field.at(pt);
+    auto row = field.min().Y;
+    for (auto iter = field.areaIterator(); iter.isValid(); ++iter) {
+        if (row != iter.point().Y) {
+            row = iter.point().Y;
+            os << '\n';
         }
-        os << '\n';
+        os << field.at(iter.point());
     }
+    os << '\n';
 }
 
 }  // namespace Map
