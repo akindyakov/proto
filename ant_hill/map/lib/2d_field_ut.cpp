@@ -131,7 +131,7 @@ iw...m..si
     auto in = std::istringstream(text);
     auto field = Map::ScanFromText<Map::SimpleCell>(in);
     auto element = field.at(Map::Point(4, 6));
-    UT_ASSERT_EQUAL(element.grain, Map::EMaterial::Water);
+    UT_ASSERT_EQUAL(element.grain, Map::EMaterial::Letter_a);
 
     auto out = std::ostringstream();
     Map::PrintToText(out, field);

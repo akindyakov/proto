@@ -11,7 +11,7 @@ void appearTest() {
     auto chain = std::vector<Map::EMaterial>{
         Map::EMaterial::AntBody,
         Map::EMaterial::AntHead,
-        Map::EMaterial::Water,
+        Map::EMaterial::Letter_a
     };
     {
         std::string text = R"FieldMap(<5,4>
@@ -32,7 +32,7 @@ void appearTest() {
         std::string rightAnswer = R"FieldMap(<5,4>
 (0,0)
 #....
-X....
++....
 a....
 .....
 )FieldMap";
@@ -59,7 +59,7 @@ ii.ii
 (0,0)
 iiiii
 ii#ii
-iiXii
+ii+ii
 iiaii
 )FieldMap";
         auto out = std::ostringstream();
