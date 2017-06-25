@@ -141,7 +141,7 @@ Cell If::call(Function::Args args) const {
         throw Error() << "given too many arguments: " << args.size();
     }
     if (args.size() == 2) {
-        args.push_back(Cell{});
+        args.push_back(Cell::nil());
     }
     return args[0].get().is<Nil>() ? args[2].get() : args[1].get();
 }
@@ -167,7 +167,7 @@ Cell Not::call(Function::Args args) const {
     if (args.size() > 1) {
         throw Error() << "given too many arguments: " << args.size();
     }
-    return args[0].get().is<Nil>() ? True : Nil{};
+    return args[0].get().is<Nil>() ? True : Cell::nil();
 }
 
 }  // namespace Func

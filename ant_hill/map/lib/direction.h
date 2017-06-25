@@ -25,7 +25,7 @@ private:
     static constexpr Type east_ = 3;
     static constexpr Type all_ = 4;
 
-    constexpr Direction(
+    explicit constexpr Direction(
         Type compass
     ) noexcept
         : compass_(compass)
@@ -41,20 +41,20 @@ public:
     Direction() = delete;
 
     static constexpr const Direction North() noexcept {
-        return north_;
+        return Direction{north_};
     }
     static constexpr const Direction West() noexcept {
-        return west_;
+        return Direction{west_};
     }
     static constexpr const Direction South() noexcept {
-        return south_;
+        return Direction{south_};
     }
     static constexpr const Direction East() noexcept {
-        return east_;
+        return Direction{east_};
     }
 
     static constexpr const Direction ToNowhere() noexcept {
-        return Direction(all_);
+        return Direction{all_};
     }
 
     int toInt() const {
@@ -68,7 +68,7 @@ public:
                 << value << ")"
             ;
         }
-        return value;
+        return Direction(value);
     }
 
     constexpr void normalize() noexcept {
@@ -173,22 +173,22 @@ private:
 
 public:
     static constexpr const RelativeDirection Forward() noexcept {
-        return forward_;
+        return RelativeDirection{forward_};
     }
     static constexpr const RelativeDirection Left() noexcept {
-        return left_;
+        return RelativeDirection{left_};
     }
     static constexpr const RelativeDirection Backward() noexcept {
-        return backward_;
+        return RelativeDirection{backward_};
     }
     static constexpr const RelativeDirection Right() noexcept {
-        return right_;
+        return RelativeDirection{right_};
     }
 
 public:
     RelativeDirection() = delete;
 
-    constexpr RelativeDirection(
+    explicit constexpr RelativeDirection(
         Type dir
     ) noexcept
         : rdir_(dir)

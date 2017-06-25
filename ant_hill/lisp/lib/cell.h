@@ -155,13 +155,16 @@ public:
     {
     };
 
-    Cell()
+    explicit Cell()
         : value(Nil{})
     {
     }
-    Cell(Nil v)
+    explicit Cell(Nil v)
         : value(v)
     {
+    }
+    static Cell nil() {
+        return Cell(Nil{});
     }
     explicit Cell(Integer v)
         : value(v)
@@ -187,14 +190,6 @@ public:
         : value(std::move(v))
     {
     }
- //   explicit Cell(const Table& v)
- //       : value(v)
- //   {
- //   }
- //   explicit Cell(Table&& v)
- //       : value(std::move(v))
- //   {
- //   }
     explicit Cell(FunctionPtr ptr)
         : value(ptr)
     {
@@ -365,7 +360,7 @@ public:
 
 public:
     explicit ArgFuture(std::string expr, Context* cnt);
-    /*explicit*/ ArgFuture(Cell value);
+    ArgFuture(Cell value);  // implicit
 
     template<typename T = Cell>
     const T& get() {

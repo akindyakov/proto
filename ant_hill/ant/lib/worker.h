@@ -53,6 +53,7 @@ public:
         Point body
     )
         : Ant(head, body)
+        , Status(EStatus::ALIVE)
     {
     }
 

@@ -128,7 +128,7 @@ public:
 class Scout
 {
 public:
-    Scout(
+    explicit Scout(
         Map::JsonRPCClient& client
     );
 
