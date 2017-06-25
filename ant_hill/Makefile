@@ -12,7 +12,7 @@ TARGETS := lib lisp map ant doc
 
 all: $(TARGETS)
 
-test:
+test: all
 	./tools/run_all_tests.sh
 
 $(TARGETS):
