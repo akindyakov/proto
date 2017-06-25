@@ -43,10 +43,10 @@ public:
     ~Point() = default;
 };
 
-inline bool operator == (
+inline constexpr bool operator == (
     const Point& first
     , const Point& second
-) {
+) noexcept {
     return (
         first.X == second.X
         && first.Y == second.Y
@@ -84,29 +84,70 @@ public:
 
 };
 
-bool operator!=(const Vector& first, const Vector& second);
-bool operator!=(const Point& first, const Point& second);
+constexpr bool operator!=(const Vector& first, const Vector& second) noexcept {
+    return first.X != second.X || first.Y != second.Y;
+}
 
-Point& operator+=(Point& self, const Vector& shift);
+constexpr bool operator!=(const Point& first, const Point& second) noexcept {
+    return first.X != second.X || first.Y != second.Y;
+}
 
-Vector operator-(const Point& left, const Point& right);
-Point operator+(const Point& base, const Vector& shift);
+constexpr Point& operator+=(Point& self, const Vector& shift) noexcept {
+    self.X += shift.X;
+    self.Y += shift.Y;
+    return self;
+}
+
+constexpr Vector operator-(const Point& left, const Point& right) noexcept {
+    return Vector(
+        left.X - right.X,
+        left.Y - right.Y
+    );
+}
+
+constexpr Point operator+(const Point& base, const Vector& shift) noexcept {
+    return Point(
+        base.X + shift.X,
+        base.Y + shift.Y
+    );
+}
 
 class Square {
 public:
-    explicit Square(Vector size_, Point min_=Point{0, 0})
-        : min(std::move(min_))
-        , size(std::move(size_))
+    constexpr explicit Square(
+        Vector size
+        , Point min=Point{0, 0}
+    )
+        : min_(std::move(min))
+        , size_(std::move(size))
     {
     }
 
-    const Point max() const noexcept {
-        return this->min + this->size;
+    constexpr const Point max() const noexcept {
+        return this->min() + this->size();
+    }
+
+    constexpr const Point& min() const noexcept {
+        return this->min_;
+    }
+
+    constexpr const Vector& size() const noexcept {
+        return this->size_;
+    }
+
+    constexpr bool inRange(const Point& pt) const noexcept {
+        auto m = this->max();
+        return (
+            pt.X < m.X
+            && pt.Y < m.Y
+            && pt.X >= this->min_.X
+            && pt.Y >= this->min_.Y
+        );
     }
 
 public:
-    Point min;
-    Vector size;
+    Point min_;
+    Vector size_;
 };
 
 bool operator==(const Square& first, const Square& second);

@@ -12,34 +12,6 @@ Vector& operator+=(Vector& self, const Vector& shift) {
     return self;
 }
 
-bool operator!=(const Vector& first, const Vector& second) {
-    return first.X != second.X || first.Y != second.Y;
-}
-
-bool operator!=(const Point& first, const Point& second) {
-    return first.X != second.X || first.Y != second.Y;
-}
-
-Point& operator+=(Point& self, const Vector& shift) {
-    self.X += shift.X;
-    self.Y += shift.Y;
-    return self;
-}
-
-Vector operator-(const Point& left, const Point& right) {
-    return Vector(
-        left.X - right.X,
-        left.Y - right.Y
-    );
-}
-
-Point operator+(const Point& base, const Vector& shift) {
-    return Point(
-        base.X + shift.X,
-        base.Y + shift.Y
-    );
-}
-
 std::ostream& operator<<(std::ostream& out, const SimpleCell& cell) {
     out << GetSymbolMap().GetSymbol(cell.grain);
     return out;
@@ -54,16 +26,16 @@ std::istream& operator>>(std::istream& in, SimpleCell& cell) {
 
 bool operator==(const Square& first, const Square& second) {
     return (
-        first.min == second.min
-        && first.size == second.size
+        first.min() == second.min()
+        && first.size() == second.size()
     );
 }
 
 std::ostream& operator<<(std::ostream& out, const Square& square) {
     out << "(map-square "
-        << square.min
+        << square.min()
         << " "
-        << square.size
+        << square.size()
         << ")";
     return out;
 }
