@@ -40,20 +40,20 @@ private:
 public:
     Direction() = delete;
 
-    static constexpr const Direction North() noexcept {
+    static constexpr Direction North() noexcept {
         return Direction{north_};
     }
-    static constexpr const Direction West() noexcept {
+    static constexpr Direction West() noexcept {
         return Direction{west_};
     }
-    static constexpr const Direction South() noexcept {
+    static constexpr Direction South() noexcept {
         return Direction{south_};
     }
-    static constexpr const Direction East() noexcept {
+    static constexpr Direction East() noexcept {
         return Direction{east_};
     }
 
-    static constexpr const Direction ToNowhere() noexcept {
+    static constexpr Direction ToNowhere() noexcept {
         return Direction{all_};
     }
 
@@ -77,7 +77,7 @@ public:
         compass_ = compass_ < 0 ? all_ + compass_ : compass_;
     }
 
-    constexpr const Direction Inverse() const noexcept {
+    constexpr Direction Inverse() const noexcept {
         auto to = Direction(compass_ + all_ / 2);
         to.normalize();
         return to;
@@ -85,7 +85,7 @@ public:
 
     static Direction Diff(const Point& to, const Point& from);
 
-    constexpr const Point MovePoint(
+    constexpr Point MovePoint(
         Point pt
         , const Measure distance = 1
     ) const noexcept {
@@ -118,7 +118,7 @@ public:
         return *this;
     }
 
-    constexpr const Type counter() const noexcept {
+    constexpr Type counter() const noexcept {
         return counter_;
     }
 
@@ -172,16 +172,16 @@ private:
     ) noexcept;
 
 public:
-    static constexpr const RelativeDirection Forward() noexcept {
+    static constexpr RelativeDirection Forward() noexcept {
         return RelativeDirection{forward_};
     }
-    static constexpr const RelativeDirection Left() noexcept {
+    static constexpr RelativeDirection Left() noexcept {
         return RelativeDirection{left_};
     }
-    static constexpr const RelativeDirection Backward() noexcept {
+    static constexpr RelativeDirection Backward() noexcept {
         return RelativeDirection{backward_};
     }
-    static constexpr const RelativeDirection Right() noexcept {
+    static constexpr RelativeDirection Right() noexcept {
         return RelativeDirection{right_};
     }
 
@@ -207,7 +207,7 @@ public:
         rdir_ = rdir_ < 0 ? all_ + rdir_ : rdir_;
     }
 
-    constexpr const Direction Turn(
+    constexpr Direction Turn(
         Direction dir
     ) const noexcept {
         dir.compass_ += rdir_;
