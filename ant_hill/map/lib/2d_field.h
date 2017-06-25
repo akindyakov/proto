@@ -145,7 +145,7 @@ public:
         );
     }
 
-public:
+private:
     Point min_;
     Vector size_;
 };
@@ -292,6 +292,36 @@ public:
 
     SquareIterator areaIterator() const noexcept {
         return SquareIterator(this->area_);
+    }
+
+    /**
+         ________________
+        |    new size    |
+        |   __________   |
+        |  | old size |  |
+        |  |          |  |
+        |  |          |  |
+        |  |__________|  |
+        |________________|
+    */
+    void resize(
+          Vector newSize
+        , Vector shift = Vector{0, 0}
+        , const CellType initCellValue = CellType()
+    ) {
+        this->field_.resize(newSize.cube(), initCellValue);
+        auto oldIter = --SquareIterator(this->area_, this->area_.max());
+        this->area_ = Square(newSize, this->area_.min() + shift);
+        auto newIter = --SquareIterator(this->area_, this->area_.max());
+        using std::swap;
+        while (oldIter.isValid() && newIter.isValid()) {
+            swap(
+                this->at(oldIter.point()),
+                this->at(newIter.point())
+            );
+            --oldIter;
+            --newIter;
+        }
     }
 
 private:

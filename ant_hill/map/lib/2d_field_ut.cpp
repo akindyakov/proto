@@ -230,6 +230,31 @@ void squareIteratorConstexprTest() {
     }
 }
 
+void fieldResizeTest() {
+    std::cerr << " - fieldResizeTest\n";
+    {
+        std::string text = R"FieldMap(<3,3>
+(0,0)
+012
+345
+678
+)FieldMap";
+        auto in = std::istringstream(text);
+        auto field = Map::ScanFromText<Map::SimpleCell>(in);
+        field.resize(Map::Vector(4,4));
+        std::string rightAnswer = R"FieldMap(<4,4>
+(0,0)
+012.
+345.
+678.
+....
+)FieldMap";
+        auto out = std::ostringstream();
+        Map::PrintToText(out, field);
+        UT_ASSERT_EQUAL(rightAnswer, out.str());
+    }
+}
+
 int main(int argn, char** argv) {
     try {
         std::cerr << "2d_field_ut:\n";
@@ -240,6 +265,7 @@ int main(int argn, char** argv) {
         compareTest();
         squareIteratorTest();
         squareIteratorConstexprTest();
+        fieldResizeTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;
