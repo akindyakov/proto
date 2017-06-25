@@ -140,6 +140,96 @@ iw...m..si
     UT_ASSERT_EQUAL(text, outText);
 }
 
+void squareIteratorTest() {
+    std::cerr << " - squareIteratorTest\n";
+    auto iterator = Map::SquareIterator(
+        Map::Square(
+            Map::Vector(4, 3),
+            Map::Point(-2, -1)
+        )
+    );
+    auto rightAnswer = std::vector<Map::Point>{
+        Map::Point(-2, -1),
+        Map::Point(-1, -1),
+        Map::Point( 0, -1),
+        Map::Point( 1, -1),
+        Map::Point(-2,  0),
+        Map::Point(-1,  0),
+        Map::Point( 0,  0),
+        Map::Point( 1,  0),
+        Map::Point(-2,  1),
+        Map::Point(-1,  1),
+        Map::Point( 0,  1),
+        Map::Point( 1,  1),
+    };
+    auto rightAnswerIt = rightAnswer.begin();
+    auto counter = size_t{0};
+    while (iterator.isValid()) {
+        UT_ASSERT_EQUAL(iterator.point(), *rightAnswerIt);
+        UT_ASSERT_EQUAL(*iterator, *rightAnswerIt);
+        ++iterator;
+        ++rightAnswerIt;
+        ++counter;
+    }
+    UT_ASSERT_EQUAL(counter, rightAnswer.size());
+}
+
+void squareIteratorConstexprTest() {
+    std::cerr << " - squareIteratorConstexprTest\n";
+    {
+        constexpr auto it = ++Map::SquareIterator(
+            Map::Square(
+                Map::Vector(4, 3),
+                Map::Point(0, 0)
+            )
+        );
+        static_assert(it.point() == Map::Point(1, 0), "is suppose to be equal");
+        static_assert(*it == Map::Point(1, 0), "is suppose to be equal");
+        static_assert(it.isValid(), "is suppose to be valid");
+    }
+    {
+        constexpr auto it = ++Map::SquareIterator(
+            Map::Square(
+                Map::Vector(1, 3),
+                Map::Point(0, 0)
+            )
+        );
+        static_assert(it.point() == Map::Point(0, 1), "is suppose to be equal");
+        static_assert(*it == Map::Point(0, 1), "is suppose to be equal");
+        static_assert(it.isValid(), "is suppose to be valid");
+    }
+    {
+        constexpr auto it = --Map::SquareIterator(
+            Map::Square(
+                Map::Vector(2, 3),
+                Map::Point(0, 0)
+            ),
+            Map::Point(1, 0)
+        );
+        static_assert(it.point() == Map::Point(0, 0), "is suppose to be equal");
+        static_assert(*it == Map::Point(0, 0), "is suppose to be equal");
+        static_assert(it.isValid(), "is suppose to be valid");
+    }
+    {
+        constexpr auto it = --Map::SquareIterator(
+            Map::Square(
+                Map::Vector(1, 3),
+                Map::Point(0, 0)
+            )
+        );
+        static_assert(!it.isValid(), "is suppose to be not valid");
+    }
+    {
+        constexpr auto it = ++Map::SquareIterator(
+            Map::Square(
+                Map::Vector(1, 1),
+                Map::Point(0, 0)
+            )
+        );
+        static_assert(!it.isValid(), "is suppose to be not valid");
+    }
+}
+
 int main(int argn, char** argv) {
     try {
         std::cerr << "2d_field_ut:\n";
@@ -148,6 +238,8 @@ int main(int argn, char** argv) {
         inRangeFieldTest();
         scanAndPrintField();
         compareTest();
+        squareIteratorTest();
+        squareIteratorConstexprTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;

@@ -150,6 +150,66 @@ public:
     Vector size_;
 };
 
+class SquareIterator
+{
+public:
+    constexpr explicit SquareIterator(
+        Square square
+    )
+        : square_(std::move(square))
+        , pt_(square_.min())
+    {
+    }
+
+    constexpr explicit SquareIterator(
+        Square square
+        , Point start
+    )
+        : square_(std::move(square))
+        , pt_(std::move(start))
+    {
+    }
+
+    constexpr SquareIterator& operator ++ () noexcept {
+        if (this->isValid()) {
+            ++this->pt_.X;
+            if (this->pt_.X >= this->square_.max().X) {
+                this->pt_.X = this->square_.min().X;
+                ++this->pt_.Y;
+            }
+        }
+        return *this;
+    }
+
+    constexpr SquareIterator& operator -- () noexcept {
+        if (this->isValid()) {
+            --this->pt_.X;
+            if (this->pt_.X < this->square_.min().X) {
+                this->pt_.X = this->square_.max().X - 1;
+                --this->pt_.Y;
+            }
+        }
+        return *this;
+    }
+
+    constexpr bool isValid() const noexcept {
+        return this->square_.inRange(this->pt_);
+    }
+
+    constexpr Point point() const noexcept {
+        return pt_;
+    }
+
+    constexpr const Point& operator * () const noexcept {
+        return pt_;
+    }
+
+private:
+    Square square_;
+    Point pt_;
+};
+
+
 bool operator==(const Square& first, const Square& second);
 std::ostream& operator<<(std::ostream& out, const Square& square);
 
