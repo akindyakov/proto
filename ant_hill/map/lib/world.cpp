@@ -157,9 +157,8 @@ const World::CellType& World::lookTo(
 ) const {
     auto obj = World::findObject(id);
     auto pt = obj->lookTo(to, segment);
-    static const auto forbidden = CellType{EMaterial::Forbidden};
     if (!this->field_.inRange(pt)) {
-        return forbidden;
+        throw Forbidden() << "This grain is out of environment range.";
     }
     return this->field_.at(pt);
 }

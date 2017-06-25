@@ -37,6 +37,7 @@ public:
     struct LookInfo {
         Map::EMaterial material = Map::EMaterial::Unknown;
         Map::ObjectId ownerId = Map::ObjectId::Invalid();
+        bool forbidden = false;
     };
     LookInfo lookTo(
         Map::RelativeDirection direction
@@ -57,7 +58,7 @@ public:
 
 public:
     Map::EMaterial material = Map::EMaterial::Unknown;
-    bool locked;
+    bool locked = false;
 };
 
 std::ostream& operator<<(std::ostream& out, const DiscoveredCell& cell);

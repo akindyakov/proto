@@ -101,8 +101,9 @@ LocationClient::LookInfo LocationClient::lookTo(
             jRet["material"].asInt()
         );
     } catch (const jsonrpc::JsonRpcException&) {
+        ret.forbidden = true;
         // TODO: log warnign here
-        std::cerr << "warning: empty [look_to] responce\n";
+        std::cerr << "warning: [look_to] error in responce\n";
     }
     return ret;
 }
@@ -217,12 +218,17 @@ const DiscoveredCell& Location::lookTo(
     auto& cell = this->grid_.at(pt);
 
     auto resp = this->client_.lookTo(direction, segment);
-    if (resp.material != Map::EMaterial::Unknown) {
+    if (resp.forbidden) {
+        // FIXME: use fullsize status bitset here
+        cell.locked = true;
+    } else {
         if (resp.ownerId.isValid()) {
             // this is someone else
             // TODO: do smth to connect
+            cell.material = Map::EMaterial::EmptySpace;
+        } else {
+            cell.material = resp.material;
         }
-        cell.material = resp.material;
     }
     return cell;
 }
@@ -364,17 +370,6 @@ bool Scout::discoverSomeSpace() {
 
 bool Scout::run() {
     discoverSomeSpace();
-    while (true) {
-        auto way = this->location.findMaterial(
-            this->location.whereAmI(),
-            Map::EMaterial::Wood
-        );
-        if (!way.empty()) {
-            //pass
-        } else {
-            return false;
-        }
-    }
     return false;
 }
 
