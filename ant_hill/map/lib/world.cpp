@@ -19,7 +19,7 @@ World::SnakeType createSnakeOnField(
         body.size() - 1,
         RelativeDirection::Forward()
     );
-    for (auto iter = where.areaIterator(); iter.isValid(); ++iter) {
+    for (auto iter = where.begin(); iter.isValid(); ++iter) {
         auto startDir = Direction::North();
         while (startDir.counter() == 0) {
             bool vacant = true;

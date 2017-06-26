@@ -15,7 +15,7 @@ Field<TCell> ScanFromText(std::istream& is) {
         '\n'
     );
     auto field = Field<TCell>(size, pt);
-    for (auto iter = field.areaIterator(); iter.isValid(); ++iter) {
+    for (auto iter = field.begin(); iter.isValid(); ++iter) {
         if (!is.eof() && is.good()) {
             if (is.peek() == '\n') {
                 is.ignore(
@@ -39,7 +39,7 @@ void PrintToText(std::ostream& os, const Field<TCell>& field) {
     os << field.size() << '\n';
     os << field.min() << '\n';
     auto row = field.min().Y;
-    for (auto iter = field.areaIterator(); iter.isValid(); ++iter) {
+    for (auto iter = field.begin(); iter.isValid(); ++iter) {
         if (row != iter.point().Y) {
             row = iter.point().Y;
             os << '\n';

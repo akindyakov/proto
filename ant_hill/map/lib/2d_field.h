@@ -170,24 +170,34 @@ public:
     {
     }
 
+    static constexpr SquareIterator begin(
+        Square square
+    ) {
+        return SquareIterator(square);
+    }
+
+    static constexpr SquareIterator end(
+        Square square
+    ) {
+        auto it = SquareIterator(square, square.max());
+        --it.pt_.Y;
+        return it;
+    }
+
     constexpr SquareIterator& operator ++ () noexcept {
-        if (this->isValid()) {
-            ++this->pt_.X;
-            if (this->pt_.X >= this->square_.max().X) {
-                this->pt_.X = this->square_.min().X;
-                ++this->pt_.Y;
-            }
+        ++this->pt_.X;
+        if (this->pt_.X >= this->square_.max().X) {
+            this->pt_.X = this->square_.min().X;
+            ++this->pt_.Y;
         }
         return *this;
     }
 
     constexpr SquareIterator& operator -- () noexcept {
-        if (this->isValid()) {
-            --this->pt_.X;
-            if (this->pt_.X < this->square_.min().X) {
-                this->pt_.X = this->square_.max().X - 1;
-                --this->pt_.Y;
-            }
+        --this->pt_.X;
+        if (this->pt_.X < this->square_.min().X) {
+            this->pt_.X = this->square_.max().X - 1;
+            --this->pt_.Y;
         }
         return *this;
     }
@@ -204,8 +214,12 @@ public:
         return pt_;
     }
 
+    constexpr const Square& square() const noexcept {
+        return square_;
+    }
+
 private:
-    Square square_;
+    const Square square_;
     Point pt_;
 };
 
@@ -290,8 +304,12 @@ public:
         return this->area_;
     }
 
-    SquareIterator areaIterator() const noexcept {
-        return SquareIterator(this->area_);
+    SquareIterator begin() const noexcept {
+        return SquareIterator::begin(this->area_);
+    }
+
+    SquareIterator end() const noexcept {
+        return SquareIterator::end(this->area_);
     }
 
     /**
@@ -310,31 +328,32 @@ public:
         , const CellType initCellValue = CellType()
     ) {
         this->field_.resize(newSize.cube(), initCellValue);
-        auto oldIter = --SquareIterator(this->area_, this->area_.max());
+        auto oldIter = --this->end();
         this->area_ = Square(newSize, this->area_.min() + shift);
-        auto newIter = --SquareIterator(this->area_, this->area_.max());
         using std::swap;
-        while (oldIter.isValid() && newIter.isValid()) {
-            swap(
-                this->at(oldIter.point()),
-                this->at(newIter.point())
-            );
+        while (oldIter.isValid()) {
+            if (this->inRange(oldIter.point())) {
+                auto oldIndex = static_cast<size_t>(signedIndexByPoint(oldIter.point(), oldIter.square()));
+                auto newIndex = static_cast<size_t>(signedIndexByPoint(oldIter.point(), this->area_));
+                swap(
+                    this->field_[oldIndex],
+                    this->field_[newIndex]
+                );
+            }
             --oldIter;
-            --newIter;
         }
     }
 
 private:
     static constexpr inline Measure signedIndexByPoint(
         const Point& pt
-        , const Point& min
-        , const Vector& size
+        , const Square& sq
     ) noexcept {
-        return (pt.X - min.X) + (pt.Y - min.Y) * size.X;
+        return (pt.X - sq.min().X) + (pt.Y - sq.min().Y) * sq.size().X;
     }
 
     size_t safeIndexByPoint(const Point& pt) const {
-        auto signedIndex = signedIndexByPoint(pt, this->min(), this->size());
+        auto signedIndex = signedIndexByPoint(pt, this->area_);
         auto index = static_cast<size_t>(signedIndex);
         if (signedIndex < 0 || index >= this->field_.size()) {
             throw Exception("Access by out range point: ")

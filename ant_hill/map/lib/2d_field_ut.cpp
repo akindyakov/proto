@@ -253,6 +253,89 @@ void fieldResizeTest() {
         Map::PrintToText(out, field);
         UT_ASSERT_EQUAL(rightAnswer, out.str());
     }
+    {
+        std::string text = R"FieldMap(<3,3>
+(0,0)
+012
+345
+678
+)FieldMap";
+        auto in = std::istringstream(text);
+        auto field = Map::ScanFromText<Map::SimpleCell>(in);
+        field.resize(Map::Vector(4,4), Map::Vector(1, 0));
+        std::string rightAnswer = R"FieldMap(<4,4>
+(0,0)
+.012
+.345
+.678
+....
+)FieldMap";
+        auto out = std::ostringstream();
+        Map::PrintToText(out, field);
+        UT_ASSERT_EQUAL(rightAnswer, out.str());
+    }
+    {
+        std::string text = R"FieldMap(<3,3>
+(0,0)
+012
+345
+678
+)FieldMap";
+        auto in = std::istringstream(text);
+        auto field = Map::ScanFromText<Map::SimpleCell>(in);
+        field.resize(Map::Vector(4,4), Map::Vector(0, 1));
+        std::string rightAnswer = R"FieldMap(<4,4>
+(0,0)
+....
+012.
+345.
+678.
+)FieldMap";
+        auto out = std::ostringstream();
+        Map::PrintToText(out, field);
+        UT_ASSERT_EQUAL(rightAnswer, out.str());
+    }
+    {
+        std::string text = R"FieldMap(<3,3>
+(0,0)
+012
+345
+678
+)FieldMap";
+        auto in = std::istringstream(text);
+        auto field = Map::ScanFromText<Map::SimpleCell>(in);
+        field.resize(Map::Vector(4,4), Map::Vector(1, 1));
+        std::string rightAnswer = R"FieldMap(<4,4>
+(0,0)
+....
+.012
+.345
+.678
+)FieldMap";
+        auto out = std::ostringstream();
+        Map::PrintToText(out, field);
+        UT_ASSERT_EQUAL(rightAnswer, out.str());
+    }
+    {
+        std::string text = R"FieldMap(<3,3>
+(0,0)
+012
+345
+678
+)FieldMap";
+        auto in = std::istringstream(text);
+        auto field = Map::ScanFromText<Map::SimpleCell>(in);
+        field.resize(field.size(), Map::Vector(-1, -1));
+        std::string rightAnswer = R"FieldMap(<4,4>
+(0,0)
+45.
+78.
+...
+)FieldMap";
+        auto out = std::ostringstream();
+        Map::PrintToText(out, field);
+        UT_ASSERT_EQUAL(rightAnswer, out.str());
+    }
 }
 
 int main(int argn, char** argv) {
