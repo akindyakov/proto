@@ -4,6 +4,7 @@
 #include "direction.h"
 
 #include <algorithm>
+#include <memory>
 #include <queue>
 
 
