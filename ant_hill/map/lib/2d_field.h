@@ -4,11 +4,8 @@
 
 #include <lib/validate.h>
 
-#include <array>
-#include <cstdint>
 #include <istream>
-#include <memory>
-#include <mutex>
+#include <map>
 #include <ostream>
 #include <vector>
 
@@ -312,13 +309,10 @@ public:
         return SquareIterator::end(this->area_);
     }
 
-    /**
-         ________________
+    /**  ________________
         |    new size    |
         |   __________   |
         |  | old size |  |
-        |  |          |  |
-        |  |          |  |
         |  |__________|  |
         |________________|
     */
@@ -326,41 +320,7 @@ public:
           Vector newSize
         , Vector shift = Vector{0, 0}
         , const CellType initCellValue = CellType()
-    ) {
-        auto cubeDelta = newSize.cube() - this->size().cube();
-        if (cubeDelta > 0) {
-            this->field_.resize(newSize.cube(), initCellValue);
-        }
-
-        auto leftOrUp = shift.X < 0 || shift.Y < 0;
-
-        auto oldIter = leftOrUp ? this->begin() : --this->end();
-        //auto oldIter = this->begin();
-        this->area_ = Square(newSize, this->area_.min() - shift);
-        std::cerr << std::endl;
-        using std::swap;
-        while (oldIter.isValid()) {
-            const auto& point = oldIter.point();
-            std::cerr << "point: " << point << std::endl;
-            if (this->inRange(point)) {
-                auto oldIndex = static_cast<size_t>(signedIndexByPoint(point, oldIter.square()));
-                auto newIndex = static_cast<size_t>(signedIndexByPoint(point, this->area_));
-                std::cerr << "oldIndex: " << oldIndex << std::endl;
-                std::cerr << "newIndex: " << newIndex << std::endl;
-                std::cerr << "ch: " << this->field_[oldIndex] << std::endl;
-                swap(
-                    this->field_[oldIndex],
-                    this->field_[newIndex]
-                );
-            }
-            leftOrUp ? ++oldIter : --oldIter;
-            //++oldIter;
-        }
-
-        if (cubeDelta < 0) {
-            this->field_.resize(newSize.cube(), initCellValue);
-        }
-    }
+    );
 
 private:
     static constexpr inline Measure signedIndexByPoint(

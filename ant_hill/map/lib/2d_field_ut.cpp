@@ -326,9 +326,9 @@ void fieldResizeTest() {
         field.resize(field.size(), Map::Vector(1, 1));
         std::string rightAnswer = R"FieldMap(<3,3>
 (-1,-1)
-852
-701
-634
+...
+.01
+.34
 )FieldMap";
         auto out = std::ostringstream();
         Map::PrintToText(out, field);
@@ -346,9 +346,9 @@ void fieldResizeTest() {
         field.resize(field.size(), Map::Vector(-1, -1));
         std::string rightAnswer = R"FieldMap(<3,3>
 (1,1)
-452
-781
-630
+45.
+78.
+...
 )FieldMap";
         auto out = std::ostringstream();
         Map::PrintToText(out, field);
@@ -369,6 +369,27 @@ void fieldResizeTest() {
 01
 34
 67
+)FieldMap";
+        auto out = std::ostringstream();
+        Map::PrintToText(out, field);
+        UT_ASSERT_EQUAL(out.str(), rightAnswer);
+    }
+    {
+        std::string text = R"FieldMap(<3,3>
+(0,0)
+012
+345
+678
+)FieldMap";
+        auto in = std::istringstream(text);
+        auto field = Map::ScanFromText<Map::SimpleCell>(in);
+        field.resize(Map::Vector(1, 4), Map::Vector(-2, -1));
+        std::string rightAnswer = R"FieldMap(<1,4>
+(2,1)
+5
+8
+.
+.
 )FieldMap";
         auto out = std::ostringstream();
         Map::PrintToText(out, field);
