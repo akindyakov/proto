@@ -26,8 +26,8 @@ $(PRODUCT)/world.o: world.cpp world.h direction.h map_symbols.h 2d_field.h
 $(PRODUCT)/snake.o: snake.cpp snake.h world.h chain.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/2d_field_ut.o: 2d_field_ut.cpp
-	$(CC) -c -o $@ $^
+$(PRODUCT)/2d_field_ut.o: 2d_field_ut.cpp 2d_field.h
+	$(CC) -c -o $@ $<
 
 $(PRODUCT)/direction_ut.o: direction_ut.cpp
 	$(CC) -c -o $@ $<

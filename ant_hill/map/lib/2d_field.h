@@ -327,20 +327,38 @@ public:
         , Vector shift = Vector{0, 0}
         , const CellType initCellValue = CellType()
     ) {
-        this->field_.resize(newSize.cube(), initCellValue);
-        auto oldIter = --this->end();
-        this->area_ = Square(newSize, this->area_.min() + shift);
+        auto cubeDelta = newSize.cube() - this->size().cube();
+        if (cubeDelta > 0) {
+            this->field_.resize(newSize.cube(), initCellValue);
+        }
+
+        auto leftOrUp = shift.X < 0 || shift.Y < 0;
+
+        auto oldIter = leftOrUp ? this->begin() : --this->end();
+        //auto oldIter = this->begin();
+        this->area_ = Square(newSize, this->area_.min() - shift);
+        std::cerr << std::endl;
         using std::swap;
         while (oldIter.isValid()) {
-            if (this->inRange(oldIter.point())) {
-                auto oldIndex = static_cast<size_t>(signedIndexByPoint(oldIter.point(), oldIter.square()));
-                auto newIndex = static_cast<size_t>(signedIndexByPoint(oldIter.point(), this->area_));
+            const auto& point = oldIter.point();
+            std::cerr << "point: " << point << std::endl;
+            if (this->inRange(point)) {
+                auto oldIndex = static_cast<size_t>(signedIndexByPoint(point, oldIter.square()));
+                auto newIndex = static_cast<size_t>(signedIndexByPoint(point, this->area_));
+                std::cerr << "oldIndex: " << oldIndex << std::endl;
+                std::cerr << "newIndex: " << newIndex << std::endl;
+                std::cerr << "ch: " << this->field_[oldIndex] << std::endl;
                 swap(
                     this->field_[oldIndex],
                     this->field_[newIndex]
                 );
             }
-            --oldIter;
+            leftOrUp ? ++oldIter : --oldIter;
+            //++oldIter;
+        }
+
+        if (cubeDelta < 0) {
+            this->field_.resize(newSize.cube(), initCellValue);
         }
     }
 
