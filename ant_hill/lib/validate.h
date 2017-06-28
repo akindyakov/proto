@@ -9,6 +9,19 @@ namespace Lib {
 
 template<
     typename FirstT
+    , typename ExceptionType = Exception
+>
+inline void validateTrue(
+    const FirstT& value
+    , ExceptionType error = ExceptionType{}
+) {
+    if (!value) {
+        throw error << "[" << Lib::toString(value) << "] is suppose to be true";
+    }
+}
+
+template<
+    typename FirstT
     , typename SecondT
     , typename ExceptionType = Exception
 >

@@ -17,6 +17,15 @@ public:
     virtual ~UTFailure() = default;
 };
 
+#define UT_ASSERT(value) \
+    Lib::validateTrue( \
+        value, \
+        UTFailure( \
+            __FILE__, \
+            __LINE__ \
+        ) \
+    ); \
+
 #define UT_ASSERT_EQUAL(value, gold) \
     Lib::validateEqual( \
         value, \
