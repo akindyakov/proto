@@ -6,8 +6,8 @@
 
 #include <lib/exception.h>
 
-#include <thread>
 #include <chrono>
+#include <thread>
 
 
 namespace Ant {
@@ -144,8 +144,8 @@ Location::Location(
         )
     )
     , grid_(
-        Map::Vector(sectionSideSize, sectionSideSize),
-        Map::Point(sectionSideSize/-2, sectionSideSize/-2)
+        Map::Vector(7, 7),
+        Map::Point(-3, -3)
     )
 {
     auto body = snake_.getBody();
@@ -215,8 +215,10 @@ const DiscoveredCell& Location::lookTo(
     , size_t segment
 ) {
     auto pt = this->snake_.lookTo(direction, segment);
+    if (!this->grid_.inRange(pt)) {
+        this->grid_.extendFor(pt);
+    }
     auto& cell = this->grid_.at(pt);
-
     auto resp = this->client_.lookTo(direction, segment);
     if (resp.forbidden) {
         // FIXME: use fullsize status bitset here
@@ -264,7 +266,6 @@ Scout::Scout(
     )
 {
 }
-
 
 void Scout::findTheWall() {
 }
