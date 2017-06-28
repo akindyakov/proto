@@ -43,6 +43,58 @@ void compareTest() {
     );
 }
 
+void vectorAbsTest() {
+    std::cerr << " - vectorAbsTest\n";
+    UT_ASSERT_EQUAL(
+        Map::Vector(28, 21).abs(),
+        Map::Vector(28, 21)
+    );
+    UT_ASSERT_EQUAL(
+        Map::Vector(-35, 81).abs(),
+        Map::Vector( 35, 81)
+    );
+    UT_ASSERT_EQUAL(
+        Map::Vector(-97, -22).abs(),
+        Map::Vector( 97,  22)
+    );
+}
+
+void vectorInverseTest() {
+    std::cerr << " - vectorInverseTest\n";
+    UT_ASSERT_EQUAL(
+        Map::Vector( 28,  21).inverse(),
+        Map::Vector(-28, -21)
+    );
+    UT_ASSERT_EQUAL(
+        Map::Vector(-35,  81).inverse(),
+        Map::Vector( 35, -81)
+    );
+    UT_ASSERT_EQUAL(
+        Map::Vector(-97, -22).inverse(),
+        Map::Vector( 97,  22)
+    );
+    static_assert(
+        Map::Vector(-97, -22).inverse() == Map::Vector( 97,  22),
+        "is suppose to be equal"
+    );
+}
+
+void vectorNormalizeTest() {
+    std::cerr << " - vectorNormalizeTest\n";
+    UT_ASSERT_EQUAL(
+        Map::Vector(28, 21).normalize(),
+        Map::Vector( 1,  1)
+    );
+    UT_ASSERT_EQUAL(
+        Map::Vector(-35, 81).normalize(),
+        Map::Vector( -1,  1)
+    );
+    UT_ASSERT_EQUAL(
+        Map::Vector(0, -22).normalize(),
+        Map::Vector(0,  -1)
+    );
+}
+
 void pointStreamIO() {
     std::cerr << " - pointStreamIO\n";
     std::string text = "  ( -123   ,   289 )";
@@ -397,9 +449,66 @@ void fieldResizeTest() {
     }
 }
 
+void fieldExtendForTest() {
+    std::cerr << " - fieldExtendForTest\n";
+    {
+        auto field = Map::Field<Map::SimpleCell>(
+            Map::Vector(2, 2),
+            Map::Point(0, 0)
+        );
+        UT_ASSERT(field.inRange(Map::Point(1, 1)));
+        const auto pt0 = Map::Point(2, 2);
+        UT_ASSERT(!field.inRange(pt0));
+        field.extendFor(pt0);
+        UT_ASSERT(field.inRange(pt0));
+
+        const auto pt1 = Map::Point(0, 22);
+        UT_ASSERT(!field.inRange(pt1));
+        field.extendFor(pt1);
+        UT_ASSERT(field.inRange(pt1));
+        UT_ASSERT(!field.inRange(Map::Point(10, 22)));
+    }
+    {
+        auto field = Map::Field<Map::SimpleCell>(
+            Map::Vector(2, 2),
+            Map::Point(0, 0)
+        );
+        const auto pt = Map::Point(-1, 1);
+        UT_ASSERT(!field.inRange(pt));
+        field.extendFor(pt);
+        UT_ASSERT(field.inRange(pt));
+    }
+    {
+        std::string text = R"FieldMap(<2,2>
+(0,0)
+01
+23
+)FieldMap";
+        auto in = std::istringstream(text);
+        auto field = Map::ScanFromText<Map::SimpleCell>(in);
+        const auto pt = Map::Point(-1, -1);
+        UT_ASSERT(!field.inRange(pt));
+        field.extendFor(pt);
+        UT_ASSERT(field.inRange(pt));
+        std::string rightAnswer = R"FieldMap(<4,4>
+(-2,-2)
+....
+....
+..01
+..23
+)FieldMap";
+        auto out = std::ostringstream();
+        Map::PrintToText(out, field);
+        UT_ASSERT_EQUAL(out.str(), rightAnswer);
+    }
+}
+
 int main(int argn, char** argv) {
     try {
         std::cerr << "2d_field_ut:\n";
+        vectorAbsTest();
+        vectorInverseTest();
+        vectorNormalizeTest();
         pointStreamIO();
         vectorStreamIO();
         inRangeFieldTest();
@@ -408,6 +517,7 @@ int main(int argn, char** argv) {
         squareIteratorTest();
         squareIteratorConstexprTest();
         fieldResizeTest();
+        fieldExtendForTest();
         std::cerr << std::endl;
     } catch (const std::exception& except) {
         std::cerr << except.what() << std::endl;

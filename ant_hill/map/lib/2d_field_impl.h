@@ -67,6 +67,39 @@ void Field<TCell>::resize(
     }
 }
 
+template<
+    typename TCell
+>
+void Field<TCell>::extendFor(
+    const Point& pt
+    , CellType initCellValue
+) {
+    const auto max = this->max();
+    const auto min = this->min();
+    auto shift = Vector{0, 0};
+    auto newSize = this->size();
+    // FIXME: remove copy-paste here please
+    if (pt.X < min.X) {
+        newSize.X += min.X - pt.X;
+        newSize.X = (newSize.X * 7) / 5;
+        shift.X = this->size().X - newSize.X;
+    } else if (pt.X >= max.X) {
+        newSize.X += pt.X - max.X + 1;
+        newSize.X = (newSize.X * 7) / 5;
+    }
+    if (pt.Y < min.Y) {
+        newSize.Y += min.Y - pt.Y;
+        newSize.Y = (newSize.Y * 7) / 5;
+        shift.Y = this->size().Y - newSize.Y;
+    } else if (pt.Y >= max.Y) {
+        newSize.Y += pt.Y - max.Y + 1;
+        newSize.Y = (newSize.Y * 7) / 5;
+    }
+    if (newSize != this->size()) {
+        this->resize(newSize, shift.inverse(), std::move(initCellValue));
+    }
+}
+
 template<typename TCell>
 Field<TCell> ScanFromText(std::istream& is) {
     auto size = Vector{0, 0};

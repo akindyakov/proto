@@ -4,6 +4,7 @@
 
 #include <lib/validate.h>
 
+#include <cstdlib>
 #include <istream>
 #include <map>
 #include <ostream>
@@ -79,6 +80,20 @@ public:
         return X * Y;
     }
 
+    constexpr Vector inverse() const noexcept {
+        return Vector{-this->X, -this->Y};
+    }
+
+    Vector abs() const noexcept {
+        return Vector{std::abs(X), std::abs(Y)};
+    }
+
+    Vector normalize() const noexcept {
+        return Vector{
+            this->X == 0 ? 0 : this->X / std::abs(this->X),
+            this->Y == 0 ? 0 : this->Y / std::abs(this->Y)
+        };
+    }
 };
 
 constexpr bool operator!=(const Vector& first, const Vector& second) noexcept {
@@ -310,16 +325,23 @@ public:
     }
 
     /**  ________________
-        |    new size    |
-        |   __________   |
-        |  | old size |  |
-        |  |__________|  |
-        |________________|
+    *   |\   new size    |
+    *   | \ __________   |
+    *   |  | old size |  |
+    *   |  |__________|  |
+    *   |________________|
+    *
+    *   @shift - Vector from new min to old
     */
     void resize(
           Vector newSize
         , Vector shift = Vector{0, 0}
         , const CellType initCellValue = CellType()
+    );
+
+    void extendFor(
+        const Point& pt
+        , CellType initCellValue = CellType()
     );
 
 private:
