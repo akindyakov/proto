@@ -167,7 +167,7 @@ bool Location::frontMove(
     }) {
         this->lookTo(dir);
     }
-    /*dbg*/ std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    /*dbg*/ std::this_thread::sleep_for(std::chrono::milliseconds(100));
     /*dbg*/ printMap(std::cerr);
     return success;
 }
@@ -187,7 +187,7 @@ bool Location::backMove(
     }) {
         this->lookTo(dir, lastSegment);
     }
-    /*dbg*/ std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    /*dbg*/ std::this_thread::sleep_for(std::chrono::milliseconds(100));
     /*dbg*/ printMap(std::cerr);
     return success;
 }

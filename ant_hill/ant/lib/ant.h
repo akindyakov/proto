@@ -63,6 +63,8 @@ public:
 
 std::ostream& operator<<(std::ostream& out, const DiscoveredCell& cell);
 
+using FieldInMemory = Map::Field<DiscoveredCell>;
+
 class Location
 {
 public:
@@ -113,14 +115,12 @@ public:
     void printMap(std::ostream& out);
 
 public:
-    using FieldType = Map::Field<DiscoveredCell>;
-    using SnakeType = Map::SnakeObj<FieldType>;
+    using SnakeType = Map::SnakeObj<FieldInMemory>;
 
 private:
     LocationClient client_;
     SnakeType snake_;
-    FieldType grid_;
-    Map::Chain<Map::RelativeDirection, Map::EMaterial> chain_;
+    FieldInMemory grid_;
 
 public:
     static const DiscoveredCell UnknownCell;
@@ -166,6 +166,14 @@ private:
         const Map::Point& where
         , Map::Measure maxDist
     );
+
+//   Square findBuildingYard(
+//       Map::Vector size
+//   ) const;
+//
+//   void collectRareElement(
+//       Map::Vector size
+//   ) const;
 
 private:
     Location location;
