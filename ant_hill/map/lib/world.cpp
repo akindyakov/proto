@@ -69,7 +69,7 @@ World::World(
             fieldStream
         )
     )
-    , objects_(128, ObjectHash)
+    , objects_(128)
     , nextFreeId_(ObjectId::Invalid().id + 1)
 {
 }

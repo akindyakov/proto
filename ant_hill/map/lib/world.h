@@ -30,7 +30,7 @@ public:
     {
     }
 
-    constexpr bool isValid() noexcept {
+    constexpr bool isValid() const noexcept {
         return id != InvalidId_;
     }
 
@@ -75,8 +75,11 @@ struct WorldCell {
     ObjectId objectId = ObjectId::Invalid();
 };
 
-const auto ObjectHash = [](const ObjectId& id) {
-    return std::hash<ObjectId::Type>{}(id.id);
+class ObjectIdHash {
+public:
+    auto operator()(const ObjectId& id) const {
+        return std::hash<ObjectId::Type>{}(id.id);
+    }
 };
 
 class World
@@ -97,7 +100,7 @@ private:
     std::unordered_map<
         ObjectId,
         std::shared_ptr<SnakeType>,
-        decltype(ObjectHash)
+        ObjectIdHash
     > objects_;
     std::atomic<ObjectId::Type> nextFreeId_;
 
