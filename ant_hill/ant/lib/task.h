@@ -2,6 +2,7 @@
 
 #include "ant.h"
 
+#include <lib/iter_range.h>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -9,81 +10,7 @@
 
 namespace Ant {
 
-template<
-    typename IteratorType
->
-class IterRange {
-public:
-    explicit IterRange(
-        IteratorType begin
-        , IteratorType end
-    )
-        : begin_(begin)
-        , end_(end)
-    {
-    }
-
-    IteratorType begin() const {
-        return begin_;
-    }
-    IteratorType cbegin() const {
-        return begin_;
-    }
-    IteratorType end() const {
-        return end_;
-    }
-    IteratorType cend() const {
-        return end_;
-    }
-    IteratorType& begin() {
-        return begin_;
-    }
-    IteratorType& end() {
-        return end_;
-    }
-
-private:
-    IteratorType begin_;
-    IteratorType end_;
-};
-
-template<
-    typename IteratorType
->
-auto makeIterRange(
-    IteratorType begin
-    , IteratorType end
-)
-{
-    return IterRange<IteratorType>(
-        std::move(begin), std::move(end)
-    );
-}
-
-template<
-    typename TContainer
->
-auto makeIterRange(
-    TContainer& cont
-)
-{
-    return IterRange<decltype(cont.begin())>(
-        cont.begin(), cont.end()
-    );
-}
-
-template<typename TContainer>
-auto makeIterRange(
-    const TContainer& cont
-)
-{
-    return IterRange<decltype(cont.cbegin())>(
-        cont.begin(), cont.end()
-    );
-}
-
 class ITask;
-//using TaskId = long int;
 
 class TaskId
 {
@@ -153,7 +80,7 @@ public:
     using DependencesList = std::unordered_set<TaskId, TaskIdHash>;
     virtual const DependencesList& dependences() const = 0;
 
-    using DepIterRangeType = IterRange<DependencesList::const_iterator>;
+    using DepIterRangeType = Lib::IterRange<DependencesList::const_iterator>;
     virtual DepIterRangeType dependOn() const = 0;
 
     virtual ~ITask() = default;
@@ -177,7 +104,7 @@ public:
     }
 
     inline ITask::DepIterRangeType dependOn() const override {
-        return makeIterRange(dependences_);
+        return Lib::makeIterRange(dependences_);
     }
 };
 
@@ -221,9 +148,9 @@ class LookAround
 //     explicit ConstructionTask(
 //         Map::Field<Map::EMaterial> plan
 //     );
-// 
+//
 //     BearTask next();
-// 
+//
 // private:
 //     const FieldInMemory& fieldRef;
 // };
@@ -232,17 +159,14 @@ class LookAround
 *   struct CompletedTask {
 *       Map::ObjectId WorkerId;
 *   };
-*
 *   struct WaitingDependsTask {
 *       // who wants to know ?
 *       std::unordered_set<Map::ObjectId> subscribers;
 *   };
-*
 *   struct WaitingRunTask {
 *       // who wants to know ?
 *       std::unordered_set<Map::ObjectId> subscribers;
 *   };
-*
 *   struct InProgressTask {
 *       Map::ObjectId WorkerId;
 *       // who wants to know ?
