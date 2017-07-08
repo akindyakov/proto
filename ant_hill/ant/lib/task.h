@@ -10,18 +10,7 @@
 
 namespace Ant {
 
-struct AntState {
-public:
-    explicit AntState(
-        Location location_
-    )
-        : location(std::move(location_))
-    {
-    }
-
-public:
-    Location location;
-};
+class AntState;
 
 class ITask;
 
@@ -138,36 +127,6 @@ public:
     void run(AntState&) const override {
     }
 };
-
-class LookAroundTask
-    : public TaskDependences
-{
-    void run(AntState& state) const override {
-        discoverSomeSpace(state.location);
-    }
-};
-
-// class BearTask
-//     : public ITask
-// {
-// public:
-//     Map::EMaterial what;
-//     Map::Point toWhere;
-// };
-//
-// class ConstructionTask
-//     : public ITask
-// {
-// public:
-//     explicit ConstructionTask(
-//         Map::Field<Map::EMaterial> plan
-//     );
-//
-//     BearTask next();
-//
-// private:
-//     const FieldInMemory& fieldRef;
-// };
 
 /**
 *   struct CompletedTask {
@@ -298,5 +257,22 @@ private:
     // set of completed task to understanding what dependency is satisfied
     std::unordered_map<TaskId, CompletedTask, TaskIdHash> completedTasks;
 };
+
+class AntState {
+public:
+    explicit AntState(
+        Location location_
+        , const TaskLibrary& taskLibrary
+    )
+        : location(std::move(location_))
+        , taskManager(taskLibrary)
+    {
+    }
+
+public:
+    Location location;
+    TaskEmploymentService taskManager;
+};
+
 
 }  // namespace Ant

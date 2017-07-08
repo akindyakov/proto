@@ -134,18 +134,4 @@ public:
     static const DiscoveredCell UnknownCell;
 };
 
-bool discoverSomeSpace(
-    Location& location
-);
-
-bool followTheWay(
-    Location& location
-    , const Map::RelativeDirectionCurve& way
-);
-
-bool followTheWayBack(
-    Location& location
-    , const Map::RelativeDirectionCurve& way
-);
-
 }  // namespace Ant

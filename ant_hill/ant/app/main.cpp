@@ -2,6 +2,7 @@
 
 #include <ant/lib/location.h>
 #include <ant/lib/task.h>
+#include <ant/lib/movements.h>
 
 #include <map/rpc/client.h>
 
@@ -14,22 +15,23 @@
 void runWorker(
     Map::JsonRPCClient& client
 ) {
-    auto state = Ant::AntState(
-        Ant::Location(
-            Ant::LocationClient(client)
-        )
-    );
     auto taskLib = Ant::TaskLibrary{};
     auto firstTaskId = Ant::TaskId{1};
     taskLib.emplace(
         firstTaskId,
         std::make_unique<Ant::LookAroundTask>()
     );
-    auto manager = Ant::TaskEmploymentService(taskLib);
-    manager.add(state.location.id(), firstTaskId);
+
+    auto state = Ant::AntState(
+        Ant::Location(
+            Ant::LocationClient(client)
+        ),
+        taskLib
+    );
+    state.taskManager.add(state.location.id(), firstTaskId);
 
     while (true) {
-        auto taskId = manager.obtain(state.location.id());
+        auto taskId = state.taskManager.obtain(state.location.id());
         if (!taskId.isValid()) {
             return;
         }

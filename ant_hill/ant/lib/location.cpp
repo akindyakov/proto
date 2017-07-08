@@ -1,4 +1,4 @@
-#include "ant.h"
+#include "location.h"
 
 #include <map/lib/find_a_way.h>
 #include <map/lib/map_symbols.h>
@@ -304,58 +304,6 @@ Location::findMaterial(
         way,
         this->snake_.forward()
     );
-}
-
-bool followTheWay(
-    Location& location
-    , const Map::RelativeDirectionCurve& way
-) {
-    for (const auto& to : way) {
-        if (!location.frontMove(to)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool followTheWayBack(
-    Location& location
-    , const Map::RelativeDirectionCurve& way
-) {
-    for (auto to : way) {
-        if (to == Map::RelativeDirection::Forward()) {
-            to = to.Inverse();
-        }
-        if (!location.backMove(to)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool discoverSomeSpace(
-    Location& location
-) {
-    while (true) {
-        auto way = location.findMaterial(
-            location.whereAmI(),
-            Map::EMaterial::Unknown
-        );
-        if (!way.empty()) {
-            followTheWay(location, way);
-        } else {
-            way = location.findMaterial(
-                location.whereIsMyTail(),
-                Map::EMaterial::Unknown
-            );
-            if (!way.empty()) {
-                followTheWayBack(location, way);
-            } else {
-                return true;
-            }
-        }
-    }
-    return false;
 }
 
 }  // namespace Ant

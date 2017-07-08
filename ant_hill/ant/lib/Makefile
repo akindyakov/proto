@@ -4,9 +4,9 @@ PRODUCT = $(ABS_PRODUCT)/ant/lib
 
 all: prepare $(PRODUCT)/libant.a ut
 
-ut: $(PRODUCT)/location_ut $(PRODUCT)/task_ut
+ut: $(PRODUCT)/location_ut $(PRODUCT)/task_ut $(PRODUCT)/movements_ut
 
-$(PRODUCT)/libant.a: $(PRODUCT)/ant.o $(PRODUCT)/task.o
+$(PRODUCT)/libant.a: $(PRODUCT)/location.o $(PRODUCT)/task.o $(PRODUCT)/movements.o
 	ar rcs $@ $^
 
 $(PRODUCT)/location.o: location.cpp location.h
@@ -25,6 +25,15 @@ $(PRODUCT)/task_ut.o: task_ut.cpp task.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/task_ut: $(PRODUCT)/task_ut.o $(PRODUCT)/libant.a
+	$(CC) -o $@ $^ $(ABS_PRODUCT)/map/lib/libmap.a
+
+$(PRODUCT)/movements.o: movements.cpp movements.h
+	$(CC) -c -o $@ $<
+
+$(PRODUCT)/movements_ut.o: movements_ut.cpp movements.h
+	$(CC) -c -o $@ $<
+
+$(PRODUCT)/movements_ut: $(PRODUCT)/movements_ut.o $(PRODUCT)/libant.a
 	$(CC) -o $@ $^ $(ABS_PRODUCT)/map/lib/libmap.a
 
 clear:
