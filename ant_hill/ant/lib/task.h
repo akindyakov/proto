@@ -148,7 +148,9 @@ class ITask
 public:
     virtual void run() const = 0;
 
-    using DependencesList = std::vector<TaskId>;
+    virtual void setDependsOn(TaskId id) = 0;
+
+    using DependencesList = std::unordered_set<TaskId, TaskIdHash>;
     virtual const DependencesList& dependences() const = 0;
 
     using DepIterRangeType = IterRange<DependencesList::const_iterator>;
@@ -157,9 +159,26 @@ public:
     virtual ~ITask() = default;
 };
 
-struct TaskDependences
+class TaskDependences
+    : public ITask
 {
+public:
     ITask::DependencesList dependences_;
+
+public:
+    void setDependsOn(TaskId depId) override {
+        this->dependences_.insert(
+            std::move(depId)
+        );
+    }
+
+    inline const ITask::DependencesList& dependences() const override {
+        return dependences_;
+    }
+
+    inline ITask::DepIterRangeType dependOn() const override {
+        return makeIterRange(dependences_);
+    }
 };
 
 using TaskLibrary = std::unordered_map<
@@ -169,8 +188,7 @@ using TaskLibrary = std::unordered_map<
 >;
 
 class EmptyTask
-    : public ITask
-    , public TaskDependences
+    : public TaskDependences
 {
 public:
     explicit EmptyTask() = default;
@@ -179,21 +197,15 @@ public:
 
     void run() const override {
     }
+};
 
-    const ITask::DependencesList& dependences() const override {
-        return dependences_;
-    }
-
-    ITask::DepIterRangeType dependOn() const override {
-        return makeIterRange(dependences_);
+class LookAround
+    : public TaskDependences
+{
+    void run() const override {
     }
 };
 
-// class LookAround
-//     : public ITask
-// {
-// };
-// 
 // class BearTask
 //     : public ITask
 // {
@@ -201,7 +213,7 @@ public:
 //     Map::EMaterial what;
 //     Map::Point toWhere;
 // };
-// 
+//
 // class ConstructionTask
 //     : public ITask
 // {
@@ -262,6 +274,12 @@ public:
     {
     }
 
+    bool isBelongsTo(
+        Map::ObjectId id
+    ) {
+        return this->workerId_ == id;
+    }
+
     void resetWorker(
         Map::ObjectId id = Map::ObjectId::Invalid()
     ) {
@@ -281,6 +299,7 @@ public:
 
     void subscribe(TaskId id) {
         subscribers.insert(id);
+        //*dbg*/ std::cerr << "subscribers number is " << subscribers.size() << '\n';
     }
 
 private:
@@ -289,6 +308,7 @@ private:
 
 public:
     std::unordered_set<TaskId, TaskIdHash> dependences;
+    // could vector be here instead of set?
     std::unordered_set<TaskId, TaskIdHash> subscribers;
 };
 
@@ -311,15 +331,18 @@ public:
         Map::ObjectId autorId
         , TaskId taskId
     ) {
+        //*dbg*/ std::cerr << "add: " << taskId << std::endl;
         auto taskIter = tasks.find(taskId);
         if (taskIter == tasks.end()) {
             taskIter = tasks.emplace(
                 taskId, TaskInQueue(autorId)
             ).first;
-            for (const auto& dep : taskLibrary_.at(taskId)->dependences()) {
+            for (const auto& dep : taskLibrary_.at(taskId)->dependOn()) {
+                //*dbg*/ std::cerr << "depend on: " << dep << '\n';
                 if (!completedTasks.count(dep)) {
                     taskIter->second.dependences.insert(dep);
-                    auto depTask = add(autorId, dep);
+                    auto& depTask = add(autorId, dep);
+                    //*dbg*/ std::cerr << " - " << dep << " is not completed, so subscribe " << taskId << "\n";
                     depTask.subscribe(taskId);
                 }
             }
@@ -348,11 +371,17 @@ public:
         , TaskId taskId
     ) {
         auto taskIter = tasks.find(taskId);
-        if (taskIter != tasks.end()) {
+        if (
+            taskIter != tasks.end()
+            && taskIter->second.inProgress()
+            && taskIter->second.isBelongsTo(id)
+        ) {
+            //*dbg*/ std::cerr << "task (" << taskId << ") is exist, inProgress and so on\n";
             completedTasks.emplace(
                 taskId, CompletedTask(id)
             );
             for (const auto& subId : taskIter->second.subscribers) {
+                //*dbg*/ std::cerr << "subId: " << subId << '\n';
                 auto& task = tasks.at(subId);
                 task.satisfy(taskId);
                 if (task.isReady()) {
