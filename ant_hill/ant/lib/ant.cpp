@@ -258,21 +258,6 @@ void Location::printMap(std::ostream& out) {
     Map::PrintToText(out, this->grid_);
 }
 
-Scout::Scout(
-    Map::JsonRPCClient& client
-)
-    : location(
-        LocationClient(client)
-    )
-{
-}
-
-void Scout::findTheWall() {
-}
-
-void Scout::moveAlongTheWall() {
-}
-
 Map::Point
 Location::findFreeSpace(
     const Map::Point& where
@@ -321,56 +306,55 @@ Location::findMaterial(
     );
 }
 
-bool Scout::followTheWay(
-    const Map::RelativeDirectionCurve& way
+bool followTheWay(
+    Location& location
+    , const Map::RelativeDirectionCurve& way
 ) {
     for (const auto& to : way) {
-        if (!this->location.frontMove(to)) {
+        if (!location.frontMove(to)) {
             return false;
         }
     }
     return true;
 }
 
-bool Scout::followTheWayBack(
-    const Map::RelativeDirectionCurve& way
+bool followTheWayBack(
+    Location& location
+    , const Map::RelativeDirectionCurve& way
 ) {
     for (auto to : way) {
         if (to == Map::RelativeDirection::Forward()) {
             to = to.Inverse();
         }
-        if (!this->location.backMove(to)) {
+        if (!location.backMove(to)) {
             return false;
         }
     }
     return true;
 }
 
-bool Scout::discoverSomeSpace() {
+bool discoverSomeSpace(
+    Location& location
+) {
     while (true) {
-        auto way = this->location.findMaterial(
-            this->location.whereAmI(),
+        auto way = location.findMaterial(
+            location.whereAmI(),
             Map::EMaterial::Unknown
         );
         if (!way.empty()) {
-            followTheWay(way);
+            followTheWay(location, way);
         } else {
-            way = this->location.findMaterial(
-                this->location.whereIsMyTail(),
+            way = location.findMaterial(
+                location.whereIsMyTail(),
                 Map::EMaterial::Unknown
             );
             if (!way.empty()) {
-                followTheWayBack(way);
+                followTheWayBack(location, way);
             } else {
                 return true;
             }
         }
     }
-    return false;
-}
-
-bool Scout::run() {
-    discoverSomeSpace();
     return false;
 }
 

@@ -46,6 +46,10 @@ public:
 
     Map::RelativeDirectionCurve getPose();
 
+    Map::ObjectId id() const noexcept {
+        return this->id_;
+    }
+
 private:
     Map::JsonRPCClient& client_;
     Map::ObjectId id_;
@@ -114,6 +118,10 @@ public:
 
     void printMap(std::ostream& out);
 
+    Map::ObjectId id() const noexcept {
+        return this->client_.id();
+    }
+
 public:
     using SnakeType = Map::SnakeObj<FieldInMemory>;
 
@@ -126,57 +134,18 @@ public:
     static const DiscoveredCell UnknownCell;
 };
 
-class Scout
-{
-public:
-    explicit Scout(
-        Map::JsonRPCClient& client
-    );
+bool discoverSomeSpace(
+    Location& location
+);
 
-    ~Scout() = default;
+bool followTheWay(
+    Location& location
+    , const Map::RelativeDirectionCurve& way
+);
 
-    Scout(const Scout&) = delete;
-    Scout(Scout&&) = default;
-    Scout& operator=(const Scout&) = delete;
-    Scout& operator=(Scout&&) = default;
-
-    bool run();
-
-    void printMap(std::ostream& out) {
-        location.printMap(out);
-    }
-
-private:
-    void findTheWall();
-    void moveAlongTheWall();
-    bool followTheWay(
-        const Map::RelativeDirectionCurve& way
-    );
-
-    /**
-    * @way - this is the normal way
-    */
-    bool followTheWayBack(
-        const Map::RelativeDirectionCurve& way
-    );
-    bool discoverSomeSpace();
-
-    Map::RelativeDirectionCurve
-    findFreeSpace(
-        const Map::Point& where
-        , Map::Measure maxDist
-    );
-
-//   Square findBuildingYard(
-//       Map::Vector size
-//   ) const;
-//
-//   void collectRareElement(
-//       Map::Vector size
-//   ) const;
-
-private:
-    Location location;
-};
+bool followTheWayBack(
+    Location& location
+    , const Map::RelativeDirectionCurve& way
+);
 
 }  // namespace Ant

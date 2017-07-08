@@ -1,6 +1,7 @@
 #include "args.h"
 
 #include <ant/lib/ant.h>
+#include <ant/lib/task.h>
 
 #include <map/rpc/client.h>
 
@@ -10,32 +11,40 @@
 #include <thread>
 #include <chrono>
 
+void runWorker(
+    Map::JsonRPCClient& client
+) {
+    auto state = Ant::AntState(
+        Ant::Location(
+            Ant::LocationClient(client)
+        )
+    );
+    auto taskLib = Ant::TaskLibrary{};
+    auto firstTaskId = Ant::TaskId{1};
+    taskLib.emplace(
+        firstTaskId,
+        std::make_unique<Ant::LookAroundTask>()
+    );
+    auto manager = Ant::TaskEmploymentService(taskLib);
+    manager.add(state.location.id(), firstTaskId);
+
+    while (true) {
+        auto taskId = manager.obtain(state.location.id());
+        if (!taskId.isValid()) {
+            return;
+        }
+        auto& task = taskLib.at(taskId);
+        task->run(state);
+    }
+}
 
 int main(int argn, char** argv) {
-
     auto args = Argparse(argn, argv);
     if (!std::get<1>(args)) {
         return 1;
     }
-
     using namespace std::chrono_literals;
     auto httpclient = jsonrpc::HttpClient("http://localhost:8383");
     auto client = Map::JsonRPCClient{httpclient};
-    auto ant = Ant::Scout(client);
-    try {
-        while (ant.run()) {
-            ant.printMap(std::cout);
-            std::this_thread::sleep_for(std::chrono::milliseconds{200});
-        }
-        //while (ant.run()) {
-           //auto start = std::chrono::high_resolution_clock::now();
-           //auto end = std::chrono::high_resolution_clock::now();
-           //std::chrono::duration<double, std::milli> elapsed = end - start;
-           //std::cout << "Ping: " << elapsed.count() << "ms" << std::endl;
-        //}
-    }
-    catch (const jsonrpc::JsonRpcException& err)
-    {
-        std::cerr << err.what() << std::endl;
-    }
+    runWorker(client);
 }

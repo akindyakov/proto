@@ -10,6 +10,19 @@
 
 namespace Ant {
 
+struct AntState {
+public:
+    explicit AntState(
+        Location location_
+    )
+        : location(std::move(location_))
+    {
+    }
+
+public:
+    Location location;
+};
+
 class ITask;
 
 class TaskId
@@ -73,7 +86,7 @@ inline bool operator != (
 class ITask
 {
 public:
-    virtual void run() const = 0;
+    virtual void run(AntState&) const = 0;
 
     virtual void setDependsOn(TaskId id) = 0;
 
@@ -122,14 +135,15 @@ public:
     EmptyTask(const EmptyTask&) = default;
     EmptyTask(EmptyTask&&) = default;
 
-    void run() const override {
+    void run(AntState&) const override {
     }
 };
 
-class LookAround
+class LookAroundTask
     : public TaskDependences
 {
-    void run() const override {
+    void run(AntState& state) const override {
+        discoverSomeSpace(state.location);
     }
 };
 
