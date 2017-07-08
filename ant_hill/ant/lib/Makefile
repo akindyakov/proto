@@ -4,18 +4,18 @@ PRODUCT = $(ABS_PRODUCT)/ant/lib
 
 all: prepare $(PRODUCT)/libant.a ut
 
-ut: $(PRODUCT)/ant_ut $(PRODUCT)/task_ut
+ut: $(PRODUCT)/location_ut $(PRODUCT)/task_ut
 
 $(PRODUCT)/libant.a: $(PRODUCT)/ant.o $(PRODUCT)/task.o
 	ar rcs $@ $^
 
-$(PRODUCT)/ant.o: ant.cpp ant.h
+$(PRODUCT)/location.o: location.cpp location.h
 	$(CC) -c -o $@ $<
 
-$(PRODUCT)/ant_ut: $(PRODUCT)/ant_ut.o $(PRODUCT)/libant.a
+$(PRODUCT)/location_ut: $(PRODUCT)/location_ut.o $(PRODUCT)/libant.a
 	$(CC) -o $@ $^ $(ABS_PRODUCT)/map/lib/libmap.a
 
-$(PRODUCT)/ant_ut.o: ant_ut.cpp ant.h
+$(PRODUCT)/location_ut.o: location_ut.cpp location.h
 	$(CC) -c -o $@ $<
 
 $(PRODUCT)/task.o: task.cpp task.h
