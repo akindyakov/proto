@@ -34,8 +34,8 @@ void createTest() {
         taskLib.emplace(fourthTaskId, std::move(task));
     }
 
-    auto objId = Map::ObjectId{2};
-    auto otherObjId = Map::ObjectId{3};
+    auto objId = Map::ObjectId{1645};
+    auto otherObjId = Map::ObjectId{364};
 
     auto manager = Ant::TaskEmploymentService(taskLib);
     UT_ASSERT_EQUAL(Ant::TaskId::Invalid(), manager.obtain(objId));
