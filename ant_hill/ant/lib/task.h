@@ -262,15 +262,17 @@ class AntState {
 public:
     explicit AntState(
         Location location_
-        , const TaskLibrary& taskLibrary
+        , TaskLibrary taskLibrary_
     )
         : location(std::move(location_))
+        , taskLibrary(std::move(taskLibrary_))
         , taskManager(taskLibrary)
     {
     }
 
 public:
     Location location;
+    TaskLibrary taskLibrary;
     TaskEmploymentService taskManager;
 };
 

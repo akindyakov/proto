@@ -15,19 +15,18 @@
 void runWorker(
     Map::JsonRPCClient& client
 ) {
-    auto taskLib = Ant::TaskLibrary{};
-    auto firstTaskId = Ant::TaskId{1};
-    taskLib.emplace(
-        firstTaskId,
-        std::make_unique<Ant::LookAroundTask>()
-    );
-
     auto state = Ant::AntState(
         Ant::Location(
             Ant::LocationClient(client)
         ),
-        taskLib
+        Ant::TaskLibrary{}
     );
+    auto firstTaskId = Ant::TaskId{1};
+    state.taskLibrary.emplace(
+        firstTaskId,
+        std::make_unique<Ant::LookAroundTask>()
+    );
+
     state.taskManager.add(state.location.id(), firstTaskId);
 
     while (true) {
@@ -35,7 +34,7 @@ void runWorker(
         if (!taskId.isValid()) {
             return;
         }
-        auto& task = taskLib.at(taskId);
+        auto& task = state.taskLibrary.at(taskId);
         task->run(state);
     }
 }
