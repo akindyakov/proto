@@ -46,7 +46,7 @@ public:
     Cell call(Function::Args args) const override {
         Lib::validateEqual(
             args.size(), argNames.size(),
-            Error() << "Wrong arguments number. "
+            Error(), "Wrong arguments number. "
         );
         auto local = cnt.isolateContext();
         auto nameIt = argNames.cbegin();

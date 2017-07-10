@@ -125,7 +125,7 @@ Field<TCell> ScanFromText(std::istream& is) {
                 Lib::validateEqual(
                     iter.point().X,
                     field.min().X,
-                    Exception() << "Unexpected end of line character"
+                    Exception(), "Unexpected end of line character"
                 );
             }
             is >> field.at(iter.point());

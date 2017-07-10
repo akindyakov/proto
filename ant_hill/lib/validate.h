@@ -40,7 +40,7 @@ template<
 >
 inline void validateTrue(
     const FirstT& value
-    , ExceptionType error = ExceptionType{}
+    , ExceptionType error
     , ExceptionArgsType... exceptionArgs
 ) {
     if (!value) {
@@ -59,7 +59,7 @@ template<
 inline void validateEqual(
     const FirstT& value
     , const SecondT& other
-    , ExceptionType error = ExceptionType{}
+    , ExceptionType error
     , ExceptionArgsType... exceptionArgs
 ) {
     if (!(value == other)) {
@@ -81,7 +81,7 @@ template<
 inline void validateNotEqual(
     const FirstT& value
     , const SecondT& other
-    , ExceptionType error = ExceptionType{}
+    , ExceptionType error
     , ExceptionArgsType... exceptionArgs
 ) {
     if (value == other) {
