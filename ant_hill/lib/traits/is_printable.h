@@ -4,6 +4,8 @@
 #include <type_traits>
 
 
+namespace Lib {
+
 template<
     typename T
 >
@@ -26,3 +28,5 @@ public:
         decltype(detectType(std::declval<T>()))
     >::value;
 };
+
+}  // namespace Lib
