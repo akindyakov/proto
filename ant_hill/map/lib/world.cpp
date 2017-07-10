@@ -57,7 +57,7 @@ World::SnakeType createSnakeOnField(
             ++startDir;
         }
     }
-    throw InternalServerError() << "There is no vacant position";
+    throw Lib::HTTP::InternalServerError() << "There is no vacant position";
 }
 
 
@@ -103,7 +103,7 @@ void World::move(
     if (side == Side::Front) {
         auto pt = obj->lookTo(direction, 0);
         if (!this->field_.inRange(pt) || !this->field_.at(pt).isFree()) {
-            throw Forbidden() << "There is no free space for front move.";
+            throw Lib::HTTP::ForbiddenError() << "There is no free space for front move.";
         }
         obj->frontMove(
             this->field_,
@@ -112,7 +112,7 @@ void World::move(
     } else {
         auto pt = obj->lookTo(direction, obj->size() - 1);
         if (!this->field_.inRange(pt) || !this->field_.at(pt).isFree()) {
-            throw Forbidden() << "There is no free space for back move.";
+            throw Lib::HTTP::ForbiddenError() << "There is no free space for back move.";
         }
         obj->backMove(
             this->field_,
@@ -132,7 +132,7 @@ void World::pickUpGrain(
     auto& cell = this->field_.at(pt);
     if (cell.objectId.isValid()) {
         obj->popFrontGrain();
-        throw Forbidden() << "This grain belongs to other ant. Theft is outlow!";
+        throw Lib::HTTP::ForbiddenError() << "This grain belongs to other ant. Theft is outlow!";
     }
     cell.objectId = id;
 }
@@ -155,7 +155,7 @@ const World::CellType& World::lookTo(
     auto obj = World::findObject(id);
     auto pt = obj->lookTo(to, segment);
     if (!this->field_.inRange(pt)) {
-        throw Forbidden() << "This grain is out of environment range.";
+        throw Lib::HTTP::ForbiddenError() << "This grain is out of environment range.";
     }
     return this->field_.at(pt);
 }
@@ -178,11 +178,11 @@ std::shared_ptr<World::SnakeType> World::findObject(
 ) const {
     auto objIt = objects_.find(id);
     if (objIt == objects_.end()) {
-        throw NotFound() << "There is no object with such id " << id;
+        throw Lib::HTTP::NotFoundError() << "There is no object with such id " << id;
     }
     auto obj = objIt->second;
     if (obj.use_count() > 2) {
-        throw LockedError() << "Object (" << id << ") is locked";
+        throw Lib::HTTP::LockedError() << "Object (" << id << ") is locked";
     }
     return obj;
 }

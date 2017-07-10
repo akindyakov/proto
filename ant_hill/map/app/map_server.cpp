@@ -27,7 +27,7 @@ Json::Value MapServer::appear() {
     auto result = Json::Value(Json::objectValue);
     try {
         result["id"] = this->world.appear().id;
-    } catch (const HTTPError& err) {
+    } catch (const Lib::HTTP::Error& err) {
         throw jsonrpc::JsonRpcException(
             err.code(), err.message()
         );
@@ -43,7 +43,7 @@ Json::Value MapServer::front_move(int direction, int id) {
             Map::RelativeDirection(direction),
             Map::World::Side::Front
         );
-    } catch (const HTTPError& err) {
+    } catch (const Lib::HTTP::Error& err) {
         throw jsonrpc::JsonRpcException(
             err.code(), err.message()
         );
@@ -59,7 +59,7 @@ Json::Value MapServer::back_move(int direction, int id) {
             Map::RelativeDirection(direction),
             Map::World::Side::Back
         );
-    } catch (const HTTPError& err) {
+    } catch (const Lib::HTTP::Error& err) {
         throw jsonrpc::JsonRpcException(
             err.code(), err.message()
         );
@@ -74,7 +74,7 @@ Json::Value MapServer::pick_up_front(int direction, int id) {
             Map::ObjectId(id),
             Map::RelativeDirection(direction)
         );
-    } catch (const HTTPError& err) {
+    } catch (const Lib::HTTP::Error& err) {
         throw jsonrpc::JsonRpcException(
             err.code(), err.message()
         );
@@ -88,7 +88,7 @@ Json::Value MapServer::drop_front(int id) {
         this->world.dropGrain(
             Map::ObjectId(id)
         );
-    } catch (const HTTPError& err) {
+    } catch (const Lib::HTTP::Error& err) {
         throw jsonrpc::JsonRpcException(
             err.code(), err.message()
         );
@@ -106,7 +106,7 @@ Json::Value MapServer::look_to(int direction, int id, int segment) {
         );
         val["owner_id"] = cell.objectId.id;
         val["material"] = static_cast<int>(cell.grain);
-    } catch (const HTTPError& err) {
+    } catch (const Lib::HTTP::Error& err) {
         throw jsonrpc::JsonRpcException(
             err.code(), err.message()
         );
@@ -125,7 +125,7 @@ Json::Value MapServer::get_pose(int id) {
         for (const auto& dir : pose) {
             p.append(dir.toInt());
         }
-    } catch (const HTTPError& err) {
+    } catch (const Lib::HTTP::Error& err) {
         throw jsonrpc::JsonRpcException(
             err.code(), err.message()
         );
@@ -139,7 +139,7 @@ Json::Value MapServer::ping(int id) {
         this->world.ping(
             Map::ObjectId(id)
         );
-    } catch (const HTTPError& err) {
+    } catch (const Lib::HTTP::Error& err) {
         throw jsonrpc::JsonRpcException(
             err.code(), err.message()
         );

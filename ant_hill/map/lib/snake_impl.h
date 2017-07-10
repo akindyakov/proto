@@ -90,7 +90,7 @@ typename SnakeObj<TField>::PointType
     )
 {
     if (tail_.empty()) {
-        throw BadRequest() << "There is nothing to drop.";
+        throw Lib::HTTP::BadRequestError() << "There is nothing to drop.";
     }
     auto droppedPt = head_;
     head_ = tail_.front().Inverse().MovePoint(head_);
@@ -106,7 +106,7 @@ typename SnakeObj<TField>::PointType
     ) const
 {
     if (segment >= this->size()) {
-        throw BadRequest() << "There is no segment with number " << segment;
+        throw Lib::HTTP::BadRequestError() << "There is no segment with number " << segment;
     }
     auto vecIt = tail_.begin();
     auto pt = head_;

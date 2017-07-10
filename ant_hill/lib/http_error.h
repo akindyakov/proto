@@ -3,11 +3,14 @@
 #include "exception.h"
 
 
-class HTTPError
+namespace Lib {
+namespace HTTP {
+
+class Error
     : public Exception
 {
 public:
-    explicit HTTPError(
+    explicit Error(
         int code
         , const std::string& text
     )
@@ -15,7 +18,7 @@ public:
         , code_(code)
     {
     }
-    virtual ~HTTPError() = default;
+    virtual ~Error() = default;
 
     int code() const noexcept {
         return code_;
@@ -26,97 +29,267 @@ private:
 };
 
 // 4xx: Client Error
-class BadRequest
-    : public HTTPError
+class BadRequestError
+    : public Error
 {
 public:
-    explicit BadRequest()
-        : HTTPError(400, "Bad Request. ")
+    explicit BadRequestError()
+        : Error(400, "Bad Request. ")
     {
     }
 };
 
-class Unauthorized
-    : public HTTPError
+class UnauthorizedError
+    : public Error
 {
 public:
-    explicit Unauthorized()
-        : HTTPError(401, "Unauthorized. ")
+    explicit UnauthorizedError()
+        : Error(401, "Unauthorized. ")
     {
     }
 };
 
-class Forbidden
-    : public HTTPError
+class ForbiddenError
+    : public Error
 {
 public:
-    explicit Forbidden()
-        : HTTPError(403, "Forbidden. ")
+    explicit ForbiddenError()
+        : Error(403, "Forbidden. ")
     {
     }
 };
 
-class NotFound
-    : public HTTPError
+class NotFoundError
+    : public Error
 {
 public:
-    explicit NotFound()
-        : HTTPError(404, "Not Found. ")
+    explicit NotFoundError()
+        : Error(404, "Not Found. ")
     {
     }
 };
 
 class LockedError
-    : public HTTPError
+    : public Error
 {
 public:
     explicit LockedError()
-        : HTTPError(423, "Locked .")
+        : Error(423, "Locked .")
     {
     }
 };
 
-//      : HTTPError(405, "Method Not Allowed («метод не поддерживается»)[2][3];
-//      : HTTPError(406, "Not Acceptable («неприемлемо»)[2][3];
-//      : HTTPError(408, "Request Timeout («истекло время ожидания»)[2][3];
-//      : HTTPError(409, "Conflict («конфликт»)[2][3][4];
-//      : HTTPError(410, "Gone («удалён»)[2][3];
-//      : HTTPError(411, "Length Required («необходима длина»)[2][3];
-//      : HTTPError(412, "Precondition Failed («условие ложно»)[2][3][7];
-//      : HTTPError(413, "Request Entity Too Large («размер запроса слишком велик»)[2][3];
-//      : HTTPError(414, "Request-URI Too Large («запрашиваемый URI слишком длинный»)[2][3];
-//      : HTTPError(415, "Unsupported Media Type («неподдерживаемый тип данных»)[2][3];
-//      : HTTPError(416, "Requested Range Not Satisfiable («запрашиваемый диапазон не достижим»)[3];
-//      : HTTPError(417, "Expectation Failed («ожидаемое неприемлемо»)[3];
-//      : HTTPError(422, "Unprocessable Entity («необрабатываемый экземпляр»);
+class MethodNotAllowedError
+    : public Error
+{
+public:
+    explicit MethodNotAllowedError()
+        : Error(405, "Method Not Allowed. ")
+    {
+    }
+};
 
-//      : HTTPError(424, "Failed Dependency («невыполненная зависимость»);
-//      : HTTPError(425, "Unordered Collection («неупорядоченный набор»)[8];
-//      : HTTPError(426, "Upgrade Required («необходимо обновление»);
-//      : HTTPError(428, "Precondition Required («необходимо предусловие»)[9];
-//      : HTTPError(429, "Too Many Requests («слишком много запросов»)[9];
-//      : HTTPError(431, "Request Header Fields Too Large («поля заголовка запроса слишком большие»)[9];
-//      : HTTPError(444, "Закрывает соединение без передачи заголовка ответа. Нестандартный код[10];
-//      : HTTPError(449, "Retry With («повторить с»)[1];
-//      : HTTPError(451, "Unavailable For Legal Reasons («недоступно по юридическим причинам»)[11].
+class NotAcceptableError
+    : public Error
+{
+public:
+    explicit NotAcceptableError()
+        : Error(406, "Not Acceptable. ")
+    {
+    }
+};
 
-// 5xx: Server Error (ошибка сервера):
+class RequestTimeoutError
+    : public Error
+{
+public:
+    explicit RequestTimeoutError()
+        : Error(408, "Request Timeout. ")
+    {
+    }
+};
+
+class ConflictError
+    : public Error
+{
+public:
+    explicit ConflictError()
+        : Error(409, "Conflict. ")
+    {
+    }
+};
+
+class LengthRequiredError
+    : public Error
+{
+public:
+    explicit LengthRequiredError()
+        : Error(411, "Length Required. ")
+    {
+    }
+};
+
+class PreconditionFailedError
+    : public Error
+{
+public:
+    explicit PreconditionFailedError()
+        : Error(412, "Precondition Failed. ")
+    {
+    }
+};
+
+class RequestEntityTooLargeError
+    : public Error
+{
+public:
+    explicit RequestEntityTooLargeError()
+        : Error(413, "Request Entity Too Large. ")
+    {
+    }
+};
+
+class RequestURITooLargeError
+    : public Error
+{
+public:
+    explicit RequestURITooLargeError()
+        : Error(414, "Request-URI Too Large. ")
+    {
+    }
+};
+
+class UnsupportedMediaTypeError
+    : public Error
+{
+public:
+    explicit UnsupportedMediaTypeError()
+        : Error(415, "Unsupported Media Type. ")
+    {
+    }
+};
+
+class RequestedRangeNotSatisfiableError
+    : public Error
+{
+public:
+    explicit RequestedRangeNotSatisfiableError()
+        : Error(416, "Requested Range Not Satisfiable. ")
+    {
+    }
+};
+
+class ExpectationFailedError
+    : public Error
+{
+public:
+    explicit ExpectationFailedError()
+        : Error(417, "Expectation Failed. ")
+    {
+    }
+};
+
+class UnprocessableEntityError
+    : public Error
+{
+public:
+    explicit UnprocessableEntityError()
+        : Error(422, "Unprocessable Entity. ")
+    {
+    }
+};
+
+class FailedDependencyError
+    : public Error
+{
+public:
+    explicit FailedDependencyError()
+        : Error(424, "Failed Dependency. ")
+    {
+    }
+};
+
+class UnorderedCollectionError
+    : public Error
+{
+public:
+    explicit UnorderedCollectionError()
+        : Error(425, "Unordered Collection. ")
+    {
+    }
+};
+
+class UpgradeRequiredError
+    : public Error
+{
+public:
+    explicit UpgradeRequiredError()
+        : Error(426, "Upgrade Required. ")
+    {
+    }
+};
+
+class PreconditionRequiredError
+    : public Error
+{
+public:
+    explicit PreconditionRequiredError()
+        : Error(428, "Precondition Required. ")
+    {
+    }
+};
+
+class TooManyRequestsError
+    : public Error
+{
+public:
+    explicit TooManyRequestsError()
+        : Error(429, "Too Many Requests. ")
+    {
+    }
+};
+
+class RequestHeaderFieldsTooLargeError
+    : public Error
+{
+public:
+    explicit RequestHeaderFieldsTooLargeError()
+        : Error(431, "Request Header Fields Too Large. ")
+    {
+    }
+};
+
+class RetryWithError
+    : public Error
+{
+public:
+    explicit RetryWithError()
+        : Error(449, "Retry With. ")
+    {
+    }
+};
+
+
+// 5xx: Server Error
 class InternalServerError
-    : public HTTPError
+    : public Error
 {
 public:
     explicit InternalServerError()
-        : HTTPError(500, "Internal Server Error. ")
+        : Error(500, "Internal Server Error. ")
     {
     }
 };
 
-class NotImplemented
-    : public HTTPError
+class NotImplementedError
+    : public Error
 {
 public:
-    explicit NotImplemented()
-        : HTTPError(501, "Not Implemented. ")
+    explicit NotImplementedError()
+        : Error(501, "Not Implemented. ")
     {
     }
 };
+
+}  // namespace HTTP
+}  // namespace Lib
