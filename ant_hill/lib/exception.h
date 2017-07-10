@@ -6,6 +6,8 @@
 #include <iostream>
 
 
+namespace Lib {
+
 class Exception
     : public std::exception
 {
@@ -86,3 +88,5 @@ inline Err&& operator<<(
     err.append(ostr.str());
     return std::forward<Err>(err);
 }
+
+}  // namespace Lib

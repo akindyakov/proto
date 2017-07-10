@@ -70,7 +70,7 @@ public:
                 second.get<Float>()
             ));
         }
-        // throw an Exception
+        // throw an Lib::Exception
         first.asRealNumber();
         second.asRealNumber();
         return first;
@@ -81,11 +81,11 @@ public:
 * (+ x1 x2 ... xn)    The sum of x1, x2, ..., xn
 */
 class SumError
-    : public Exception
+    : public Lib::Exception
 {
 public:
     explicit SumError()
-        : Exception("SUM: ")
+        : Lib::Exception("SUM: ")
     {
     }
 };
@@ -95,11 +95,11 @@ using Sum = Commutative<RealNumberOperation<std::plus<>>, SumError>;
 // * (* x1 x2 ... xn)    The product of x1, x2, ..., xn
 // */
 class ProductError
-    : public Exception
+    : public Lib::Exception
 {
 public:
     explicit ProductError()
-        : Exception("PRODUCT: ")
+        : Lib::Exception("PRODUCT: ")
     {
     }
 };
@@ -134,11 +134,11 @@ public:
 * (- x y) Subtract y from x
 */
 class SubtractError
-    : public Exception
+    : public Lib::Exception
 {
 public:
     explicit SubtractError()
-        : Exception("SUBTRACT: ")
+        : Lib::Exception("SUBTRACT: ")
     {
     }
 };
@@ -151,11 +151,11 @@ using Subtract = Anticommutative<
 * (/ x y) Divide x by y
 */
 class DivisionError
-    : public Exception
+    : public Lib::Exception
 {
 public:
     explicit DivisionError()
-        : Exception("DIVISION: ")
+        : Lib::Exception("DIVISION: ")
     {
     }
 };
@@ -190,11 +190,11 @@ public:
 * (rem x y)   The remainder of dividing x by y
 */
 class RemainderError
-    : public Exception
+    : public Lib::Exception
 {
 public:
     explicit RemainderError()
-        : Exception("REMAINDER: ")
+        : Lib::Exception("REMAINDER: ")
     {
     }
 };
@@ -207,11 +207,11 @@ using Remainder = Anticommutative<
 * (abs x) The absolute value of x
 */
 class AbsError
-    : public Exception
+    : public Lib::Exception
 {
 public:
     explicit AbsError()
-        : Exception("ABS: ")
+        : Lib::Exception("ABS: ")
     {
     }
 };
@@ -227,11 +227,11 @@ public:
 * (max x1 x2 ... xn)  The maximum of x1, x2, ..., xn
 */
 class MaxError
-    : public Exception
+    : public Lib::Exception
 {
 public:
     explicit MaxError()
-        : Exception("MAX: ")
+        : Lib::Exception("MAX: ")
     {
     }
 };
@@ -247,11 +247,11 @@ public:
 * (min x1 x2 ... xn)  The minimum of x1, x2, ..., xn
 */
 class MinError
-    : public Exception
+    : public Lib::Exception
 {
 public:
     explicit MinError()
-        : Exception("MIN: ")
+        : Lib::Exception("MIN: ")
     {
     }
 };

@@ -2,6 +2,8 @@
 
 #include <lib/validate.h>
 
+namespace Lib {
+
 class UTFailure
     : public Exception
 {
@@ -17,10 +19,12 @@ public:
     virtual ~UTFailure() = default;
 };
 
+}  // namespace Lib
+
 #define UT_ASSERT_TRUE(value) \
     Lib::validateTrue( \
         value, \
-        UTFailure( \
+        Lib::UTFailure( \
             __FILE__, \
             __LINE__ \
         ) \
@@ -30,7 +34,7 @@ public:
     Lib::validateEqual( \
         value, \
         gold, \
-        UTFailure( \
+        Lib::UTFailure( \
             __FILE__, \
             __LINE__ \
         ) \
@@ -40,7 +44,7 @@ public:
     Lib::validateNotEqual( \
         value, \
         gold, \
-        UTFailure( \
+        Lib::UTFailure( \
             __FILE__, \
             __LINE__ \
         ) \

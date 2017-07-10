@@ -27,7 +27,7 @@ void addNameTest() {
     } catch (const Lisp::Namespace::Error& err) {
         return;
     }
-    throw Exception() << "Expected throwing exception";
+    throw Lib::Exception() << "Expected throwing exception";
 }
 
 int main() {

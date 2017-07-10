@@ -26,7 +26,7 @@ LocationClient::LocationClient(
     } catch (const jsonrpc::JsonRpcException) {
     }
     if (!this->id_.isValid()) {
-        throw Exception("Invalid id, wtf?");
+        throw Lib::Exception("Invalid id, wtf?");
     }
 }
 

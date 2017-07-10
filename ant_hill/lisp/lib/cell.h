@@ -150,8 +150,8 @@ public:
 
     ~Cell() = default;
 
-    class Exception
-        : public ::Exception
+    class Error
+        : public Lib::Exception
     {
     };
 
@@ -220,7 +220,7 @@ public:
     }
 
     class BadGetError
-        : public Exception
+        : public Lib::Exception
     {
     };
 
@@ -350,10 +350,10 @@ class ArgFuture
 {
 public:
     class Error
-        : public ::Exception
+        : public Lib::Exception
     {
         explicit Error()
-            : Exception("Future error.")
+            : Lib::Exception("Future error.")
         {
         }
     };

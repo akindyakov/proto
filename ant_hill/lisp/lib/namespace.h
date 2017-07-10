@@ -57,11 +57,11 @@ private:
 
 public:
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     public:
         explicit Error()
-            : Exception("Evironment error. ")
+            : Lib::Exception("Evironment error. ")
         {
         }
     };

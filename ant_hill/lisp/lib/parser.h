@@ -11,11 +11,11 @@
 namespace Lisp {
 
 class ParserError
-    : public Exception
+    : public Lib::Exception
 {
 public:
     explicit ParserError()
-        : Exception("Parser error. ")
+        : Lib::Exception("Parser error. ")
     {
     }
 };

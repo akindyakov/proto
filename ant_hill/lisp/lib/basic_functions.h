@@ -3,6 +3,8 @@
 #include "cell.h"
 #include "namespace.h"
 
+#include <lib/exception.h>
+
 #include <functional>
 
 
@@ -14,11 +16,11 @@ class Define
 {
 public:
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     public:
         explicit Error()
-            : Exception("define: ")
+            : Lib::Exception("define: ")
         {
         }
     };
@@ -42,11 +44,11 @@ class If
 {
 public:
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     public:
         explicit Error()
-            : Exception("if: ")
+            : Lib::Exception("if: ")
         {
         }
     };
@@ -61,11 +63,11 @@ class Eq
 {
 public:
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     public:
         explicit Error()
-            : Exception("eq: ")
+            : Lib::Exception("eq: ")
         {
         }
     };
@@ -80,11 +82,11 @@ class Less
 {
 public:
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     public:
         explicit Error()
-            : Exception("less: ")
+            : Lib::Exception("less: ")
         {
         }
     };
@@ -99,11 +101,11 @@ class Greater
 {
 public:
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     public:
         explicit Error()
-            : Exception("greater: ")
+            : Lib::Exception("greater: ")
         {
         }
     };
@@ -118,11 +120,11 @@ class Not
 {
 public:
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     public:
         explicit Error()
-            : Exception("not: ")
+            : Lib::Exception("not: ")
         {
         }
     };

@@ -144,21 +144,21 @@ std::string ExprParser::read(std::istream& is) {
 void ExprParser::readBegin(std::istream& in) {
     skipSpaces(in);
     if (!in.good()) {
-        throw Exception() << "Unexpected end of file at the expression begining (parentheses group)";
+        throw Lib::Exception() << "Unexpected end of file at the expression begining (parentheses group)";
     }
     char ch = in.get();
     if (ch != ExprParser::CHAR_OPEN) {
-        throw Exception() << "Wrong parentheses group first character: '" << ch << "'\n";
+        throw Lib::Exception() << "Wrong parentheses group first character: '" << ch << "'\n";
     }
 }
 void ExprParser::readEnd(std::istream& in) {
     skipSpaces(in);
     if (!in.good()) {
-        throw Exception() << "Unexpected end of file at the end of parentheses group";
+        throw Lib::Exception() << "Unexpected end of file at the end of parentheses group";
     }
     char ch = in.get();
     if (ch != ExprParser::CHAR_CLOSE) {
-        throw Exception()
+        throw Lib::Exception()
             << "Wrong parentheses group last character: '" << ch << "'\n";
     }
 }

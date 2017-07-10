@@ -72,17 +72,17 @@ std::istream& operator>>(std::istream& is, Point& pt) {
     is >> std::skipws >> ch;
     Lib::validateEqual(
         ch, PointLeftBrace,
-        Exception(), "Wrong begining character"
+        Lib::Exception(), "Wrong begining character"
     );
     is >> pt.X >> ch;
     Lib::validateEqual(
         ch, DimensionsDelimiter,
-        Exception(), "Wrong separator"
+        Lib::Exception(), "Wrong separator"
     );
     is >> pt.Y >> ch;
     Lib::validateEqual(
         ch, PointRightBrace,
-        Exception(), "Wrong ending character"
+        Lib::Exception(), "Wrong ending character"
     );
     is >> std::noskipws;
     return is;
@@ -94,17 +94,17 @@ std::istream& operator>>(std::istream& is, Vector& vect) {
     is >> std::skipws >> ch;
     Lib::validateEqual(
         ch, VectorLeftBrace,
-        Exception(), "Wrong begining character"
+        Lib::Exception(), "Wrong begining character"
     );
     is >> vect.X >> ch;
     Lib::validateEqual(
         ch, DimensionsDelimiter,
-        Exception(), "Wrong separator"
+        Lib::Exception(), "Wrong separator"
     );
     is >> vect.Y >> ch;
     Lib::validateEqual(
         ch, VectorRightBrace,
-        Exception(), "Wrong ending character"
+        Lib::Exception(), "Wrong ending character"
     );
     is >> std::noskipws;
     return is;

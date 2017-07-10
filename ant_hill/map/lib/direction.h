@@ -63,7 +63,7 @@ public:
 
     static Direction fromInt(int value) {
         if (value >= all_) {
-            throw Exception()
+            throw Lib::Exception()
                 << "Direction::FromInt() error. Wrong int value: ("
                 << value << ")"
             ;

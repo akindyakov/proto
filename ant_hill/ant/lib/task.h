@@ -221,7 +221,7 @@ public:
     );
 
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     };
 

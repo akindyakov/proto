@@ -8,48 +8,48 @@ void streamArgsToExceptionTest() {
     std::cerr << " - streamArgsToExceptionTest\n";
     {
         auto err = Lib::streamArgsToException(
-            Exception{"You can sense it "}
+            Lib::Exception{"You can sense it "}
         );
         if (err.message() != "You can sense it ") {
-            throw Exception() << "Message must be exactly the same "
+            throw Lib::Exception() << "Message must be exactly the same "
                 << "'" << err.message() << "' and 'You can sense it '"
             ;
         }
     }
     {
         auto err = Lib::streamArgsToException(
-            Exception{"Let's count: "},
+            Lib::Exception{"Let's count: "},
             "0"
         );
         if (err.message() != "Let's count: 0") {
-            throw Exception() << "Message must be exactly the same "
+            throw Lib::Exception() << "Message must be exactly the same "
                 << "'" << err.message() << "' and 'Let's count: 0'"
             ;
         }
     }
     {
         auto err = Lib::streamArgsToException(
-            Exception{"Let's count: "},
+            Lib::Exception{"Let's count: "},
             "0, ",
             "1, ",
             "2!"
         );
         if (err.message() != "Let's count: 0, 1, 2!") {
-            throw Exception() << "Message must be exactly the same "
+            throw Lib::Exception() << "Message must be exactly the same "
                 << "'" << err.message() << "' and 'Let's count: 0, 1, 2!'"
             ;
         }
     }
     {
         auto err = Lib::streamArgsToException(
-            Exception{"Let's count: "},
+            Lib::Exception{"Let's count: "},
             "0, ",
             1, ", ",
             "two, ",
             std::string("3!")
         );
         if (err.message() != "Let's count: 0, 1, two, 3!") {
-            throw Exception() << "Message must be exactly the same "
+            throw Lib::Exception() << "Message must be exactly the same "
                 << "'" << err.message() << "' and 'Let's count: 0, 1, two, 3!'"
             ;
         }

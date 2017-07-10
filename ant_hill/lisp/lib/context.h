@@ -15,11 +15,11 @@ class Context
 {
 public:
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     public:
         explicit Error()
-            : Exception("Eval error. ")
+            : Lib::Exception("Eval error. ")
         {
         }
     };

@@ -77,7 +77,7 @@ DirectionCurve findSmthOnTheField(
         areaMin
     );
     if (!weights.inRange(start)) {
-        throw Exception()
+        throw Lib::Exception()
             << "Start position "
             << start
             << " is out of area range "

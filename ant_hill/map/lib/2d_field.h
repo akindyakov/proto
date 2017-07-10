@@ -2,6 +2,7 @@
 
 #include "map_symbols.h"
 
+#include <lib/exception.h>
 #include <lib/validate.h>
 
 #include <cstdlib>
@@ -356,7 +357,7 @@ private:
         auto signedIndex = signedIndexByPoint(pt, this->area_);
         auto index = static_cast<size_t>(signedIndex);
         if (signedIndex < 0 || index >= this->field_.size()) {
-            throw Exception("Access by out range point: ")
+            throw Lib::Exception("Access by out range point: ")
                 << pt << " not in [" << this->min() << ", " << this->max() << "]"
             ;
         }

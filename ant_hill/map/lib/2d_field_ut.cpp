@@ -103,7 +103,7 @@ void pointStreamIO() {
     auto pt = Map::Point{0, 0};
     in >> pt;
     if (pt != expectedPt) {
-        throw Exception()
+        throw Lib::Exception()
             << "Expected: " << expectedPt.X << " " << expectedPt.Y
             << "\nGot: " << pt.X << " " << pt.Y;
     }
@@ -112,7 +112,7 @@ void pointStreamIO() {
     auto outStr = out.str();
     auto expectedStr = std::string("(-123,289)(-123,289)");
     if (outStr != expectedStr) {
-        throw Exception()
+        throw Lib::Exception()
             << "Expected: " << expectedStr
             << "\nGot: " << outStr;
     }
@@ -126,7 +126,7 @@ void vectorStreamIO() {
     auto vect = Map::Vector{0, 0};
     in >> vect;
     if (vect != expectedPt) {
-        throw Exception()
+        throw Lib::Exception()
             << "Expected: " << expectedPt.X << " " << expectedPt.Y
             << "\nGot: " << vect.X << " " << vect.Y;
     }
@@ -135,7 +135,7 @@ void vectorStreamIO() {
     auto outStr = out.str();
     auto expectedStr = std::string("<21239,-2349><21239,-2349>");
     if (outStr != expectedStr) {
-        throw Exception()
+        throw Lib::Exception()
             << "Expected: " << expectedStr
             << "\nGot: " << outStr;
     }

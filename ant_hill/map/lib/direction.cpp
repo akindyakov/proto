@@ -8,7 +8,7 @@ namespace Map {
 Direction Direction::Diff(const Point& to, const Point& from) {
     auto shift = to - from;
     if (shift.X != 0 && shift.Y != 0) {
-        throw Exception("Direction move must be only horisontal or vertical");
+        throw Lib::Exception("Direction move must be only horisontal or vertical");
     } else if (shift.X > 0) {
         return Direction::East();
     } else if (shift.X < 0) {

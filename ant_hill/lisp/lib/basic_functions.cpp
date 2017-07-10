@@ -15,11 +15,11 @@ class RuntimeDefinedFunction
 {
 public:
     class Error
-        : public Exception
+        : public Lib::Exception
     {
     public:
         explicit Error()
-            : Exception("Eval: ")
+            : Lib::Exception("Eval: ")
         {
         }
     };
