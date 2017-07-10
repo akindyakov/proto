@@ -17,7 +17,7 @@ public:
     virtual ~UTFailure() = default;
 };
 
-#define UT_ASSERT(value) \
+#define UT_ASSERT_TRUE(value) \
     Lib::validateTrue( \
         value, \
         UTFailure( \

@@ -456,17 +456,17 @@ void fieldExtendForTest() {
             Map::Vector(2, 2),
             Map::Point(0, 0)
         );
-        UT_ASSERT(field.inRange(Map::Point(1, 1)));
+        UT_ASSERT_TRUE(field.inRange(Map::Point(1, 1)));
         const auto pt0 = Map::Point(2, 2);
-        UT_ASSERT(!field.inRange(pt0));
+        UT_ASSERT_TRUE(!field.inRange(pt0));
         field.extendFor(pt0);
-        UT_ASSERT(field.inRange(pt0));
+        UT_ASSERT_TRUE(field.inRange(pt0));
 
         const auto pt1 = Map::Point(0, 22);
-        UT_ASSERT(!field.inRange(pt1));
+        UT_ASSERT_TRUE(!field.inRange(pt1));
         field.extendFor(pt1);
-        UT_ASSERT(field.inRange(pt1));
-        UT_ASSERT(!field.inRange(Map::Point(10, 22)));
+        UT_ASSERT_TRUE(field.inRange(pt1));
+        UT_ASSERT_TRUE(!field.inRange(Map::Point(10, 22)));
     }
     {
         auto field = Map::Field<Map::SimpleCell>(
@@ -474,9 +474,9 @@ void fieldExtendForTest() {
             Map::Point(0, 0)
         );
         const auto pt = Map::Point(-1, 1);
-        UT_ASSERT(!field.inRange(pt));
+        UT_ASSERT_TRUE(!field.inRange(pt));
         field.extendFor(pt);
-        UT_ASSERT(field.inRange(pt));
+        UT_ASSERT_TRUE(field.inRange(pt));
     }
     {
         std::string text = R"FieldMap(<2,2>
@@ -487,9 +487,9 @@ void fieldExtendForTest() {
         auto in = std::istringstream(text);
         auto field = Map::ScanFromText<Map::SimpleCell>(in);
         const auto pt = Map::Point(-1, -1);
-        UT_ASSERT(!field.inRange(pt));
+        UT_ASSERT_TRUE(!field.inRange(pt));
         field.extendFor(pt);
-        UT_ASSERT(field.inRange(pt));
+        UT_ASSERT_TRUE(field.inRange(pt));
         std::string rightAnswer = R"FieldMap(<4,4>
 (-2,-2)
 ....

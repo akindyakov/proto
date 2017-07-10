@@ -48,10 +48,10 @@ void createTest() {
     manager.complete(objId, firstTaskId);
     {
         auto taskId = manager.obtain(objId);
-        UT_ASSERT(taskId == secondTaskId || taskId == thirdTaskId);
+        UT_ASSERT_TRUE(taskId == secondTaskId || taskId == thirdTaskId);
 
         auto otherTaskId = manager.obtain(otherObjId);
-        UT_ASSERT(otherTaskId == secondTaskId || otherTaskId == thirdTaskId);
+        UT_ASSERT_TRUE(otherTaskId == secondTaskId || otherTaskId == thirdTaskId);
 
         // second and third are not complete yet
         UT_ASSERT_EQUAL(Ant::TaskId::Invalid(), manager.obtain(objId));
