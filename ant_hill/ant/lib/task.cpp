@@ -35,7 +35,7 @@ TaskInQueue& TaskEmploymentService::addRec(
 ) {
     //*dbg*/ std::cerr << "add: " << taskId << std::endl;
     auto taskIter = tasks.find(taskId);
-    if (taskIter == tasks.end()) {
+    if (taskIter == tasks.end() && !completedTasks.count(taskId)) {
         taskIter = tasks.emplace(
             taskId, TaskInQueue(autorId)
         ).first;
