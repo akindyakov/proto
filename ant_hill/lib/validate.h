@@ -50,7 +50,7 @@ inline void validateNotEqual(
     , const SecondT& other
     , ExceptionType error = ExceptionType{}
 ) {
-    if (!(value != other)) {
+    if (value == other) {
         throw error
             << "[" << Lib::toString(value)
             << "] is suppose to be not equal to ["
