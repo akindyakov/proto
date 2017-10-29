@@ -1,3 +1,15 @@
+/**
+ * Count the number of shapes on a given matrix.
+ * A cluster of consecutive (not diagonal) 1's defines one shape.
+ *
+ * e.g.:
+ * [1, 1, 0, 0, 1]
+ * [1, 0, 0, 1, 0]
+ * [1, 1, 0, 1, 0]
+ * [0, 0, 1, 0, 0]
+ * Count: 4
+ */
+
 #include <iostream>
 #include <vector>
 #include <cstddef>
