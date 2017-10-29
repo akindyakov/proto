@@ -4,11 +4,11 @@
 
 
 /**
- * There is a array of prices (float) for every considerable day.
- * Function should determine the best day of sale and day of buy,
- * which will make more money.
- * For instance for the array [0.3, 1.1, 0.2, 0.5, 1.2, 1.0, 0.1,]
- * the bets trade interval is [2, 4]. 2 is the buy day and 4 sale day.
+ * There is an array of prices (float) for every trading day.
+ * Your solution should determine the best day of the sale and best day of buy,
+ * which will make more money. Day of the buy must precede the day of sale.
+ * For example for the array [0.3, 1.1, 0.2, 0.5, 1.2, 1.0, 0.1,]
+ * the bets trade interval is [2, 4]. 2 is the buy day and 4 is the sale day.
  */
 
 struct TraidInterval {
