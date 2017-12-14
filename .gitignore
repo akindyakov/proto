@@ -3,3 +3,8 @@
 doc/**.html
 doc/**.pdf
 **/a.out
+
+**.lock-waf**
+**.waf-**
+**.swp
+build-waf
