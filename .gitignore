@@ -8,3 +8,4 @@ doc/**.pdf
 **.waf-**
 **.swp
 build-waf
+ant_hill/tools/waf/waf-**
