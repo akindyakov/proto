@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+
+def build(ctx):
+    ctx.stlib(
+        target="ant/lib",
+        source = [
+            "creative.cpp",
+            "location.cpp",
+            "movements.cpp",
+            "task.cpp",
+            "worker.cpp",
+        ]
+    )

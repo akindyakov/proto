@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+
+def build(ctx):
+    ctx(
+        rule=(
+            "jsonrpcstub ${SRC} "
+            " --cpp-server=${TGT}::Server"
+            " --cpp-server-file=$(PRODUCT)/server.h"
+            " --cpp-client=${TGT}::Server"
+            " --cpp-client-file=$(PRODUCT)/client.h"
+        ),
+        source="rpc_spec.json",
+        target="WorldRpc",
+    )

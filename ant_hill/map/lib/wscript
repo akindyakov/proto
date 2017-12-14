@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+
+def build(ctx):
+    ctx.stlib(
+        target="map/lib",
+        source = [
+            "2d_field.cpp",
+            "direction.cpp",
+            "find_a_way.cpp",
+            "map_symbols.cpp",
+            "snake.cpp",
+            "spiral.cpp",
+            "world.cpp",
+        ]
+    )
