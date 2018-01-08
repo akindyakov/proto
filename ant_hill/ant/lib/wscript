@@ -4,12 +4,50 @@
 
 def build(ctx):
     ctx.stlib(
-        target="ant/lib",
+        target="ant-lib-base",
         source = [
             "creative.cpp",
             "location.cpp",
             "movements.cpp",
             "task.cpp",
-            "worker.cpp",
-        ]
+        ],
+        use=[
+            "map-lib-base",
+        ],
+    )
+    ctx.program(
+        target="creative_ut",
+        source="creative_ut.cpp",
+        use="ant-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="creative_ut",
+    )
+    ctx.program(
+        target="location_ut",
+        source="location_ut.cpp",
+        use="ant-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="location_ut",
+    )
+    ctx.program(
+        target="movements_ut",
+        source="movements_ut.cpp",
+        use="ant-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="movements_ut",
+    )
+    ctx.program(
+        target="task_ut",
+        source="task_ut.cpp",
+        use="ant-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="task_ut",
     )

@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+
+def build(ctx):
+    ctx.program(
+        target="validate_ut",
+        source=[
+            "validate_ut.cpp",
+        ],
+    )
+    ctx(
+        rule="${SRC}",
+        source="validate_ut",
+    )
+    ctx.recurse([
+        "str",
+        "tests",
+        "traits",
+    ])

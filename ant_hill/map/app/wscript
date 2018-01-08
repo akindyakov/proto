@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+
+def build(ctx):
+    ctx.program(
+        target="map_server",
+        source = [
+            "args.cpp",
+            "main.cpp",
+            "map_server.cpp",
+        ],
+        lib=[
+            "jsoncpp",
+            "jsonrpccpp-common",
+            "jsonrpccpp-server",
+            "microhttpd",
+            "boost_program_options",
+        ],
+        use=[
+            "map-lib-base",
+        ],
+    )

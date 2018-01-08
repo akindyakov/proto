@@ -5,12 +5,19 @@
 def build(ctx):
     ctx(
         rule=(
-            "jsonrpcstub ${SRC} "
-            " --cpp-server=${TGT}::Server"
-            " --cpp-server-file=$(PRODUCT)/server.h"
-            " --cpp-client=${TGT}::Server"
-            " --cpp-client-file=$(PRODUCT)/client.h"
+            "${JSONRPCSTUB} ${SRC} "
+            " --cpp-server=Map::JsonRPCServer"
+            " --cpp-server-file=${TGT}"
         ),
         source="rpc_spec.json",
-        target="WorldRpc",
+        target="server.h",
+    )
+    ctx(
+        rule=(
+            "${JSONRPCSTUB} ${SRC} "
+            " --cpp-client=Map::JsonRPCClient"
+            " --cpp-client-file=${TGT}"
+        ),
+        source="rpc_spec.json",
+        target="client.h",
     )

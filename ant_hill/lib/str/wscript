@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+
+def build(ctx):
+    ctx.program(
+        target="to_string_ut",
+        source=[
+            "to_string_ut.cpp",
+        ],
+    )
+    ctx(
+        rule="${SRC}",
+        source="to_string_ut",
+    )

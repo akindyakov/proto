@@ -3,7 +3,4 @@
 
 
 def build(ctx):
-    ctx.recurse([
-        "lib",
-        "app",
-    ])
+    pass

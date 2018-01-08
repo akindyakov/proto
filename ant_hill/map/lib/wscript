@@ -4,8 +4,8 @@
 
 def build(ctx):
     ctx.stlib(
-        target="map/lib",
-        source = [
+        target="map-lib-base",
+        source=[
             "2d_field.cpp",
             "direction.cpp",
             "find_a_way.cpp",
@@ -14,4 +14,70 @@ def build(ctx):
             "spiral.cpp",
             "world.cpp",
         ]
+    )
+    ctx.program(
+        target="world_ut",
+        source=[
+            "world_ut.cpp",
+        ],
+        use="map-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="world_ut",
+    )
+    ctx.program(
+        target="spiral_ut",
+        source=[
+            "spiral_ut.cpp",
+        ],
+        use="map-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="spiral_ut",
+    )
+    ctx.program(
+        target="snake_ut",
+        source=[
+            "snake_ut.cpp",
+        ],
+        use="map-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="snake_ut",
+    )
+    ctx.program(
+        target="find_a_way_ut",
+        source=[
+            "find_a_way_ut.cpp",
+        ],
+        use="map-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="find_a_way_ut",
+    )
+    ctx.program(
+        target="direction_ut",
+        source=[
+            "direction_ut.cpp",
+        ],
+        use="map-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="direction_ut",
+    )
+    ctx.program(
+        target="2d_field_ut",
+        source=[
+            "2d_field_ut.cpp",
+        ],
+        use="map-lib-base",
+    )
+    ctx(
+        rule="${SRC}",
+        source="2d_field_ut",
     )

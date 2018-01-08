@@ -14,7 +14,7 @@ def options(opt):
 
 def configure(ctx):
     ctx.load("compiler_cxx")
-    ctx.find_program("jsonrpcstub")
+    ctx.find_program("jsonrpcstub", var="JSONRPCSTUB")
     ctx.env.append_unique(
         "CXXFLAGS", [
             "-O2",
@@ -22,7 +22,8 @@ def configure(ctx):
         ]
     )
     ctx.env.INCLUDES = [
-        os.path.abspath(top)
+        os.path.abspath(top),
+        os.path.abspath(out),
     ]
     print ctx.env.INCLUDES
 
@@ -30,7 +31,8 @@ def configure(ctx):
 def build(ctx):
     print ctx.env.INCLUDES
     ctx.recurse([
+        "lib",
+        "lisp",
         "map",
-        #"lisp",
-        #"ant",
+        "ant",
     ])

@@ -6,5 +6,4 @@ def build(ctx):
     ctx.recurse([
         "app",
         "lib",
-        "rpc",
     ])
