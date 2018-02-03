@@ -106,7 +106,8 @@ struct FunctionDefinition {
     };
     std::vector<Step> operations;
     std::size_t ArgsNumber;
-    std::vector<TVarName> VarNames;
+    std::vector<TVarName> names;
+    LocalFrame initialFrame;
 
     static bool step(Environment& env);
 };
@@ -155,7 +156,7 @@ public:
     }
 
     void getGlobal(const GlobalFrame& global) {
-        const auto& name = function->VarNames[
+        const auto& name = function->names[
             function->operations[runner].position
         ];
         this->pushLocal(
@@ -164,7 +165,7 @@ public:
     }
 
     void setGlobal(GlobalFrame& global) {
-        const auto& name = function->VarNames[
+        const auto& name = function->names[
             function->operations[runner].position
         ];
         global[name] = this->popLocal();
@@ -191,7 +192,7 @@ public:
 
 private:
     void setGlobal(GlobalFrame& global, Cell cell) const {
-        const auto& name = function->VarNames[
+        const auto& name = function->names[
             function->operations[runner].position
         ];
         global[name] = std::move(cell);
@@ -362,11 +363,11 @@ int main() {
     );
     auto fdef = std::make_shared<FunctionDefinition>();
     auto frame = LocalFrame{};
-    fdef->VarNames.push_back("print");
-    fdef->VarNames.push_back("+");
-    fdef->VarNames.push_back("first");
-    fdef->VarNames.push_back("second");
-    fdef->VarNames.push_back("third");
+    fdef->names.push_back("print");
+    fdef->names.push_back("+");
+    fdef->names.push_back("first");
+    fdef->names.push_back("second");
+    fdef->names.push_back("third");
     fdef->operations.push_back(
         FunctionDefinition::Step(
             FunctionDefinition::GetGlobal,
