@@ -12,17 +12,21 @@
 class FunctionDefinition;
 class FunctionCall;
 
+class IExtFunction;
+
 using FunctionDefinitionPtr =    std::shared_ptr<FunctionDefinition>;
+using FunctionCallPtr = std::shared_ptr<FunctionCall>;
 using PostponedFunctionCallPtr = std::shared_ptr<FunctionCall>;
+using ExtFunctionPtr =    std::shared_ptr<IExtFunction>;
 
 struct Nil {};
 
 using Cell = boost::variant<
     Nil
     , int
-    , std::string
     , FunctionDefinitionPtr
-    , PostponedFunctionCallPtr
+    , FunctionCallPtr
+    , ExtFunctionPtr
 >;
 
 bool isNil(const Cell& cell) {
@@ -34,6 +38,43 @@ using TVarName = std::string;
 
 using LocalFrame = std::vector<Cell>;
 using GlobalFrame = std::unordered_map<TVarName, Cell>;
+
+class IExtFunction {
+public:
+    virtual void call(
+        LocalFrame& frame
+    ) const = 0;
+};
+
+class ExtSum
+    : public IExtFunction
+{
+    void call(
+        LocalFrame& frame
+    ) const override {
+        auto sum = int{0};
+        for (const auto& cell : frame) {
+            sum += boost::get<int>(cell);
+        }
+        frame.clear();
+        frame.push_back(
+            Cell(sum)
+        );
+    }
+};
+
+class ExtPrint
+    : public IExtFunction
+{
+    void call(
+        LocalFrame& frame
+    ) const override {
+        for (const auto& cell : frame) {
+            std::cout << boost::get<int>(cell) << '\n';
+        }
+        frame.clear();
+    }
+};
 
 struct Environment;
 
@@ -52,6 +93,14 @@ struct FunctionDefinition {
         SkipIfFalse,
     };
     struct Step {
+        explicit Step(
+            EOperations op
+            , std::size_t pos
+        )
+            : operation(op)
+            , position(pos)
+        {
+        }
         EOperations operation;
         std::size_t position = 0;
     };
@@ -183,15 +232,15 @@ struct Environment {
 bool FunctionDefinition::step(Environment& env) {
     auto call = env.stackTop();
     switch (call->getOperation()) {
-        case FunctionDefinition::Nope:
+        case Nope:
             break;
-        case FunctionDefinition::GetGlobal:
+        case GetGlobal:
             call->getGlobal(env.vars);
             break;
-        case FunctionDefinition::SetGlobal:
+        case SetGlobal:
             call->setGlobal(env.vars);
             break;
-        case FunctionDefinition::RunFunction:
+        case RunFunction:
             {
                 auto frame = call->createNewFrame();
                 auto fdef = boost::get<FunctionDefinitionPtr>(
@@ -205,13 +254,28 @@ bool FunctionDefinition::step(Environment& env) {
                 );
             }
             break;
-        case FunctionDefinition::RunExternalFunction:
-            // TODO:
+        case RunExternalFunction:
+            {
+                auto frame = call->createNewFrame();
+                auto fdef = boost::get<ExtFunctionPtr>(
+                    call->popLocal()
+                );
+                fdef->call(frame);
+                if (!frame.empty()) {
+                    call->pushLocal(
+                        std::move(frame.back())
+                    );
+                } else {
+                    call->pushLocal(
+                        Cell(Nil{})
+                    );
+                }
+            }
             break;
-        case FunctionDefinition::StackRewind:
+        case StackRewind:
             call->rewind();
             break;
-        case FunctionDefinition::SkipIfTrue:
+        case SkipIfTrue:
             {
                 auto guard = call->popLocal();
                 if (isNil(guard)) {
@@ -219,7 +283,7 @@ bool FunctionDefinition::step(Environment& env) {
                 }
             }
             break;
-        case FunctionDefinition::SkipIfFalse:
+        case SkipIfFalse:
             {
                 auto guard = call->popLocal();
                 if (!isNil(guard)) {
@@ -271,6 +335,86 @@ bool FunctionDefinition::step(Environment& env) {
 
 int main() {
     Environment env;
+    env.vars.insert(
+        std::make_pair(
+            "+", Cell(std::make_shared<ExtSum>())
+        )
+    );
+    env.vars.insert(
+        std::make_pair(
+            "print", Cell(std::make_shared<ExtPrint>())
+        )
+    );
+    env.vars.insert(
+        std::make_pair(
+            "first", Cell(12)
+        )
+    );
+    env.vars.insert(
+        std::make_pair(
+            "second", Cell(13)
+        )
+    );
+    env.vars.insert(
+        std::make_pair(
+            "third", Cell(14)
+        )
+    );
+    auto fdef = std::make_shared<FunctionDefinition>();
+    auto frame = LocalFrame{};
+    fdef->VarNames.push_back("print");
+    fdef->VarNames.push_back("+");
+    fdef->VarNames.push_back("first");
+    fdef->VarNames.push_back("second");
+    fdef->VarNames.push_back("third");
+    fdef->operations.push_back(
+        FunctionDefinition::Step(
+            FunctionDefinition::GetGlobal,
+            0
+        )
+    );
+    fdef->operations.push_back(
+        FunctionDefinition::Step(
+            FunctionDefinition::GetGlobal,
+            1
+        )
+    );
+    fdef->operations.push_back(
+        FunctionDefinition::Step(
+            FunctionDefinition::GetGlobal,
+            2
+        )
+    );
+    fdef->operations.push_back(
+        FunctionDefinition::Step(
+            FunctionDefinition::GetGlobal,
+            3
+        )
+    );
+    fdef->operations.push_back(
+        FunctionDefinition::Step(
+            FunctionDefinition::RunExternalFunction,
+            2
+        )
+    );
+    fdef->operations.push_back(
+        FunctionDefinition::Step(
+            FunctionDefinition::GetGlobal,
+            4
+        )
+    );
+    fdef->operations.push_back(
+        FunctionDefinition::Step(
+            FunctionDefinition::RunExternalFunction,
+            2
+        )
+    );
+    env.CallStack.push_back(
+        FunctionCall(
+            std::move(fdef),
+            std::move(frame)
+        )
+    );
     while (FunctionDefinition::step(env)) {
     }
 }
