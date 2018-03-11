@@ -15,7 +15,6 @@ class FunctionCall;
 class IExtFunction;
 
 using FunctionDefinitionPtr =    std::shared_ptr<FunctionDefinition>;
-using FunctionCallPtr = std::shared_ptr<FunctionCall>;
 using PostponedFunctionCallPtr = std::shared_ptr<FunctionCall>;
 using ExtFunctionPtr =    std::shared_ptr<IExtFunction>;
 
@@ -25,7 +24,6 @@ using Cell = boost::variant<
     Nil
     , int
     , FunctionDefinitionPtr
-    , FunctionCallPtr
     , ExtFunctionPtr
 >;
 
@@ -33,7 +31,7 @@ bool isNil(const Cell& cell) {
     return cell.which() == 0;
 }
 
-// may we use stringview here?
+// may we use a std::stringview here?
 using TVarName = std::string;
 
 using LocalFrame = std::vector<Cell>;
@@ -81,14 +79,13 @@ struct Environment;
 struct FunctionDefinition {
     enum EOperations {
         Nope,
-        //UnpackFunction,     // Берем последнее значение со стека и превращаем его в вызываемый объект со стеком. лдем указатель на функцию в стек.
-        // Для любой функции: создаем новый LocalScope - кладем его в специальный стек.
-        //GetLocal,          // Берем из локального скоупа по номеру в стеке.
-        GetGlobal,         // Берез из глобального скоупа по имени, которое берем по номеру из локального скоупа имен.
+        GetConst,
+        GetLocal,
+        GetGlobal,
         SetGlobal,
-        RunFunction,          // Запуск функции, сколько аргументов положить в функцию, а так же где эту самую функцию взять
-        RunExternalFunction,  // Запуск внешней по отношению к языку функции (встроеные и притянутые из CPP функции)
-        StackRewind,    // Сколько нужно отмотать?
+        RunFunction,
+        RunExternalFunction,
+        StackRewind,
         SkipIfTrue,
         SkipIfFalse,
     };
@@ -104,16 +101,29 @@ struct FunctionDefinition {
         EOperations operation;
         std::size_t position = 0;
     };
+
     std::vector<Step> operations;
-    std::size_t ArgsNumber;
+    std::size_t argnum;
     std::vector<TVarName> names;
-    LocalFrame initialFrame;
+    LocalFrame consts;
 
     static bool step(Environment& env);
 };
 
 class FunctionCall {
 public:
+    explicit FunctionCall(
+        FunctionDefinitionPtr fdef
+    )
+        : function(
+            std::move(fdef)
+        )
+        , frame(
+            function->consts
+        )
+    {
+    }
+
     explicit FunctionCall(
         FunctionDefinitionPtr fdef
         , LocalFrame frame_
@@ -149,16 +159,31 @@ public:
         );
     }
 
-    const Cell& getLocal() const {
-        return frame[
+    void getConst() {
+        // copy
+        auto cell = function->consts[
             function->operations[runner].position
         ];
+        this->pushLocal(
+            std::move(cell)
+        );
+    }
+
+    void getLocal() {
+        // copy
+        auto local = frame[
+            function->operations[runner].position
+        ];
+        this->pushLocal(
+            std::move(local)
+        );
     }
 
     void getGlobal(const GlobalFrame& global) {
         const auto& name = function->names[
             function->operations[runner].position
         ];
+        // copy
         this->pushLocal(
             global.at(name)
         );
@@ -171,7 +196,7 @@ public:
         global[name] = this->popLocal();
     }
 
-    void rewind() {
+    void stackRewind() {
         frame.resize(
             frame.size() - function->operations[runner].position
         );
@@ -181,21 +206,13 @@ public:
         runner += function->operations[runner].position;
     }
 
-    LocalFrame createNewFrame() {
+    LocalFrame createArgs() {
         auto size = function->operations[runner].position;
         auto newFrame = LocalFrame(size);
         while (size--) {
             newFrame[size] = popLocal();
         }
         return newFrame;
-    }
-
-private:
-    void setGlobal(GlobalFrame& global, Cell cell) const {
-        const auto& name = function->names[
-            function->operations[runner].position
-        ];
-        global[name] = std::move(cell);
     }
 
 private:
@@ -235,6 +252,12 @@ bool FunctionDefinition::step(Environment& env) {
     switch (call->getOperation()) {
         case Nope:
             break;
+        case GetConst:
+            call->getConst();
+            break;
+        case GetLocal:
+            call->getLocal();
+            break;
         case GetGlobal:
             call->getGlobal(env.vars);
             break;
@@ -243,21 +266,21 @@ bool FunctionDefinition::step(Environment& env) {
             break;
         case RunFunction:
             {
-                auto frame = call->createNewFrame();
+                auto args = call->createArgs();
                 auto fdef = boost::get<FunctionDefinitionPtr>(
                     call->popLocal()
                 );
                 call = env.stackPush(
                     FunctionCall(
                         std::move(fdef),
-                        std::move(frame)
+                        std::move(args)
                     )
                 );
             }
             break;
         case RunExternalFunction:
             {
-                auto frame = call->createNewFrame();
+                auto frame = call->createArgs();
                 auto fdef = boost::get<ExtFunctionPtr>(
                     call->popLocal()
                 );
@@ -274,7 +297,7 @@ bool FunctionDefinition::step(Environment& env) {
             }
             break;
         case StackRewind:
-            call->rewind();
+            call->stackRewind();
             break;
         case SkipIfTrue:
             {
