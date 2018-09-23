@@ -5,88 +5,154 @@ import datetime
 import hashlib
 import logging
 import pathlib
+import sys
 
 
 _log = logging.getLogger(__name__)
 _log_format = "%(asctime)s %(name)s [%(process)d] %(levelname)s %(message)s"
 
+PATH_PREFIX_SIZE = 5
+
+class Placeholder:
+    pass
 
 class Event:
     def __init__(self, name, params):
         self.name = name
         self.params = params
         self.hashes = set()
+        name_m = hashlib.sha1()
+        name_m.update(name.encode("utf-8"))
+        self.hashes.add(name_m.hexdigest())
+
         for key, value in self.params.items():
-            m = hashlib.sha1()
-            m.update(name.encode("utf-8"))
-            m.update(key.encode("utf-8"))
+            param_m = name_m.copy()
+            param_m.update(key.encode("utf-8"))
             if isinstance(value, pathlib.Path):
+                for pref in self._prefixes_for_path(value):
+                    pref_m = param_m.copy()
+                    pref_m.update(
+                        pref.as_posix().encode("utf-8")
+                    )
+                    self.hashes.add(pref_m.hexdigest())
+                    _log.debug("Hash path prefix: %r -> %r", pref.as_posix(), pref_m.hexdigest())
+            elif isinstance(value, Placeholder):
+                pass
             else:
-                m.update(value.encode("utf-8"))
-                self.hashes.add(m.hexdigest())
+                param_m.update(value.encode("utf-8"))
+                self.hashes.add(param_m.hexdigest())
+
+    @staticmethod
+    def _prefixes_for_path(path):
+        prefixes = list()
+        while path.name:
+            prefixes.append(path)
+            path = path.parent
+        return prefixes[-PATH_PREFIX_SIZE:]
+
+    def __repr__(self):
+        return "{name!r} {params!r} {hashes!r}".format(
+            name = self.name,
+            params = self.params,
+            hashes = self.hashes,
+        )
 
 
 class EventTrap:
-    def __init__(self, hashes, successors, action=None):
+    def __init__(self, hashes, successors, action=None, repeatable=False):
         self._hashes = hashes
         self._successors = list(successors)
         self._action = action
+        self._repeatable = repeatable
 
     def trap(self, event):
         triggered = all(h in event.hashes for h in self._hashes)
         if triggered:
             if self._action is not None:
                 self._action(event)
-            return self._successors
+                if self._repeatable:
+                    return [self]
+                else:
+                    return []
+            if self._repeatable:
+                return self._successors + [self]
+            else:
+                return self._successors
         return [self]
 
 
 class EventEdge:
     def __init__(self, predecessor, name, params, repeatable):
-        _log.debug("EventEdge created: %r %r", name, params)
+        self._event = Event(name, params)
+        _log.debug("EventEdge created: %r", self._event)
         self._predecessor = predecessor
         self._successors = list()
         self._repeatable = repeatable
 
-    def next(self, name, **params):
-        _log.debug("Next: %r %r", name, params)
+    def one(self, name, **params):
         successor = EventEdge(self, name, params, False)
         self._successors.append(successor)
         return successor
 
-    def repeat(self, name, **params):
-        _log.debug("Repeat: %r %r", name, params)
+    def many(self, name, **params):
         successor = EventEdge(self, name, params, True)
         self._successors.append(successor)
         return successor
 
-    def action(self, action_):
-        #self._actions.append(action_)
+    def action(self, action):
+        trap = EventTrap(
+            self._event.hashes,
+            successors=[],
+            action=action,
+            repeatable=self._repeatable,
+        )
+        edge = self
+        while edge._predecessor is not None:
+            edge = edge._predecessor
+            trap = EventTrap(
+                edge._event.hashes,
+                successors=[trap],
+                action=None,
+                repeatable=edge._repeatable,
+            )
+        return trap
 
-    def _as_actionable(self):
-        pass
+    def null(self, action):
+        return self.action(self, None)
+
+def many(name, params):
+    return EventEdge(None, name, params, True)
 
 
-class InitialEventEdge(EventEdge):
-    def __init__(self):
-        EventEdge.__init__(self, None, "initial")
+def one(name, params):
+    return EventEdge(None, name, params, False)
+
+
+def print_action(event):
+    _log.debug(" -> Some final action on event: %r", event)
 
 
 def dfs():
-    init = InitialEventEdge()
-    init.next("first")#.action(lambda 
-    init.next("second").next("third")
-    return [] # init
+    traps = [
+        many("first", {}).action(print_action),
+        many("first", {}).one("second").action(print_action),
+        many("first", {}).many("second").one("2").action(print_action),
+        many("1", {}).one("2").one("3").action(print_action),
+        many("open", {"path": pathlib.Path("/etc/netctl")}).action(print_action),
+    ]
+    return traps
 
 
 def read_event():
     args = input("Enter event: ").strip().split()
     name = args[0]
     args = args[1:]
-    params = {
-        str(ind): value
-        for ind, value in args
-    }
+    params = dict()
+    for ind, value in enumerate(args):
+        key, value = value.split(":", 1)
+        if key == "path":
+            value = pathlib.Path(value)
+        params[key] = value
     return Event(name, params)
 
 
@@ -94,11 +160,13 @@ def run(args):
     traps = dfs()
     while True:
         event = read_event()
+        _log.debug("Event: %r", event)
         traps = [
             next_trap
             for trap in traps
             for next_trap in trap.trap(event)
         ]
+        _log.debug("Traps count: %r", len(traps))
 
 
 def arguments():
