@@ -1,0 +1,10 @@
+[package]
+name = "wren"
+version = "0.1.0"
+authors = ["akindyakov <akindyakov@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+clap = "2.32"
+groestl = "0.8"
+hex = "0.3"
