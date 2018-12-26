@@ -1,93 +1,101 @@
+extern crate chrono;
 extern crate clap;
-use clap::{Arg, App, SubCommand};
-
-
 extern crate groestl;
-use groestl::{Digest, Groestl256};
-
 extern crate hex;
 
+use clap::{
+    App,
+    Arg,
+    SubCommand,
+};
+use groestl::{
+    Digest,
+    Groestl256,
+};
 use std::fs::OpenOptions;
-use std::io::Write;
+use std::io::{
+    BufWriter,
+    Write,
+};
 use std::path::Path;
-use std::time::SystemTime;
 
-fn todo(args: &clap::ArgMatches<>) {
+
+fn new_item(args: &clap::ArgMatches<>) {
     // TODO: take values from config
     let todo_root_path = Path::new(
-        "~/source/git.note"
+        "/home/akindyakov/source/git.note/todo"
     );
     let rel_todo_list_path = Path::new(
-        "todo/list.md"
+        "list.md"
     );
     let rel_tasks_dir_path = Path::new(
-        "todo/files"
+        "files"
     );
     let todo_list_path = todo_root_path.join(rel_todo_list_path);
-    // if args.is_present("message") {
-    //     println!(
-    //         "Message: {}",
-    //         args.values_of("message").unwrap().collect::<Vec<_>>().join(" ")
-    //     );
-    // }
-    // if args.is_present("tag") {
-    //     println!(
-    //         "Tags: #{}",
-    //         args.values_of("tag").unwrap().collect::<Vec<_>>().join(" #")
-    //     );
-    // }
+    if args.is_present("message") {
+        println!(
+            "Message: {}",
+            args.values_of("message").unwrap().collect::<Vec<_>>().join(" ")
+        );
+    }
+    if args.is_present("tag") {
+        println!(
+            "Tags: #{}",
+            args.values_of("tag").unwrap().collect::<Vec<_>>().join(" #")
+        );
+    }
     if args.is_present("list") {
         println!("List of tasks");
-    } else {
-        let mut hasher = Groestl256::default();
-        let message = args
-            .values_of("message")
-            .unwrap()
-            .collect::<Vec<_>>()
-            .join(" ");
-        hasher.input(message.into_bytes());
-        let tags = args.values_of("tag").unwrap().collect::<Vec<_>>();
-        for tag in tags.iter() {
-            hasher.input(tag);
-        }
-        let uid = hex::encode(hasher.result());
-        let rel_task_file_path = rel_tasks_dir_path.join(uid + ".md");
-        let task_file_path = todo_root_path.join(rel_task_file_path);
-        {
-            let mut file = OpenOptions::new()
-                .create(true)
-                .append(true)
-                .write(true)
-                .open(todo_list_path).unwrap();
-            file.write_all(
-                format!(
-                    " - [{}]({}.md) {}\n",
-                    uid[0..6],
-                    rel_task_file_path.display(),
-                    message
-                )
-            ).unwrap();
-        }
-        println!("Create new {} {} {}", uid[0..6], message, rel_task_file_path);
-        {
-            let mut file = OpenOptions::new()
-                .create(true)
-                .append(true)
-                .write(true)
-                .open(task_file_path).unwrap();
-            file.write(
-                format!("# {} {}\n\n", uid[0..6], message)
-            ).unwrap();
-            file.write(
-                format!(" #{}\n\n", tags.join(" #"))
-            ).unwrap();
-            file.write(
-                format!("[back]({})\n", rel_todo_list_path)
-            ).unwrap();
-            file.write(
-                format!("Created: {}\n\n", SystemTime::now())
-            ).unwrap();
-        }
+        return;
+    }
+    let mut hasher = Groestl256::default();
+    let message = args
+        .values_of("message")
+        .unwrap()
+        .collect::<Vec<_>>()
+        .join(" ");
+    hasher.input(&message);
+    let tags = args.values_of("tag").unwrap().collect::<Vec<_>>();
+    for tag in tags.iter() {
+        hasher.input(tag);
+    }
+    let uid = hex::encode(hasher.result());
+    let rel_task_file_path = rel_tasks_dir_path.join(
+        [uid.as_str(), "md"].join(".")
+    );
+    let task_file_path = todo_root_path.join(&rel_task_file_path);
+    {
+        println!("Open {}", todo_list_path.display());
+        let file = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .write(true)
+            .open(todo_list_path).unwrap();
+        let mut buf = BufWriter::new(&file);
+        writeln!(&mut buf,
+                " - [{}]({}) {}",
+                &uid,
+                rel_task_file_path.display(),
+                &message
+        ).unwrap();
+    }
+    println!("Create new {} {} {}", &uid, &message, rel_task_file_path.display());
+    {
+        let time_format = "%Y.%m.%d %u %H:%M";
+        let file = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .write(true)
+            .open(task_file_path).unwrap();
+        let mut buf = BufWriter::new(&file);
+        write!(&mut buf, "# {} {}\n\n", &uid, &message).unwrap();
+        write!(&mut buf, " #{}\n\n", tags.join(" #")).unwrap();
+        write!(&mut buf, "[back]({})\n", rel_todo_list_path.display()).unwrap();
+        write!(
+            &mut buf,
+            "Created: {}\n\n",
+            chrono::Local::now().format(&time_format)
+        ).unwrap();
     }
 }
 
@@ -98,7 +106,6 @@ fn test(_args: &clap::ArgMatches<>) {
 }
 
 fn main() {
-    println!("Hello, world!");
     let args = App::new("wren program")
         .version("0.0.1")
         .author("Alexander Kindyakov <akindyakov@gmail.com>")
@@ -119,14 +126,14 @@ fn main() {
                 .help("Sets the level of verbosity")
         )
         .subcommand(
-            SubCommand::with_name("todo")
+            SubCommand::with_name("new")
                 .about("task tracker")
-                .arg(
-                    Arg::with_name("list")
-                        .short("l")
-                        .long("list")
-                        .help("list all existing tasks")
-                )
+                //.arg(
+                //    Arg::with_name("list")
+                //        .short("l")
+                //        .long("list")
+                //        .help("list all existing tasks")
+                //)
                 .arg(
                     Arg::with_name("tag")
                         .long("tag")
@@ -138,11 +145,14 @@ fn main() {
                 .arg(
                     Arg::with_name("message")
                         .help("message")
-                        .last(true)
+                        .long("message")
+                        .short("m")
                         .multiple(true)
-                        .raw(true)
                         .takes_value(true)
                 )
+        )
+        .subcommand(
+            SubCommand::with_name("new")
         )
         .subcommand(
             SubCommand::with_name("test")
@@ -164,8 +174,8 @@ fn main() {
     println!("Path to config file: {}", config.display());
 
     return match args.subcommand() {
-        ("todo", Some(sub_args)) => {
-            todo(sub_args)
+        ("new", Some(sub_args)) => {
+            new_item(sub_args)
         },
         ("test", Some(sub_args)) => {
             test(sub_args)
