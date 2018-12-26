@@ -2,12 +2,8 @@ extern crate chrono;
 extern crate clap;
 extern crate groestl;
 extern crate hex;
+extern crate kv;
 
-use clap::{
-    App,
-    Arg,
-    SubCommand,
-};
 use groestl::{
     Digest,
     Groestl256,
@@ -18,7 +14,6 @@ use std::io::{
     Write,
 };
 use std::path::Path;
-
 
 fn new_item(args: &clap::ArgMatches<>) {
     // TODO: take values from config
@@ -106,12 +101,12 @@ fn test(_args: &clap::ArgMatches<>) {
 }
 
 fn main() {
-    let args = App::new("wren program")
+    let args = clap::App::new("wren program")
         .version("0.0.1")
         .author("Alexander Kindyakov <akindyakov@gmail.com>")
         .about("Does awesome things")
         .arg(
-            Arg::with_name("config")
+            clap::Arg::with_name("config")
                 .short("c")
                 .long("config")
                 .value_name("FILE")
@@ -119,23 +114,23 @@ fn main() {
                 .takes_value(true)
         )
         .arg(
-            Arg::with_name("v")
+            clap::Arg::with_name("v")
                 .short("v")
                 .multiple(true)
                 .global(true)
                 .help("Sets the level of verbosity")
         )
         .subcommand(
-            SubCommand::with_name("new")
+            clap::SubCommand::with_name("new")
                 .about("task tracker")
                 //.arg(
-                //    Arg::with_name("list")
+                //    clap::Arg::with_name("list")
                 //        .short("l")
                 //        .long("list")
                 //        .help("list all existing tasks")
                 //)
                 .arg(
-                    Arg::with_name("tag")
+                    clap::Arg::with_name("tag")
                         .long("tag")
                         .multiple(true)
                         .short("t")
@@ -143,7 +138,7 @@ fn main() {
                         .help("tag")
                 )
                 .arg(
-                    Arg::with_name("message")
+                    clap::Arg::with_name("message")
                         .help("message")
                         .long("message")
                         .short("m")
@@ -152,15 +147,15 @@ fn main() {
                 )
         )
         .subcommand(
-            SubCommand::with_name("new")
+            clap::SubCommand::with_name("new")
         )
         .subcommand(
-            SubCommand::with_name("test")
+            clap::SubCommand::with_name("test")
                 .about("controls testing features")
                 .version("1.3")
                 .author("Someone E. <someone_else@other.com>")
                 .arg(
-                    Arg::with_name("debug")
+                    clap::Arg::with_name("debug")
                         .short("d")
                         .help("print debug information verbosely")
                 )
